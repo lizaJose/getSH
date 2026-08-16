@@ -1,0 +1,181 @@
+<div class="detail">
+
+  <!-- ============================= -->
+  <!-- HEADER -->
+  <!-- ============================= -->
+
+  <button class="back" (click)="back()">
+    ← Back
+  </button>
+
+  <h2>PAGE TITLE</h2>
+
+  <p class="section-description">
+    Short description of this section.
+  </p>
+
+
+  <!-- ============================= -->
+  <!-- MAIN ACCORDION -->
+  <!-- ============================= -->
+
+  <mat-accordion multi>
+
+
+    <!-- ============================= -->
+    <!-- 1. CATEGORY -->
+    <!-- ============================= -->
+
+    <mat-expansion-panel>
+
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          1. Category Name
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <mat-accordion multi>
+
+
+        <!-- ITEM 1 -->
+
+        <mat-expansion-panel>
+
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Item Name
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <p>
+            Description of what this technique / tool / concept is used for.
+          </p>
+
+          <pre><code>{{ itemOne }}</code></pre>
+
+          <button
+            class="copy-button"
+            (click)="copy(itemOne)">
+            Copy
+          </button>
+
+        </mat-expansion-panel>
+
+
+        <!-- ITEM 2 -->
+
+        <mat-expansion-panel>
+
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Another Item
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <p>
+            Description.
+          </p>
+
+          <pre><code>{{ itemTwo }}</code></pre>
+
+          <button
+            class="copy-button"
+            (click)="copy(itemTwo)">
+            Copy
+          </button>
+
+        </mat-expansion-panel>
+
+
+      </mat-accordion>
+
+    </mat-expansion-panel>
+
+
+    <!-- ============================= -->
+    <!-- 2. CATEGORY -->
+    <!-- ============================= -->
+
+    <mat-expansion-panel>
+
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          2. Another Category
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <mat-accordion multi>
+
+
+        <!-- ITEM -->
+
+        <mat-expansion-panel>
+
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Item Name
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <pre><code>{{ itemThree }}</code></pre>
+
+          <button
+            class="copy-button"
+            (click)="copy(itemThree)">
+            Copy
+          </button>
+
+        </mat-expansion-panel>
+
+
+      </mat-accordion>
+
+    </mat-expansion-panel>
+
+
+    <!-- ============================= -->
+    <!-- 3. CATEGORY -->
+    <!-- ============================= -->
+
+    <mat-expansion-panel>
+
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          3. Another Category
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <mat-accordion multi>
+
+
+        <mat-expansion-panel>
+
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Item Name
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <p>
+            Description.
+          </p>
+
+          <pre><code>{{ itemFour }}</code></pre>
+
+          <button
+            class="copy-button"
+            (click)="copy(itemFour)">
+            Copy
+          </button>
+
+        </mat-expansion-panel>
+
+
+      </mat-accordion>
+
+    </mat-expansion-panel>
+
+
+  </mat-accordion>
+
+</div>

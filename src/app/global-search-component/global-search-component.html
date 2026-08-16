@@ -1,0 +1,41 @@
+<div class="overlay" (click)="close.emit()">
+
+  <div class="search-box" (click)="$event.stopPropagation()">
+
+    <!-- HEADER -->
+    <div class="search-header">
+
+      <input
+        type="text"
+        [(ngModel)]="query"
+        (input)="onSearch()"
+        placeholder="Search..."
+      />
+
+      <!-- BOTÓN CERRAR -->
+      <button class="close-btn" (click)="close.emit()">
+        ✕
+      </button>
+
+    </div>
+
+    <!-- RESULTS -->
+    <div class="results">
+
+      <div
+        class="result"
+        *ngFor="let item of results"
+        (click)="go(item)"
+      >
+        {{ item.title }}
+      </div>
+
+      <div *ngIf="query && results.length === 0" class="no-results">
+        No results found
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

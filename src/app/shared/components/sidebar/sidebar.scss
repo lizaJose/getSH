@@ -1,0 +1,41 @@
+.sidebar {
+  width: 240px;
+  height: 100vh;
+  background: #0b1220;
+  border-right: 1px solid #1e293b;
+  padding: 1rem;
+}
+
+.title {
+  color: white;
+  font-size: 18px;
+  margin-bottom: 2rem;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  margin-bottom: 10px;
+}
+
+a {
+  display: block;
+  padding: 10px;
+  border-radius: 8px;
+  color: #94a3b8;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+a:hover {
+  background: #1e293b;
+  color: white;
+}
+
+a.active {
+  background: #2563eb;
+  color: white;
+}

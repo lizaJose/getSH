@@ -1,0 +1,39 @@
+.layout {
+  display: flex;
+  height: 100vh;
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2rem;
+}
+app-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+}
+app-global-search {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  z-index: 9999;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  padding-top: 80px;
+
+  background: rgba(0, 0, 0, 0.6);
+}
+.search-button {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}

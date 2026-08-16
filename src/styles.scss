@@ -1,1 +1,31 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+
+/* Tailwind */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Angular Material theme */
+html {
+  height: 100%;
+
+  @include mat.theme((
+    color: (
+      primary: mat.$azure-palette,
+      tertiary: mat.$blue-palette,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
+}
+
+/* Base app styling */
+body {
+  margin: 0;
+  height: 100%;
+  color-scheme: dark;
+
+  /* IMPORTANT:
+     No forces colors hardcoded.
+     Let Material + Tailwind handle it. */
+}
