@@ -1,627 +1,622 @@
-<div class="detail">
+<div class="scan-page">
+  <!-- ===================================================== -->
+  <!-- TOOL SELECTION -->
+  <!-- ===================================================== -->
+  <div class="terminal-path"><span class="prompt">~</span>/get.sh/scan</div>
+  <br />
+  <ng-container *ngIf="!selected">
+    <h1 class="title">Scan</h1>
 
-  <!-- ============================= -->
-  <!-- HEADER -->
-  <!-- ============================= -->
+    <p class="page-description">Network discovery, enumeration and scanning techniques.</p>
+    <p class="page-description">Network discovery, enumeration and scanning techniques.</p>
 
-  <button class="back" (click)="back()">← Back</button>
+    <div class="grid">
+      <!-- NMAP -->
 
-  <h2>Nmap</h2>
+      <div class="card" (click)="selectTech('nmap')">
+        <div class="card-icon">
+          <span>&gt;_</span>
+        </div>
 
-  <p class="section-description">
-    Network discovery, port scanning and service enumeration.
-  </p>
+        <div class="card-content">
+          <h2>Nmap</h2>
 
+          <p>Network discovery, port scanning and service enumeration.</p>
+        </div>
+      </div>
 
-  <!-- ============================= -->
-  <!-- MAIN ACCORDION -->
-  <!-- ============================= -->
+      <!-- RUSTSCAN -->
 
-  <mat-accordion multi>
+      <div class="card" (click)="selectTech('rustscan')">
+        <div class="card-icon">
+          <span>⚡</span>
+        </div>
 
+        <div class="card-content">
+          <h2>Rustscan</h2>
 
-    <!-- ============================= -->
-    <!-- 1. INITIAL SCANNING -->
-    <!-- ============================= -->
+          <p>Fast port discovery and initial enumeration.</p>
+        </div>
+      </div>
 
-    <mat-expansion-panel>
+      <!-- MASSCAN -->
 
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          1. Initial Scanning
-        </mat-panel-title>
-      </mat-expansion-panel-header>
+      <div class="card" (click)="selectTech('masscan')">
+        <div class="card-icon">
+          <span>◉</span>
+        </div>
 
-      <mat-accordion multi>
+        <div class="card-content">
+          <h2>Masscan</h2>
 
+          <p>High-speed network and port scanning.</p>
+        </div>
+      </div>
 
-        <!-- QUICK SCAN -->
+      <!-- NIKTO -->
 
-        <mat-expansion-panel>
+      <div class="card" (click)="selectTech('nikto')">
+        <div class="card-icon">
+          <span>⌕</span>
+        </div>
 
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              Quick Scan
-            </mat-panel-title>
-          </mat-expansion-panel-header>
+        <div class="card-content">
+          <h2>Nikto</h2>
 
-          <p>
-            <strong>Objective:</strong>
-            Identify the full attack surface and all open ports.
-          </p>
+          <p>Web server scanning and vulnerability discovery.</p>
+        </div>
+      </div>
+    </div>
+  </ng-container>
 
-          <pre><code>{{ nmapQuick }}</code></pre>
+  <!-- ===================================================== -->
+  <!-- NMAP DETAIL -->
+  <!-- ===================================================== -->
 
-          <button
-            class="copy-button"
-            (click)="copy(nmapQuick)">
-            Copy
-          </button>
+  <ng-container *ngIf="selected === 'nmap'">
+    <div class="detail">
+      <button class="back" (click)="back()">← Back to Scan</button>
 
-        </mat-expansion-panel>
+      <h2>Nmap</h2>
 
+      <p class="section-description">Network discovery, port scanning and service enumeration.</p>
 
-        <!-- SERVICE ENUMERATION -->
-
-        <mat-expansion-panel>
-
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              Service Enumeration
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-
-          <pre><code>{{ nmapEnum }}</code></pre>
-
-          <button
-            class="copy-button"
-            (click)="copy(nmapEnum)">
-            Copy
-          </button>
-
-        </mat-expansion-panel>
-
-
-        <!-- BANNER GRABBING -->
-
-        <mat-expansion-panel>
-
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              Banner Grabbing
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-
-          <pre><code>{{ bannerGrab }}</code></pre>
-
-          <button
-            class="copy-button"
-            (click)="copy(bannerGrab)">
-            Copy
-          </button>
-
-        </mat-expansion-panel>
-
-
-        <!-- UNKNOWN PORTS -->
-
-        <mat-expansion-panel>
-
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              Unknown / Rare Ports
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-
-          <p>
-            <strong>Do not search for exploits yet.</strong>
-            First identify the protocol and service.
-          </p>
-
-          <pre><code>{{ unknownPorts }}</code></pre>
-
-          <button
-            class="copy-button"
-            (click)="copy(unknownPorts)">
-            Copy
-          </button>
-
-        </mat-expansion-panel>
-
-
-      </mat-accordion>
-
-    </mat-expansion-panel>
-
-
-    <!-- ============================= -->
-    <!-- 2. COMMON SERVICES -->
-    <!-- ============================= -->
-
-    <mat-expansion-panel>
-
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          2. Common Services
-        </mat-panel-title>
-      </mat-expansion-panel-header>
+      <!-- ================================================= -->
+      <!-- 1. INITIAL SCANNING -->
+      <!-- ================================================= -->
 
       <mat-accordion multi>
-
-
-        <!-- SSH -->
-
         <mat-expansion-panel>
-
           <mat-expansion-panel-header>
-            <mat-panel-title>
-              SSH
-            </mat-panel-title>
+            <mat-panel-title> 1. Initial Scanning </mat-panel-title>
           </mat-expansion-panel-header>
 
-          <pre><code>{{ nmapSSH }}</code></pre>
+          <mat-accordion multi>
+            <!-- QUICK SCAN -->
 
-          <button
-            class="copy-button"
-            (click)="copy(nmapSSH)">
-            Copy
-          </button>
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title> Quick Scan </mat-panel-title>
+              </mat-expansion-panel-header>
 
+              <p>
+                <strong>Objective:</strong>
+                Identify the full attack surface and all open ports.
+              </p>
+
+              <app-terminal [command]="nmapQuick"> </app-terminal>
+            </mat-expansion-panel>
+
+            <!-- SERVICE ENUMERATION -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title> Service Enumeration </mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="nmapEnum"></app-terminal>
+            </mat-expansion-panel>
+
+            <!-- BANNER GRABBING -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title> Banner Grabbing </mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="bannerGrab"></app-terminal>
+            </mat-expansion-panel>
+
+            <!-- UNKNOWN PORTS -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title> Unknown / Rare Ports </mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <p>
+                <strong>Do not search for exploits yet.</strong>
+                First identify the protocol and service.
+              </p>
+
+              <app-terminal [command]="unknownPorts"></app-terminal>
+
+              <button (click)="copy(unknownPorts)">Copy</button>
+            </mat-expansion-panel>
+          </mat-accordion>
         </mat-expansion-panel>
 
-
-        <!-- FTP -->
+        <!-- ================================================= -->
+        <!-- 2. COMMON SERVICES -->
+        <!-- ================================================= -->
 
         <mat-expansion-panel>
-
           <mat-expansion-panel-header>
-            <mat-panel-title>
-              FTP
-            </mat-panel-title>
+            <mat-panel-title> 2. Common Services </mat-panel-title>
           </mat-expansion-panel-header>
 
-          <pre><code>{{ nmapFTP }}</code></pre>
+          <mat-accordion multi>
+            <!-- SSH -->
 
-          <button
-            class="copy-button"
-            (click)="copy(nmapFTP)">
-            Copy
-          </button>
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>SSH</mat-panel-title>
+              </mat-expansion-panel-header>
 
+              <app-terminal [command]="nmapSSH"></app-terminal>
+
+              <button (click)="copy(nmapSSH)">Copy</button>
+            </mat-expansion-panel>
+
+            <!-- FTP -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>FTP</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="nmapFTP"></app-terminal>
+
+              <button (click)="copy(nmapFTP)">Copy</button>
+            </mat-expansion-panel>
+
+            <!-- SMB -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>SMB</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="nmapSMB"></app-terminal>
+            </mat-expansion-panel>
+
+            <!-- HTTP -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>HTTP / Web</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="nmapHTTP"></app-terminal>
+            </mat-expansion-panel>
+
+            <!-- TELNET -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Telnet</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="nmapTelnet"></app-terminal>
+            </mat-expansion-panel>
+
+            <!-- RDP -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>RDP</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="nmapRDP"></app-terminal>
+            </mat-expansion-panel>
+
+            <!-- VNC -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>VNC</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="nmapVNC"></app-terminal>
+            </mat-expansion-panel>
+
+            <!-- SMTP -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>SMTP</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="nmapSMTP"></app-terminal>
+            </mat-expansion-panel>
+
+            <!-- POP3 / IMAP -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>POP3 / IMAP</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="nmapMail"></app-terminal>
+            </mat-expansion-panel>
+
+            <!-- SNMP -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>SNMP</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="nmapSNMP"></app-terminal>
+            </mat-expansion-panel>
+
+            <!-- LDAP -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>LDAP</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="nmapLDAP"></app-terminal>
+            </mat-expansion-panel>
+
+            <!-- SIP -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>SIP</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="nmapSIP"></app-terminal>
+            </mat-expansion-panel>
+
+            <!-- IRC -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>IRC</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="nmapIRC"></app-terminal>
+            </mat-expansion-panel>
+          </mat-accordion>
         </mat-expansion-panel>
 
-
-        <!-- SMB -->
+        <!-- ================================================= -->
+        <!-- 3. DATABASE SERVICES -->
+        <!-- ================================================= -->
 
         <mat-expansion-panel>
-
           <mat-expansion-panel-header>
-            <mat-panel-title>
-              SMB
-            </mat-panel-title>
+            <mat-panel-title> 3. Database Services </mat-panel-title>
           </mat-expansion-panel-header>
 
-          <pre><code>{{ nmapSMB }}</code></pre>
+          <mat-accordion multi>
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>MSSQL</mat-panel-title>
+              </mat-expansion-panel-header>
 
-          <button
-            class="copy-button"
-            (click)="copy(nmapSMB)">
-            Copy
-          </button>
+              <app-terminal [command]="nmapMSSQL"></app-terminal>
+            </mat-expansion-panel>
 
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>MySQL</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="nmapMySQL"></app-terminal>
+            </mat-expansion-panel>
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>PostgreSQL</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="nmapPostgreSQL"></app-terminal>
+            </mat-expansion-panel>
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Redis</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="nmapRedis"></app-terminal>
+            </mat-expansion-panel>
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Oracle</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="nmapOracle"></app-terminal>
+            </mat-expansion-panel>
+          </mat-accordion>
         </mat-expansion-panel>
 
-
-        <!-- HTTP -->
+        <!-- ================================================= -->
+        <!-- 4. NSE & AUTHENTICATION -->
+        <!-- ================================================= -->
 
         <mat-expansion-panel>
-
           <mat-expansion-panel-header>
-            <mat-panel-title>
-              HTTP / Web
-            </mat-panel-title>
+            <mat-panel-title> 4. NSE & Authentication </mat-panel-title>
           </mat-expansion-panel-header>
 
-          <pre><code>{{ nmapHTTP }}</code></pre>
+          <mat-accordion multi>
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title> Credential Attacks </mat-panel-title>
+              </mat-expansion-panel-header>
 
-          <button
-            class="copy-button"
-            (click)="copy(nmapHTTP)">
-            Copy
-          </button>
+              <p>
+                Use authentication testing only after identifying the service and its authentication
+                mechanism.
+              </p>
 
+              <p>
+                <strong>Recommended workflow:</strong>
+              </p>
+
+              <ul>
+                <li>Confirm the service is real and reachable.</li>
+                <li>Identify the authentication mechanism.</li>
+                <li>Check for default or weak credentials.</li>
+                <li>Perform normal enumeration first.</li>
+              </ul>
+            </mat-expansion-panel>
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title> General NSE Discovery </mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="nmapNSE"></app-terminal>
+            </mat-expansion-panel>
+          </mat-accordion>
         </mat-expansion-panel>
-
-
-        <!-- TELNET -->
-
-        <mat-expansion-panel>
-
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              Telnet
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-
-          <pre><code>{{ nmapTelnet }}</code></pre>
-
-          <button
-            class="copy-button"
-            (click)="copy(nmapTelnet)">
-            Copy
-          </button>
-
-        </mat-expansion-panel>
-
-
-        <!-- RDP -->
-
-        <mat-expansion-panel>
-
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              RDP
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-
-          <pre><code>{{ nmapRDP }}</code></pre>
-
-          <button
-            class="copy-button"
-            (click)="copy(nmapRDP)">
-            Copy
-          </button>
-
-        </mat-expansion-panel>
-
-
-        <!-- VNC -->
-
-        <mat-expansion-panel>
-
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              VNC
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-
-          <pre><code>{{ nmapVNC }}</code></pre>
-
-          <button
-            class="copy-button"
-            (click)="copy(nmapVNC)">
-            Copy
-          </button>
-
-        </mat-expansion-panel>
-
-
-        <!-- SMTP -->
-
-        <mat-expansion-panel>
-
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              SMTP
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-
-          <pre><code>{{ nmapSMTP }}</code></pre>
-
-          <button
-            class="copy-button"
-            (click)="copy(nmapSMTP)">
-            Copy
-          </button>
-
-        </mat-expansion-panel>
-
-
-        <!-- POP3 / IMAP -->
-
-        <mat-expansion-panel>
-
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              POP3 / IMAP
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-
-          <pre><code>{{ nmapMail }}</code></pre>
-
-          <button
-            class="copy-button"
-            (click)="copy(nmapMail)">
-            Copy
-          </button>
-
-        </mat-expansion-panel>
-
-
-        <!-- SNMP -->
-
-        <mat-expansion-panel>
-
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              SNMP
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-
-          <pre><code>{{ nmapSNMP }}</code></pre>
-
-          <button
-            class="copy-button"
-            (click)="copy(nmapSNMP)">
-            Copy
-          </button>
-
-        </mat-expansion-panel>
-
-
-        <!-- LDAP -->
-
-        <mat-expansion-panel>
-
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              LDAP
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-
-          <pre><code>{{ nmapLDAP }}</code></pre>
-
-          <button
-            class="copy-button"
-            (click)="copy(nmapLDAP)">
-            Copy
-          </button>
-
-        </mat-expansion-panel>
-
-
-        <!-- SIP -->
-
-        <mat-expansion-panel>
-
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              SIP
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-
-          <pre><code>{{ nmapSIP }}</code></pre>
-
-          <button
-            class="copy-button"
-            (click)="copy(nmapSIP)">
-            Copy
-          </button>
-
-        </mat-expansion-panel>
-
-
-        <!-- IRC -->
-
-        <mat-expansion-panel>
-
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              IRC
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-
-          <pre><code>{{ nmapIRC }}</code></pre>
-
-          <button
-            class="copy-button"
-            (click)="copy(nmapIRC)">
-            Copy
-          </button>
-
-        </mat-expansion-panel>
-
-
       </mat-accordion>
+    </div>
+  </ng-container>
 
-    </mat-expansion-panel>
+  <!-- ===================================================== -->
+  <!-- NIKTO DETAIL -->
+  <!-- ===================================================== -->
+  <ng-container *ngIf="selected === 'nikto'">
+    <div class="detail">
+      <button class="back" (click)="back()">← Back to Scan</button>
 
+      <h2>Nikto</h2>
 
-    <!-- ============================= -->
-    <!-- 3. DATABASE SERVICES -->
-    <!-- ============================= -->
+      <p class="section-description">
+        Web server scanning, misconfiguration detection and vulnerability discovery.
+      </p>
 
-    <mat-expansion-panel>
-
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          3. Database Services
-        </mat-panel-title>
-      </mat-expansion-panel-header>
+      <!-- ================================================= -->
+      <!-- 1. BASIC SCANNING -->
+      <!-- ================================================= -->
 
       <mat-accordion multi>
-
-
-        <!-- MSSQL -->
-
         <mat-expansion-panel>
-
           <mat-expansion-panel-header>
-            <mat-panel-title>
-              MSSQL
-            </mat-panel-title>
+            <mat-panel-title> 1. Basic Scanning </mat-panel-title>
           </mat-expansion-panel-header>
 
-          <pre><code>{{ nmapMSSQL }}</code></pre>
+          <mat-accordion multi>
+            <!-- BASIC HTTP SCAN -->
 
-          <button
-            class="copy-button"
-            (click)="copy(nmapMSSQL)">
-            Copy
-          </button>
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title> Basic HTTP Scan </mat-panel-title>
+              </mat-expansion-panel-header>
 
+              <p>
+                <strong>Objective:</strong>
+                Perform an initial scan of a web server and identify common security issues,
+                dangerous files and misconfigurations.
+              </p>
+
+              <app-terminal [command]="niktoBasic"></app-terminal>
+            </mat-expansion-panel>
+
+            <!-- HTTPS -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title> HTTPS Scan </mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <p>Scan a web server running over HTTPS.</p>
+
+              <app-terminal [command]="niktoHTTPS"></app-terminal>
+            </mat-expansion-panel>
+
+            <!-- CUSTOM PORT -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title> Custom Port </mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <p>Useful when HTTP or HTTPS is running on a non-standard port.</p>
+
+              <app-terminal [command]="niktoPort"></app-terminal>
+            </mat-expansion-panel>
+          </mat-accordion>
         </mat-expansion-panel>
 
-
-        <!-- MYSQL -->
+        <!-- ================================================= -->
+        <!-- 2. ENUMERATION -->
+        <!-- ================================================= -->
 
         <mat-expansion-panel>
-
           <mat-expansion-panel-header>
-            <mat-panel-title>
-              MySQL
-            </mat-panel-title>
+            <mat-panel-title> 2. Web Server Enumeration </mat-panel-title>
           </mat-expansion-panel-header>
 
-          <pre><code>{{ nmapMySQL }}</code></pre>
+          <mat-accordion multi>
+            <!-- SERVER INFORMATION -->
 
-          <button
-            class="copy-button"
-            (click)="copy(nmapMySQL)">
-            Copy
-          </button>
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title> Server Information </mat-panel-title>
+              </mat-expansion-panel-header>
 
+              <p>Identify the web server and inspect the information exposed by its responses.</p>
+
+              <app-terminal [command]="niktoServerInfo"></app-terminal>
+            </mat-expansion-panel>
+
+            <!-- CGI -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title> CGI / Common Files </mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <p>Look for common CGI paths, files and potentially interesting resources.</p>
+
+              <app-terminal [command]="niktoCGI"></app-terminal>
+            </mat-expansion-panel>
+
+            <!-- PLUGINS -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title> Plugins and Components </mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <p>
+                Identify potentially vulnerable web applications, plugins and server components.
+              </p>
+
+              <app-terminal [command]="niktoPlugins"></app-terminal>
+            </mat-expansion-panel>
+          </mat-accordion>
         </mat-expansion-panel>
 
-
-        <!-- POSTGRESQL -->
+        <!-- ================================================= -->
+        <!-- 3. AUTHENTICATION & MISCONFIGURATION -->
+        <!-- ================================================= -->
 
         <mat-expansion-panel>
-
           <mat-expansion-panel-header>
-            <mat-panel-title>
-              PostgreSQL
-            </mat-panel-title>
+            <mat-panel-title> 3. Authentication & Misconfiguration </mat-panel-title>
           </mat-expansion-panel-header>
 
-          <pre><code>{{ nmapPostgreSQL }}</code></pre>
+          <mat-accordion multi>
+            <!-- AUTHENTICATION -->
 
-          <button
-            class="copy-button"
-            (click)="copy(nmapPostgreSQL)">
-            Copy
-          </button>
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title> Authentication </mat-panel-title>
+              </mat-expansion-panel-header>
 
+              <p>Identify authentication-related information and potentially exposed resources.</p>
+
+              <app-terminal [command]="niktoAuth"></app-terminal>
+            </mat-expansion-panel>
+
+            <!-- MISCONFIGURATION -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title> Misconfiguration Detection </mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <p>
+                Look for common web server misconfigurations, outdated components and insecure
+                configurations.
+              </p>
+
+              <app-terminal [command]="niktoMisconfig"></app-terminal>
+            </mat-expansion-panel>
+          </mat-accordion>
         </mat-expansion-panel>
 
-
-        <!-- REDIS -->
+        <!-- ================================================= -->
+        <!-- 4. SSL / TLS -->
+        <!-- ================================================= -->
 
         <mat-expansion-panel>
-
           <mat-expansion-panel-header>
-            <mat-panel-title>
-              Redis
-            </mat-panel-title>
+            <mat-panel-title> 4. SSL / TLS </mat-panel-title>
           </mat-expansion-panel-header>
 
-          <pre><code>{{ nmapRedis }}</code></pre>
+          <mat-accordion multi>
+            <!-- SSL SCAN -->
 
-          <button
-            class="copy-button"
-            (click)="copy(nmapRedis)">
-            Copy
-          </button>
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title> SSL Scanning </mat-panel-title>
+              </mat-expansion-panel-header>
 
+              <p>Scan HTTPS services and check for common SSL/TLS configuration issues.</p>
+
+              <app-terminal [command]="niktoSSL"></app-terminal>
+            </mat-expansion-panel>
+
+            <!-- SSL PORT -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title> HTTPS on Custom Port </mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="niktoSSLPort"></app-terminal>
+            </mat-expansion-panel>
+          </mat-accordion>
         </mat-expansion-panel>
 
-
-        <!-- ORACLE -->
+        <!-- ================================================= -->
+        <!-- 5. OUTPUT & TUNING -->
+        <!-- ================================================= -->
 
         <mat-expansion-panel>
-
           <mat-expansion-panel-header>
-            <mat-panel-title>
-              Oracle
-            </mat-panel-title>
+            <mat-panel-title> 5. Tuning & Output </mat-panel-title>
           </mat-expansion-panel-header>
 
-          <pre><code>{{ nmapOracle }}</code></pre>
+          <mat-accordion multi>
+            <!-- TUNING -->
 
-          <button
-            class="copy-button"
-            (click)="copy(nmapOracle)">
-            Copy
-          </button>
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title> Scan Tuning </mat-panel-title>
+              </mat-expansion-panel-header>
 
+              <p>
+                Restrict the types of tests performed during the scan when you need a more focused
+                assessment.
+              </p>
+
+              <app-terminal [command]="niktoTuning"></app-terminal>
+            </mat-expansion-panel>
+
+            <!-- OUTPUT -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title> Output </mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <p>Save the results of a Nikto scan for later analysis or documentation.</p>
+
+              <app-terminal [command]="niktoOutput"></app-terminal>
+            </mat-expansion-panel>
+          </mat-accordion>
         </mat-expansion-panel>
-
-
       </mat-accordion>
-
-    </mat-expansion-panel>
-
-
-    <!-- ============================= -->
-    <!-- 4. NSE & AUTHENTICATION -->
-    <!-- ============================= -->
-
-    <mat-expansion-panel>
-
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          4. NSE & Authentication
-        </mat-panel-title>
-      </mat-expansion-panel-header>
-
-      <mat-accordion multi>
-
-
-        <!-- CREDENTIAL ATTACKS -->
-
-        <mat-expansion-panel>
-
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              Credential Attacks
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-
-          <p>
-            Use authentication testing only after identifying
-            the service and its authentication mechanism.
-          </p>
-
-          <p>
-            <strong>Recommended workflow:</strong>
-          </p>
-
-          <ul>
-            <li>Confirm the service is real and reachable.</li>
-            <li>Identify the authentication mechanism.</li>
-            <li>Check for default or weak credentials.</li>
-            <li>Perform normal enumeration first.</li>
-          </ul>
-
-        </mat-expansion-panel>
-
-
-        <!-- NSE DISCOVERY -->
-
-        <mat-expansion-panel>
-
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              General NSE Discovery
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-
-          <pre><code>{{ nmapNSE }}</code></pre>
-
-          <button
-            class="copy-button"
-            (click)="copy(nmapNSE)">
-            Copy
-          </button>
-
-        </mat-expansion-panel>
-
-
-      </mat-accordion>
-
-    </mat-expansion-panel>
-
-
-  </mat-accordion>
-
+    </div>
+  </ng-container>
 </div>

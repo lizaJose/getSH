@@ -1,0 +1,313 @@
+.web-page {
+  padding: 2rem;
+  color: #e2e8f0;
+}
+
+/* ========================================================= */
+/* HEADER */
+/* ========================================================= */
+
+.page-header {
+  margin-bottom: 2rem;
+}
+
+.terminal-path {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 0.75rem;
+}
+
+.terminal-path .prompt {
+  color: #7cff00;
+}
+
+.title {
+  margin: 0;
+
+  font-size: 28px;
+  font-weight: 600;
+
+  color: #f8fafc;
+}
+
+.page-description {
+  margin-top: 0.5rem;
+
+  max-width: 750px;
+
+  color: #94a3b8;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+
+/* ========================================================= */
+/* GRID */
+/* ========================================================= */
+
+.grid {
+  display: grid;
+
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(250px, 1fr)
+  );
+
+  gap: 1rem;
+}
+
+
+/* ========================================================= */
+/* CARDS */
+/* ========================================================= */
+
+.card {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 1rem;
+
+  padding: 1.25rem;
+
+  background: #0b1220;
+
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+
+  background: #111827;
+
+  border-color: #334155;
+}
+
+
+/* ========================================================= */
+/* CARD ICON */
+/* ========================================================= */
+
+.card-icon {
+  min-width: 38px;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #1e293b;
+  border-radius: 6px;
+
+  background: #0f172a;
+
+  color: #7cff00;
+
+  font-family: "JetBrains Mono", monospace;
+  font-size: 16px;
+}
+
+.card-content {
+  min-width: 0;
+}
+
+.card h2 {
+  margin: 0 0 0.4rem;
+
+  font-size: 16px;
+  font-weight: 500;
+
+  color: #f8fafc;
+}
+
+.card p {
+  margin: 0;
+
+  color: #64748b;
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+
+/* ========================================================= */
+/* DETAIL */
+/* ========================================================= */
+
+.detail {
+  max-width: 1000px;
+}
+
+
+.web-section {
+  margin-bottom: 3rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.section-header h2 {
+  margin: 0 14px;
+
+  color: #64748b;
+
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  font-weight: 500;
+
+  letter-spacing: 1.5px;
+  line-height: 1;
+
+  white-space: nowrap;
+}
+
+.section-line {
+  flex: 1;
+  height: 1px;
+
+  background: #1e293b;
+}
+
+
+/* ========================================================= */
+/* BACK BUTTON */
+/* ========================================================= */
+
+.back {
+  margin-bottom: 1.5rem;
+
+  padding: 8px 12px;
+
+  background: transparent;
+
+  border: 1px solid #1e293b;
+  border-radius: 6px;
+
+  color: #94a3b8;
+
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.back:hover {
+  background: #1e293b;
+  color: white;
+}
+
+
+/* ========================================================= */
+/* DETAIL TITLE */
+/* ========================================================= */
+
+.detail h2 {
+  margin: 0 0 0.75rem;
+
+  color: #f8fafc;
+
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.section-description {
+  margin-bottom: 1.5rem;
+
+  max-width: 800px;
+
+  color: #94a3b8;
+
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+
+/* ========================================================= */
+/* ANGULAR MATERIAL */
+/* ========================================================= */
+
+mat-expansion-panel {
+  margin-bottom: 10px;
+
+  background: #0b1220 !important;
+
+  border: 1px solid #1e293b;
+
+  border-radius: 6px !important;
+
+  box-shadow: none !important;
+}
+
+mat-expansion-panel:hover {
+  border-color: #334155;
+}
+
+mat-panel-title {
+  color: #cbd5e1 !important;
+
+  font-family: "JetBrains Mono", monospace;
+
+  font-size: 13px;
+}
+
+mat-expansion-panel-header {
+  height: 52px;
+}
+
+mat-expansion-panel-header:hover {
+  background: #111827 !important;
+}
+
+
+/* ========================================================= */
+/* CODE */
+/* ========================================================= */
+
+code {
+  padding: 2px 5px;
+
+  background: #111827;
+
+  border: 1px solid #1e293b;
+  border-radius: 4px;
+
+  color: #7cff00;
+
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+}
+
+
+/* ========================================================= */
+/* RESPONSIVE */
+/* ========================================================= */
+
+@media (max-width: 768px) {
+
+  .web-page {
+    padding: 1rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+}

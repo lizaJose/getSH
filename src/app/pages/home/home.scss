@@ -1,0 +1,430 @@
+.home-page {
+  min-height: 100%;
+  padding: 3rem;
+  color: #e2e8f0;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+
+/* ===================================================== */
+/* HERO */
+/* ===================================================== */
+
+.hero {
+  padding: 4rem 0 5rem;
+  border-bottom: 1px solid #1e293b;
+}
+
+.hero-content {
+  max-width: 850px;
+}
+
+.terminal-label {
+  display: inline-block;
+
+  margin-bottom: 1.5rem;
+
+  font-family:
+    'JetBrains Mono',
+    'Fira Code',
+    Consolas,
+    monospace;
+
+  font-size: 13px;
+
+  color: #38bdf8;
+
+  letter-spacing: 0.5px;
+}
+
+.terminal-label::before {
+  content: '> ';
+  color: #64748b;
+}
+
+
+.hero h1 {
+  margin: 0;
+
+  font-size: clamp(42px, 6vw, 72px);
+
+  line-height: 1.05;
+
+  font-weight: 800;
+
+  letter-spacing: -2px;
+
+  color: #f8fafc;
+}
+
+.hero h1 span {
+  display: block;
+
+  color: #38bdf8;
+}
+
+
+.hero-description {
+  max-width: 760px;
+
+  margin: 2rem 0 0;
+
+  font-size: 20px;
+
+  line-height: 1.7;
+
+  color: #cbd5e1;
+}
+
+
+.hero-subdescription {
+  max-width: 700px;
+
+  margin-top: 1rem;
+
+  font-size: 15px;
+
+  line-height: 1.7;
+
+  color: #64748b;
+}
+
+
+/* ===================================================== */
+/* SECTIONS */
+/* ===================================================== */
+
+.sections {
+  padding: 4rem 0;
+}
+
+.sections h2 {
+  margin: 0 0 2rem;
+
+  font-size: 24px;
+
+  color: #f8fafc;
+}
+
+
+/* ===================================================== */
+/* SECTION GRID */
+/* ===================================================== */
+
+.section-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(280px, 1fr));
+
+  gap: 1rem;
+}
+
+
+/* ===================================================== */
+/* INFO CARDS */
+/* ===================================================== */
+
+.info-card {
+  position: relative;
+
+  padding: 1.75rem;
+
+  background: #111827;
+
+  border: 1px solid #1e293b;
+
+  border-radius: 12px;
+
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.info-card:hover {
+  transform: translateY(-4px);
+
+  background: #172033;
+
+  border-color: #334155;
+}
+
+
+.info-card .icon {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 42px;
+  height: 42px;
+
+  margin-bottom: 1.25rem;
+
+  border-radius: 8px;
+
+  background: #0b1220;
+
+  border: 1px solid #1e293b;
+
+  color: #38bdf8;
+
+  font-family:
+    'JetBrains Mono',
+    'Fira Code',
+    monospace;
+
+  font-size: 18px;
+}
+
+
+.info-card h3 {
+  margin: 0 0 0.75rem;
+
+  font-size: 18px;
+
+  color: #f8fafc;
+}
+
+
+.info-card p {
+  margin: 0;
+
+  color: #94a3b8;
+
+  font-size: 14px;
+
+  line-height: 1.7;
+}
+
+
+/* ===================================================== */
+/* TERMINAL */
+/* ===================================================== */
+
+.philosophy {
+  padding: 1rem 0 4rem;
+}
+
+
+.terminal-box {
+  max-width: 800px;
+
+  background: #080d16;
+
+  border: 1px solid #1e293b;
+
+  border-radius: 10px;
+
+  overflow: hidden;
+
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.25);
+}
+
+
+/* ===================================================== */
+/* TERMINAL HEADER */
+/* ===================================================== */
+
+.terminal-header {
+  display: flex;
+
+  gap: 7px;
+
+  padding: 10px 14px;
+
+  background: #0f172a;
+
+  border-bottom: 1px solid #1e293b;
+}
+
+.terminal-header span {
+  width: 9px;
+  height: 9px;
+
+  border-radius: 50%;
+
+  background: #334155;
+}
+
+
+/* ===================================================== */
+/* TERMINAL CONTENT */
+/* ===================================================== */
+
+.terminal-content {
+  padding: 1.5rem;
+
+  font-family:
+    'JetBrains Mono',
+    'Fira Code',
+    Consolas,
+    monospace;
+
+  font-size: 13px;
+
+  line-height: 1.8;
+}
+
+.terminal-content p {
+  margin: 0 0 0.5rem;
+}
+
+.prompt {
+  color: #38bdf8;
+}
+
+.output {
+  color: #64748b;
+
+  margin-bottom: 1rem !important;
+}
+
+
+/* ===================================================== */
+/* FOOTER */
+/* ===================================================== */
+
+footer {
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 1rem;
+
+  padding-top: 2rem;
+
+  border-top: 1px solid #1e293b;
+
+  color: #475569;
+
+  font-size: 12px;
+}
+
+
+/* ===================================================== */
+/* RESPONSIVE */
+/* ===================================================== */
+
+@media (max-width: 768px) {
+
+  .home-page {
+    padding: 2rem 1rem;
+  }
+
+  .hero {
+    padding: 2rem 0 3rem;
+  }
+
+  .hero h1 {
+    letter-spacing: -1px;
+  }
+
+  .hero-description {
+    font-size: 17px;
+  }
+
+  .sections {
+    padding: 3rem 0;
+  }
+
+  footer {
+    flex-direction: column;
+  }
+  /* ===================================================== */
+/* HERO */
+/* ===================================================== */
+
+.hero-tagline {
+  margin: 1.5rem 0 0;
+
+  font-family:
+    'JetBrains Mono',
+    'Fira Code',
+    Consolas,
+    monospace;
+
+  font-size: 16px;
+
+  color: #38bdf8;
+}
+
+
+/* ===================================================== */
+/* SECTION HEADINGS */
+/* ===================================================== */
+
+.section-heading {
+  margin-bottom: 2rem;
+}
+
+.section-label {
+  display: block;
+
+  margin-bottom: 0.5rem;
+
+  font-family:
+    'JetBrains Mono',
+    'Fira Code',
+    Consolas,
+    monospace;
+
+  font-size: 11px;
+
+  letter-spacing: 1px;
+
+  color: #475569;
+}
+
+.section-heading h2 {
+  margin: 0;
+
+  font-size: 26px;
+
+  color: #f8fafc;
+}
+
+.section-heading h2 span {
+  color: #38bdf8;
+}
+
+
+/* ===================================================== */
+/* ABOUT */
+/* ===================================================== */
+
+.about {
+  max-width: 850px;
+
+  padding: 4rem 0;
+
+  border-bottom: 1px solid #1e293b;
+}
+
+.about p {
+  margin: 0 0 1rem;
+
+  color: #94a3b8;
+
+  font-size: 15px;
+
+  line-height: 1.8;
+}
+
+.about strong {
+  color: #cbd5e1;
+}
+
+
+/* ===================================================== */
+/* TERMINAL SUCCESS */
+/* ===================================================== */
+
+.success {
+  color: #38bdf8 !important;
+}
+
+}

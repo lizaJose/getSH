@@ -15,5 +15,15 @@ export const routes: Routes = [
     path: 'scan',
     loadComponent: () =>
       import('./pages/scan/scan').then(m => m.ScanComponent)
+  },
+  {
+    path: 'common-services',
+    loadComponent: () =>
+      import('./pages/common-services/common-services').then(m => m.CommonServicesComponent)
+  },
+    {
+    path: 'web',
+    loadComponent: () =>
+      import('./pages/web/web').then(m => m.Web)
   }
 ];

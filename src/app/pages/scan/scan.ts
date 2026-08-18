@@ -1,27 +1,30 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { Terminal } from '../../shared/terminal/terminal';
 
 @Component({
   selector: 'app-scan',
   standalone: true,
-  imports: [CommonModule, MatExpansionModule],
+  imports: [CommonModule, MatExpansionModule, Terminal],
   templateUrl: './scan.html',
   styleUrl: './scan.scss',
 })
 export class ScanComponent {
-
   selected: string | null = null;
 
-  // 🔥 NMAP CONTENT SAFE (NO rompe Angular)
+  // =========================================================
+  // NMAP CONTENT
+  // =========================================================
+
   nmapQuick = `
 sudo nmap -p- --open --min-rate 1000 -sS -n -Pn <target_ip> -oN openPorts
 
-nmap -sCV -p \$(grep "^[0-9]" openPorts | awk '{print $1}' | cut -d'/' -f1 | paste -sd,) target_ip -oN services
-  
-nmap -sV --script vuln -p \$(grep "^[0-9]" openPorts | awk '{print $1}' | cut -d'/' -f1 | paste -sd,) -Pn target_ip -oN vuln
+nmap -sCV -p \\$(grep "^[0-9]" openPorts | awk '{print $1}' | cut -d'/' -f1 | paste -sd,) target_ip -oN services
 
+nmap -sV --script vuln -p \\$(grep "^[0-9]" openPorts | awk '{print $1}' | cut -d'/' -f1 | paste -sd,) -Pn target_ip -oN vuln
 `;
+
   nmapSSH = `
 nmap -p 22 --script ssh-brute target_ip
 
@@ -126,14 +129,13 @@ grep "brute" /usr/share/nmap/scripts/script.db
 nmap --script-help brute
 `;
 
-
   nmapEnum = `
 nmap -sC -sV -p- target_ip -oN services
 nmap -sC -sV -p port1,port2,port3 target_ip -oN focused
 nmap -sV --version-all -p port target_ip
 nmap -A -p port target_ip
 nmap -sV --version-all --version-trace -p port target_ip
-  `;
+`;
 
   bannerGrab = `
 nc -nv target_ip port
@@ -141,7 +143,7 @@ curl -v http://target_ip:port
 curl -v https://target_ip:port
 openssl s_client -connect target_ip:port
 printf "GET / HTTP/1.1\\r\\nHost: target_ip" | nc target_ip port
-  `;
+`;
 
   unknownPorts = `
 echo "help" | nc target_ip port
@@ -152,7 +154,66 @@ echo "test" | nc target_ip port
 nmap --script=banner -p port target_ip
 nmap -sV --version-all -p port target_ip
 nmap -sV --version-trace -p port target_ip
-  `;
+`;
+
+  // =====================================================
+  // NIKTO
+  // =====================================================
+
+  niktoBasic = `
+nikto -h http://target_ip
+`;
+
+  niktoHTTPS = `
+nikto -h https://target_ip
+`;
+
+  niktoPort = `
+nikto -h http://target_ip -p 8080
+nikto -h http://target_ip -p 8000
+nikto -h http://target_ip -p 8443
+`;
+
+  niktoServerInfo = `
+nikto -h http://target_ip
+`;
+
+  niktoCGI = `
+nikto -h http://target_ip -C all
+`;
+
+  niktoPlugins = `
+nikto -h http://target_ip
+`;
+
+  niktoAuth = `
+nikto -h http://target_ip
+`;
+
+  niktoMisconfig = `
+nikto -h http://target_ip
+`;
+
+  niktoSSL = `
+nikto -h https://target_ip
+`;
+
+  niktoSSLPort = `
+nikto -h https://target_ip -p 8443
+`;
+
+  niktoTuning = `
+nikto -h http://target_ip -Tuning 123b
+`;
+
+  niktoOutput = `
+nikto -h http://target_ip -o nikto.txt
+nikto -h http://target_ip -o nikto.html -Format htm
+`;
+
+  // =========================================================
+  // NAVIGATION
+  // =========================================================
 
   selectTech(tech: string) {
     this.selected = tech;
@@ -161,6 +222,10 @@ nmap -sV --version-trace -p port target_ip
   back() {
     this.selected = null;
   }
+
+  // =========================================================
+  // COPY
+  // =========================================================
 
   copy(text: string) {
     navigator.clipboard.writeText(text);

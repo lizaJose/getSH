@@ -1,0 +1,577 @@
+<div class="web-page">
+  <!-- ========================================================= -->
+  <!-- HEADER -->
+  <!-- ========================================================= -->
+
+  <div class="page-header">
+    <div class="terminal-path"><span class="prompt">~/get.sh/</span>web</div>
+
+    <h1 class="title">Web</h1>
+
+    <p class="page-description">
+      Web application reconnaissance, enumeration and common attack techniques.
+    </p>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- WEB SECTIONS -->
+  <!-- ========================================================= -->
+
+  <div *ngIf="!selectedWebSection">
+    <!-- ======================================================= -->
+    <!-- RECONNAISSANCE -->
+    <!-- ======================================================= -->
+
+    <section class="web-section">
+      <div class="section-header">
+        <span class="section-line"></span>
+        <h2>RECONNAISSANCE</h2>
+        <span class="section-line"></span>
+      </div>
+
+      <div class="grid">
+        <div class="card" (click)="selectWebSection('recon')">
+          <div class="card-icon">&gt;_</div>
+
+          <div class="card-content">
+            <h2>Recon</h2>
+            <p>Initial web reconnaissance and attack surface discovery.</p>
+          </div>
+        </div>
+
+        <div class="card" (click)="selectWebSection('technology')">
+          <div class="card-icon">◆</div>
+
+          <div class="card-content">
+            <h2>Technology</h2>
+            <p>Identify servers, frameworks, CMS and technologies.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================= -->
+    <!-- DISCOVERY -->
+    <!-- ======================================================= -->
+
+    <section class="web-section">
+      <div class="section-header">
+        <span class="section-line"></span>
+        <h2>DISCOVERY</h2>
+        <span class="section-line"></span>
+      </div>
+
+      <div class="grid">
+        <div class="card" (click)="selectWebSection('directories')">
+          <div class="card-icon">▣</div>
+
+          <div class="card-content">
+            <h2>Directories</h2>
+            <p>Discover directories, files and hidden resources.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================= -->
+    <!-- AUTHENTICATION & ACCESS -->
+    <!-- ======================================================= -->
+
+    <section class="web-section">
+      <div class="section-header">
+        <span class="section-line"></span>
+        <h2>AUTHENTICATION &amp; ACCESS</h2>
+        <span class="section-line"></span>
+      </div>
+
+      <div class="grid">
+        <div class="card" (click)="selectWebSection('authentication')">
+          <div class="card-icon">@</div>
+
+          <div class="card-content">
+            <h2>Authentication</h2>
+            <p>Login mechanisms, sessions and access control.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================= -->
+    <!-- INPUT & INJECTION -->
+    <!-- ======================================================= -->
+
+    <section class="web-section">
+      <div class="section-header">
+        <span class="section-line"></span>
+        <h2>INPUT &amp; INJECTION</h2>
+        <span class="section-line"></span>
+      </div>
+
+      <div class="grid">
+        <div class="card" (click)="selectWebSection('sqli')">
+          <div class="card-icon">!</div>
+
+          <div class="card-content">
+            <h2>SQL Injection</h2>
+            <p>SQL injection techniques, enumeration and exploitation.</p>
+          </div>
+        </div>
+
+        <div class="card" (click)="selectWebSection('xss')">
+          <div class="card-icon">&lt;/&gt;</div>
+
+          <div class="card-content">
+            <h2>XSS</h2>
+            <p>Reflected, stored and DOM-based XSS.</p>
+          </div>
+        </div>
+
+        <div class="card" (click)="selectWebSection('file-upload')">
+          <div class="card-icon">↑</div>
+
+          <div class="card-content">
+            <h2>File Upload</h2>
+            <p>Upload validation and processing weaknesses.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================= -->
+    <!-- SERVER-SIDE -->
+    <!-- ======================================================= -->
+
+    <section class="web-section">
+      <div class="section-header">
+        <span class="section-line"></span>
+        <h2>SERVER-SIDE</h2>
+        <span class="section-line"></span>
+      </div>
+
+      <div class="grid">
+        <div class="card" (click)="selectWebSection('lfi')">
+          <div class="card-icon">⌁</div>
+
+          <div class="card-content">
+            <h2>LFI / RFI</h2>
+            <p>Local and remote file inclusion.</p>
+          </div>
+        </div>
+
+        <div class="card" (click)="selectWebSection('fileInclusions')">
+          <div class="card-icon">⌁</div>
+
+          <div class="card-content">
+            <h2>File Inclusions</h2>
+            <p>LFI, RFI, PHP wrappers and log poisoning.</p>
+          </div>
+        </div>
+
+        <div class="card" (click)="selectWebSection('ssrf')">
+          <div class="card-icon">↗</div>
+
+          <div class="card-content">
+            <h2>SSRF</h2>
+            <p>Internal resources and server-side requests.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- DETAIL VIEW -->
+  <!-- ========================================================= -->
+
+  <div class="detail" *ngIf="selectedWebSection">
+    <button class="back" (click)="clearWebSection()">← Back to Web</button>
+
+    <!-- ======================================================= -->
+    <!-- RECON -->
+    <!-- ======================================================= -->
+
+    <ng-container *ngIf="selectedWebSection === 'recon'">
+      <h2>Recon</h2>
+
+      <p class="section-description">
+        Start by identifying the target's exposed web services, ports and applications before moving
+        into deeper enumeration.
+      </p>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Port &amp; Service Discovery </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="webRecon"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> HTTP / HTTPS </mat-panel-title>
+        </mat-expansion-panel-header>
+      </mat-expansion-panel>
+    </ng-container>
+
+    <!-- ======================================================= -->
+    <!-- TECHNOLOGY -->
+    <!-- ======================================================= -->
+
+    <ng-container *ngIf="selectedWebSection === 'technology'">
+      <h2>Technology Identification</h2>
+
+      <p class="section-description">
+        Identify the technologies behind the application, including web servers, frameworks, CMS
+        platforms and JavaScript components.
+      </p>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Technology Detection </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="webTechnology"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Headers &amp; Responses </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="webHeaders"></app-terminal>
+      </mat-expansion-panel>
+    </ng-container>
+
+    <!-- ======================================================= -->
+    <!-- DIRECTORIES -->
+    <!-- ======================================================= -->
+
+    <ng-container *ngIf="selectedWebSection === 'directories'">
+      <h2>Directory &amp; File Discovery</h2>
+
+      <p class="section-description">
+        Discover hidden directories, files, backups and other resources that are not directly linked
+        from the application.
+      </p>
+
+      <!-- ======================================================= -->
+      <!-- GOBUSTER -->
+      <!-- ======================================================= -->
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Gobuster </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="gobuster"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Feroxbuster </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="feroxbusterCommands"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> FFUF </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="ffufCommands"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Wfuzz </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="wfuzzCommands"></app-terminal>
+      </mat-expansion-panel>
+    </ng-container>
+
+    <!-- ======================================================= -->
+    <!-- AUTHENTICATION -->
+    <!-- ======================================================= -->
+
+    <ng-container *ngIf="selectedWebSection === 'authentication'">
+      <h2>Authentication</h2>
+
+      <p class="section-description">
+        Identify login mechanisms, authentication weaknesses, session handling and access control
+        issues.
+      </p>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Login Enumeration </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="webAuthentication"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Session Testing </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="webSessions"></app-terminal>
+      </mat-expansion-panel>
+    </ng-container>
+
+    <!-- ======================================================= -->
+    <!-- SQLi -->
+    <!-- ======================================================= -->
+
+    <ng-container *ngIf="selectedWebSection === 'sqli'">
+      <!-- BASIC CONCEPTS -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Basic Concepts</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="sqliConcepts"></app-terminal>
+      </mat-expansion-panel>
+
+      <!-- TYPES -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Types of SQL Injection</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="sqliTypes"></app-terminal>
+      </mat-expansion-panel>
+
+      <!-- TESTING -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Initial Testing Payloads</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="sqliTesting"></app-terminal>
+      </mat-expansion-panel>
+
+      <!-- FILTER BYPASS -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Filter Bypass Techniques</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="sqliFilterBypass"></app-terminal>
+      </mat-expansion-panel>
+
+      <!-- UNION -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>UNION-Based Injection</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="sqliUnion"></app-terminal>
+      </mat-expansion-panel>
+
+      <!-- BLIND -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Blind SQL Injection</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="sqliBlind"></app-terminal>
+      </mat-expansion-panel>
+
+      <!-- ENUMERATION -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Useful SQL Functions</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="sqliEnumeration"></app-terminal>
+      </mat-expansion-panel>
+
+      <!-- RCE -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>SQL Injection → RCE</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="sqliRce"></app-terminal>
+      </mat-expansion-panel>
+
+      <!-- OOB -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Out-of-Band SQL Injection</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="sqliOob"></app-terminal>
+      </mat-expansion-panel>
+
+      <!-- FLOW -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Practical Exploitation Flow</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="sqliFlow"></app-terminal>
+      </mat-expansion-panel>
+
+      <!-- NOTES -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Important Notes</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="sqliNotes"></app-terminal>
+      </mat-expansion-panel>
+    </ng-container>
+    <!-- ======================================================= -->
+    <!-- XSS -->
+    <!-- ======================================================= -->
+
+    <ng-container *ngIf="selectedWebSection === 'xss'">
+      <h2>Cross-Site Scripting</h2>
+
+      <p class="section-description">
+        Identify reflected, stored and DOM-based XSS vulnerabilities in application inputs and
+        client-side functionality.
+      </p>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Reflected XSS </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="reflectedXss"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Stored XSS </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="storedXss"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> DOM XSS </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="domXss"></app-terminal>
+      </mat-expansion-panel>
+    </ng-container>
+
+    <!-- ======================================================= -->
+    <!-- FILE UPLOAD -->
+    <!-- ======================================================= -->
+
+    <ng-container *ngIf="selectedWebSection === 'file-upload'">
+      <h2>File Upload</h2>
+
+      <p class="section-description">
+        Analyze file upload functionality, validation mechanisms and possible ways uploaded files
+        may be processed by the application.
+      </p>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Upload Testing </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="fileUpload"></app-terminal>
+      </mat-expansion-panel>
+    </ng-container>
+
+    <!-- ======================================================= -->
+    <!-- LFI / RFI -->
+    <!-- ======================================================= -->
+
+    <ng-container *ngIf="selectedWebSection === 'lfi'">
+      <h2>LFI / RFI</h2>
+
+      <p class="section-description">
+        Test file inclusion functionality for local and remote file inclusion vulnerabilities.
+      </p>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Directory Traversal </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="directoryTraversal"></app-terminal>
+      </mat-expansion-panel>
+    </ng-container>
+
+    <!-- ======================================================= -->
+    <!-- File Inclusions -->
+    <!-- ======================================================= -->
+
+    <ng-container *ngIf="selectedWebSection === 'fileInclusions'">
+      <!-- LFI -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> LFI </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="lfi"></app-terminal>
+      </mat-expansion-panel>
+
+      <!-- LOG POISONING -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Log Poisoning </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="logPoisoning"></app-terminal>
+      </mat-expansion-panel>
+
+      <!-- PHP WRAPPERS -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> PHP Wrappers </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="phpWrappers"></app-terminal>
+      </mat-expansion-panel>
+
+      <!-- RFI -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> RFI </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="rfi"></app-terminal>
+      </mat-expansion-panel>
+
+      <!-- WORKFLOW -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Workflow </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="fileInclusionWorkflow"></app-terminal>
+      </mat-expansion-panel>
+    </ng-container>
+
+    <!-- ======================================================= -->
+    <!-- SSRF -->
+    <!-- ======================================================= -->
+
+    <ng-container *ngIf="selectedWebSection === 'ssrf'">
+      <h2>SSRF</h2>
+
+      <p class="section-description">
+        Identify server-side request functionality and determine whether the application can access
+        internal resources.
+      </p>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> SSRF Testing </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="ssrf"></app-terminal>
+      </mat-expansion-panel>
+    </ng-container>
+  </div>
+</div>

@@ -1,0 +1,54 @@
+<div class="terminal">
+
+  <div class="terminal-header">
+
+    <div class="terminal-dots">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <span class="terminal-title">
+      get.sh
+    </span>
+
+    <button
+      class="copy-button"
+      [class.copied]="copied"
+      (click)="copyCommand()">
+
+      <span *ngIf="!copied">
+        Copy
+      </span>
+
+      <span *ngIf="copied">
+        ✓ copied to clipboard
+      </span>
+
+    </button>
+
+  </div>
+
+
+  <div class="terminal-body">
+
+    <span class="prompt">$</span>
+
+    <code>
+
+      <ng-container *ngFor="let line of formattedCommand; let last = last">
+
+        <span
+          [class.terminal-comment]="isComment(line)"
+          [class.terminal-command]="!isComment(line)"
+        >{{ line }}</span>
+
+        <br *ngIf="!last">
+
+      </ng-container>
+
+    </code>
+
+  </div>
+
+</div>

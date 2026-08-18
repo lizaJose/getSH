@@ -5,60 +5,152 @@
   margin: 0 auto;
 }
 
-/* ============================= */
-/* PAGE TITLE */
-/* ============================= */
+
+/* ========================================================= */
+/* PAGE HEADER */
+/* ========================================================= */
 
 .title {
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 700;
-  margin-bottom: 2rem;
-  color: #f8fafc;
-}
-
-
-/* ============================= */
-/* GRID VIEW */
-/* ============================= */
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
-}
-
-.card {
-  background: #1e293b;
-  padding: 1.5rem;
-  border-radius: 12px;
-  border: 1px solid #334155;
-  cursor: pointer;
-  transition:
-    transform 0.2s ease,
-    border-color 0.2s ease,
-    background 0.2s ease;
-}
-
-.card:hover {
-  transform: translateY(-3px);
-  border-color: #3b82f6;
-  background: #243449;
-}
-
-.card h2 {
   margin: 0 0 0.5rem;
   color: #f8fafc;
 }
 
-.card p {
-  margin: 0;
-  color: #94a3b8;
+.page-description {
+  margin: 0 0 2rem;
+  color: #64748b;
+  font-size: 14px;
 }
 
 
-/* ============================= */
+/* ========================================================= */
+/* TOOL GRID */
+/* ========================================================= */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+
+/* ========================================================= */
+/* TOOL CARD */
+/* ========================================================= */
+
+.card {
+  position: relative;
+
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+
+  min-height: 130px;
+
+  padding: 1.25rem;
+
+  background: #111827;
+
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+
+  border-color: #2563eb;
+
+  background: #172033;
+
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.25),
+    0 0 15px rgba(37, 99, 235, 0.08);
+}
+
+
+/* ========================================================= */
+/* CARD ICON */
+/* ========================================================= */
+
+.card-icon {
+  flex-shrink: 0;
+
+  width: 46px;
+  height: 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background: #0b1220;
+
+  border: 1px solid #1e3a5f;
+
+  color: #38bdf8;
+
+  font-family:
+    'JetBrains Mono',
+    'Fira Code',
+    Consolas,
+    monospace;
+
+  font-size: 18px;
+  font-weight: 700;
+
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background 0.2s ease;
+}
+
+.card:hover .card-icon {
+  border-color: #2563eb;
+  color: #60a5fa;
+  background: #0f172a;
+}
+
+
+/* ========================================================= */
+/* CARD CONTENT */
+/* ========================================================= */
+
+.card-content {
+  min-width: 0;
+}
+
+.card h2 {
+  margin: 0 0 0.45rem;
+
+  color: #f8fafc;
+
+  font-size: 17px;
+  font-weight: 650;
+}
+
+.card p {
+  margin: 0;
+
+  color: #64748b;
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+
+/* ========================================================= */
 /* DETAIL VIEW */
-/* ============================= */
+/* ========================================================= */
 
 .detail {
   display: flex;
@@ -68,28 +160,37 @@
 
 .detail h2 {
   margin: 0;
+
   font-size: 30px;
   font-weight: 700;
+
   color: #f8fafc;
 }
 
 .section-description {
   margin: -0.5rem 0 1rem;
+
   color: #94a3b8;
+
   font-size: 14px;
 }
 
 
-/* ============================= */
+/* ========================================================= */
 /* BACK BUTTON */
-/* ============================= */
+/* ========================================================= */
 
 .back {
   background: transparent;
+
   border: 1px solid #334155;
+
   color: #e2e8f0;
+
   padding: 8px 12px;
+
   border-radius: 8px;
+
   cursor: pointer;
   width: fit-content;
 
@@ -101,20 +202,24 @@
 
 .back:hover {
   background: #1e293b;
+
   border-color: #3b82f6;
+
   color: #60a5fa;
 }
 
 
-/* ============================= */
+/* ========================================================= */
 /* MATERIAL EXPANSION PANELS */
-/* ============================= */
+/* ========================================================= */
 
 mat-expansion-panel {
   background: #1e293b !important;
+
   color: #e2e8f0 !important;
 
   border-radius: 10px !important;
+
   margin-bottom: 10px;
 
   border: 1px solid #334155;
@@ -124,6 +229,7 @@ mat-expansion-panel {
 
 mat-expansion-panel-header {
   color: #e2e8f0 !important;
+
   background: transparent !important;
 
   min-height: 52px;
@@ -135,18 +241,14 @@ mat-expansion-panel-header:hover {
 
 mat-panel-title {
   color: #e2e8f0 !important;
+
   font-weight: 600;
 }
 
 
-/* ============================= */
+/* ========================================================= */
 /* NESTED ACCORDIONS */
-/* ============================= */
-
-/*
- * The inner accordions are slightly darker
- * so the hierarchy is easier to understand.
- */
+/* ========================================================= */
 
 mat-expansion-panel
   mat-expansion-panel {
@@ -164,12 +266,13 @@ mat-expansion-panel
 }
 
 
-/* ============================= */
-/* TEXT INSIDE PANELS */
-/* ============================= */
+/* ========================================================= */
+/* TEXT */
+/* ========================================================= */
 
 .detail p {
   color: #cbd5e1;
+
   line-height: 1.6;
 }
 
@@ -179,22 +282,28 @@ mat-expansion-panel
 
 .detail ul {
   color: #cbd5e1;
+
   line-height: 1.8;
+
   padding-left: 1.5rem;
 }
 
 
-/* ============================= */
+/* ========================================================= */
 /* CODE BLOCK */
-/* ============================= */
+/* ========================================================= */
 
 pre {
-  background: #0b1220;
+  position: relative;
+
+  background: #080d14;
+
   color: #38bdf8;
 
-  padding: 14px 16px;
+  padding: 16px 18px 16px 38px;
 
   border-radius: 8px;
+
   border: 1px solid #1e293b;
 
   overflow-x: auto;
@@ -208,18 +317,44 @@ pre {
     monospace;
 
   font-size: 13px;
+
   line-height: 1.6;
+
+  box-shadow:
+    inset 0 0 20px rgba(0, 0, 0, 0.25);
+
+  /* Terminal prompt */
+
+  &::before {
+    content: '$';
+
+    position: absolute;
+
+    left: 16px;
+    top: 16px;
+
+    color: #22c55e;
+
+    font-family:
+      'JetBrains Mono',
+      'Fira Code',
+      Consolas,
+      monospace;
+
+    font-weight: 700;
+  }
 }
 
 pre code {
-  color: inherit;
+  color: #38bdf8;
+
   font-family: inherit;
 }
 
 
-/* ============================= */
+/* ========================================================= */
 /* COPY BUTTON */
-/* ============================= */
+/* ========================================================= */
 
 .copy-button {
   margin-top: 8px;
@@ -244,9 +379,28 @@ pre code {
     color 0.2s ease;
 }
 
+.terminal-path {
+  margin-bottom: 0.5rem;
+
+  font-family:
+    'JetBrains Mono',
+    'Fira Code',
+    Consolas,
+    monospace;
+
+  font-size: 13px;
+  color: #64748b;
+}
+
+.terminal-path .prompt {
+  color: #38bdf8;
+}
+
 .copy-button:hover {
   background: #1e293b;
+
   border-color: #3b82f6;
+
   color: #60a5fa;
 }
 
@@ -255,9 +409,9 @@ pre code {
 }
 
 
-/* ============================= */
+/* ========================================================= */
 /* RESPONSIVE */
-/* ============================= */
+/* ========================================================= */
 
 @media (max-width: 768px) {
 
@@ -267,6 +421,10 @@ pre code {
 
   .title {
     font-size: 24px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
   }
 
   .detail h2 {

@@ -1,0 +1,452 @@
+<div class="common-services-page">
+
+  <div class="page-header">
+    <div class="terminal-path">
+      <span class="prompt">~/get.sh/</span>common-services
+    </div>
+
+    <h1 class="title">Common Services</h1>
+
+    <p class="page-description">
+      Enumeration, authentication and attack techniques for commonly exposed network services.
+    </p>
+  </div>
+
+
+  <!-- ========================================================= -->
+  <!-- SERVICE CARDS -->
+  <!-- ========================================================= -->
+
+  <div class="grid" *ngIf="!selectedService">
+
+    <div class="card" (click)="selectService('ssh')">
+      <div class="card-icon">&gt;_</div>
+      <div class="card-content">
+        <h2>SSH</h2>
+        <p>Remote access, authentication, keys and tunneling.</p>
+      </div>
+    </div>
+
+    <div class="card" (click)="selectService('ftp')">
+      <div class="card-icon">◉</div>
+      <div class="card-content">
+        <h2>FTP</h2>
+        <p>File transfer, anonymous access and credential discovery.</p>
+      </div>
+    </div>
+
+    <div class="card" (click)="selectService('smb')">
+      <div class="card-icon">◈</div>
+      <div class="card-content">
+        <h2>SMB</h2>
+        <p>Shares, permissions, users and credential exposure.</p>
+      </div>
+    </div>
+
+    <div class="card" (click)="selectService('smtp')">
+      <div class="card-icon">@</div>
+      <div class="card-content">
+        <h2>SMTP</h2>
+        <p>Mail server enumeration and user discovery.</p>
+      </div>
+    </div>
+
+    <div class="card" (click)="selectService('snmp')">
+      <div class="card-icon">◇</div>
+      <div class="card-content">
+        <h2>SNMP</h2>
+        <p>System information, community strings and network data.</p>
+      </div>
+    </div>
+
+    <div class="card" (click)="selectService('ldap')">
+      <div class="card-icon">◆</div>
+      <div class="card-content">
+        <h2>LDAP</h2>
+        <p>Directory, users, groups and domain enumeration.</p>
+      </div>
+    </div>
+
+    <div class="card" (click)="selectService('rdp')">
+      <div class="card-icon">▣</div>
+      <div class="card-content">
+        <h2>RDP</h2>
+        <p>Remote Desktop enumeration and authentication.</p>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- ========================================================= -->
+  <!-- DETAIL -->
+  <!-- ========================================================= -->
+
+  <div class="detail" *ngIf="selectedService">
+
+    <button class="back" (click)="clearService()">
+      ← Back to Common Services
+    </button>
+
+
+    <!-- ======================================================= -->
+    <!-- SSH -->
+    <!-- ======================================================= -->
+
+    <ng-container *ngIf="selectedService === 'ssh'">
+
+      <h2>SSH</h2>
+
+      <p class="section-description">
+        SSH provides remote shell access. Focus on identifying the version,
+        authentication methods, credentials and exposed keys before attempting access.
+      </p>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Enumeration</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="sshEnumeration"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Authentication</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="sshAuthentication"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>SSH Keys</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="sshKeys"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Tunneling & Pivoting</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="sshTunneling"></app-terminal>
+      </mat-expansion-panel>
+
+    </ng-container>
+
+
+    <!-- ======================================================= -->
+    <!-- FTP -->
+    <!-- ======================================================= -->
+
+    <ng-container *ngIf="selectedService === 'ftp'">
+
+      <h2>FTP</h2>
+
+      <p class="section-description">
+        FTP is primarily a file transfer service. Check for anonymous access,
+        readable or writable directories and files that may expose credentials or other services.
+      </p>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Enumeration</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="ftpEnumeration"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Authentication</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="ftpAuthentication"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>File Discovery</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="ftpFiles"></app-terminal>
+      </mat-expansion-panel>
+
+    </ng-container>
+
+
+    <!-- ======================================================= -->
+    <!-- SMB -->
+    <!-- ======================================================= -->
+
+    <ng-container *ngIf="selectedService === 'smb'">
+
+      <h2>SMB</h2>
+
+      <p class="section-description">
+        SMB exposes network shares and Windows resources. Look for anonymous access,
+        readable or writable shares, sensitive files and credentials.
+      </p>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Enumeration</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="smbEnumeration"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Share Access</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="smbShares"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Credential Hunting</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="smbCredentials"></app-terminal>
+      </mat-expansion-panel>
+
+    </ng-container>
+
+
+    <!-- ======================================================= -->
+    <!-- HTTP -->
+    <!-- ======================================================= -->
+
+    <ng-container *ngIf="selectedService === 'http'">
+
+      <h2>HTTP / HTTPS</h2>
+
+      <p class="section-description">
+        Web services expose applications, APIs and administrative interfaces.
+        Start with technology identification, directories, virtual hosts and authentication points.
+      </p>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Initial Enumeration</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="httpEnumeration"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Directory Discovery</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="httpDirectories"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Virtual Hosts</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="httpVhosts"></app-terminal>
+      </mat-expansion-panel>
+
+    </ng-container>
+
+
+    <!-- ======================================================= -->
+    <!-- SMTP -->
+    <!-- ======================================================= -->
+
+    <ng-container *ngIf="selectedService === 'smtp'">
+
+      <h2>SMTP</h2>
+
+      <p class="section-description">
+        SMTP can reveal mail infrastructure, domains and valid users.
+        Check supported commands and whether user enumeration is possible.
+      </p>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Enumeration</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="smtpEnumeration"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>User Enumeration</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="smtpUsers"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Relay Testing</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="smtpRelay"></app-terminal>
+      </mat-expansion-panel>
+
+    </ng-container>
+
+
+    <!-- ======================================================= -->
+    <!-- SNMP -->
+    <!-- ======================================================= -->
+
+    <ng-container *ngIf="selectedService === 'snmp'">
+
+      <h2>SNMP</h2>
+
+      <p class="section-description">
+        SNMP is mainly used for information gathering. Check for exposed
+        community strings such as <code>public</code>, which may reveal
+        users, processes, interfaces and other system information.
+      </p>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Enumeration</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="snmpEnumeration"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Community Strings</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="snmpCommunity"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Information Gathering</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="snmpInformation"></app-terminal>
+      </mat-expansion-panel>
+
+    </ng-container>
+
+
+    <!-- ======================================================= -->
+    <!-- LDAP -->
+    <!-- ======================================================= -->
+
+    <ng-container *ngIf="selectedService === 'ldap'">
+
+      <h2>LDAP</h2>
+
+      <p class="section-description">
+        LDAP provides structured directory information. Enumerate the naming context,
+        users, groups and other objects that may help map the domain.
+      </p>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Base Discovery</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="ldapBase"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>User Enumeration</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="ldapUsers"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-panel-title>Authenticated Enumeration</mat-panel-title>
+      </mat-expansion-panel>
+
+      <app-terminal [command]="ldapAuthenticated"></app-terminal>
+
+    </ng-container>
+
+
+    <!-- ======================================================= -->
+    <!-- RDP -->
+    <!-- ======================================================= -->
+
+    <ng-container *ngIf="selectedService === 'rdp'">
+
+      <h2>RDP</h2>
+
+      <p class="section-description">
+        RDP provides remote graphical access to Windows systems.
+        Identify the service, security configuration and available authentication paths.
+      </p>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Enumeration</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="rdpEnumeration"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Connection</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="rdpConnection"></app-terminal>
+      </mat-expansion-panel>
+
+    </ng-container>
+
+
+    <!-- ======================================================= -->
+    <!-- DATABASES -->
+    <!-- ======================================================= -->
+
+    <ng-container *ngIf="selectedService === 'databases'">
+
+      <h2>Databases</h2>
+
+      <p class="section-description">
+        Exposed databases can provide application data, credentials and sometimes
+        direct access to the underlying system. Identify the database and authentication first.
+      </p>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>MySQL</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="mysqlEnumeration"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>MSSQL</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="mssqlEnumeration"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>PostgreSQL</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="postgresEnumeration"></app-terminal>
+      </mat-expansion-panel>
+
+    </ng-container>
+
+  </div>
+
+</div>
