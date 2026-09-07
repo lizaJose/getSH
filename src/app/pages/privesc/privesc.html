@@ -1,0 +1,1211 @@
+<div class="scan-page">
+  <!-- ===================================================== -->
+  <!-- PRIVESC SELECTION -->
+  <!-- ===================================================== -->
+
+  <div class="terminal-path"><span class="prompt">~</span>/get.sh/privesc</div>
+
+  <br />
+
+  <ng-container *ngIf="!selected">
+    <h1 class="title">Privilege Escalation</h1>
+
+    <p class="page-description">
+      Linux privilege escalation enumeration, misconfigurations and common escalation vectors.
+    </p>
+
+    <div class="grid">
+      <!-- LINUX -->
+
+      <div class="card" (click)="selectTech('linux')">
+        <div class="card-icon">
+          <span>🐧</span>
+        </div>
+
+        <div class="card-content">
+          <h2>Linux PrivEsc</h2>
+
+          <p>
+            Enumeration, misconfigurations, credentials and privilege escalation techniques.
+          </p>
+        </div>
+      </div>
+
+      <!-- WINDOWS -->
+
+      <div class="card" (click)="selectTech('windows')">
+        <div class="card-icon">
+          <span>⊞</span>
+        </div>
+
+        <div class="card-content">
+          <h2>Windows PrivEsc</h2>
+
+          <p>
+            Windows privilege escalation techniques and common misconfigurations.
+          </p>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- ===================================================== -->
+  <!-- LINUX PRIVESC -->
+  <!-- ===================================================== -->
+
+  <ng-container *ngIf="selected === 'linux'">
+    <div class="detail">
+      <button class="back" (click)="back()">← Back to PrivEsc</button>
+
+      <h2>Linux Privilege Escalation</h2>
+
+      <p class="section-description">
+        Systematic enumeration and identification of common Linux privilege escalation vectors.
+      </p>
+
+      <mat-accordion multi>
+        <!-- ================================================= -->
+        <!-- 1. INITIAL ENUMERATION -->
+        <!-- ================================================= -->
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>1. Initial Enumeration</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <mat-accordion multi>
+            <!-- BASIC ENUMERATION -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Basic Enumeration</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <p>
+                <strong>Objective:</strong>
+                Understand the current user, groups, operating system and environment.
+              </p>
+
+              <app-terminal [command]="basicEnumeration"></app-terminal>
+
+              <h3>What to look for</h3>
+
+              <ul>
+                <li>Interesting groups such as sudo, docker, lxd or adm.</li>
+                <li>Potentially vulnerable kernel versions.</li>
+                <li>Processes running as root.</li>
+                <li>Sensitive environment variables.</li>
+              </ul>
+            </mat-expansion-panel>
+
+            <!-- PROCESS ENUMERATION -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Process Enumeration</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <p>
+                Running processes can expose credentials, custom scripts and root-owned services.
+              </p>
+
+              <app-terminal [command]="processEnumeration"></app-terminal>
+
+              <h3>Useful Filters</h3>
+
+              <app-terminal [command]="processFilters"></app-terminal>
+
+              <h3>Example Red Flags</h3>
+
+              <app-terminal [command]="processRedFlags"></app-terminal>
+
+              <ul>
+                <li>Credentials exposed in command-line arguments.</li>
+                <li>Root executing scripts from writable directories.</li>
+                <li>Unknown or custom binaries running as root.</li>
+                <li>Services listening only on localhost.</li>
+              </ul>
+            </mat-expansion-panel>
+
+            <!-- BASH HISTORY -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Bash History</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <p>
+                Bash history may contain passwords, SSH commands, API keys and reused credentials.
+              </p>
+
+              <h3>Common History Files</h3>
+
+              <app-terminal [command]="bashHistory"></app-terminal>
+
+              <h3>Search for Sensitive Information</h3>
+
+              <app-terminal [command]="bashHistorySearch"></app-terminal>
+
+              <h3>System-Wide Search</h3>
+
+              <app-terminal [command]="bashHistorySystem"></app-terminal>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </mat-expansion-panel>
+
+        <!-- ================================================= -->
+        <!-- 2. SUDO -->
+        <!-- ================================================= -->
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>2. Sudo Misconfigurations</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <mat-accordion multi>
+            <!-- SUDO CHECK -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Initial Check</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <p>
+                <strong>Always run this early.</strong>
+                Check which commands the current user can execute with sudo.
+              </p>
+
+              <app-terminal [command]="sudoCheck"></app-terminal>
+
+              <h3>Look for</h3>
+
+              <ul>
+                <li>NOPASSWD entries.</li>
+                <li>Wildcard permissions.</li>
+                <li>SETENV permissions.</li>
+                <li>Unsafe binaries executed as root.</li>
+              </ul>
+            </mat-expansion-panel>
+
+            <!-- HIGH RISK BINARIES -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>High-Risk Binaries</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <p>
+                If one of these binaries is available through sudo, check GTFOBins immediately.
+              </p>
+
+              <app-terminal [command]="sudoHighRisk"></app-terminal>
+            </mat-expansion-panel>
+
+            <!-- COMMON EXPLOITS -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Common Sudo Escapes</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <mat-accordion multi>
+                <!-- VIM -->
+
+                <mat-expansion-panel>
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>Vim / Vi</mat-panel-title>
+                  </mat-expansion-panel-header>
+
+                  <app-terminal [command]="sudoVim"></app-terminal>
+                </mat-expansion-panel>
+
+                <!-- LESS -->
+
+                <mat-expansion-panel>
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>Less / More</mat-panel-title>
+                  </mat-expansion-panel-header>
+
+                  <app-terminal [command]="sudoLess"></app-terminal>
+                </mat-expansion-panel>
+
+                <!-- FIND -->
+
+                <mat-expansion-panel>
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>Find</mat-panel-title>
+                  </mat-expansion-panel-header>
+
+                  <app-terminal [command]="sudoFind"></app-terminal>
+                </mat-expansion-panel>
+
+                <!-- AWK -->
+
+                <mat-expansion-panel>
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>Awk</mat-panel-title>
+                  </mat-expansion-panel-header>
+
+                  <app-terminal [command]="sudoAwk"></app-terminal>
+                </mat-expansion-panel>
+
+                <!-- PYTHON -->
+
+                <mat-expansion-panel>
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>Python</mat-panel-title>
+                  </mat-expansion-panel-header>
+
+                  <app-terminal [command]="sudoPython"></app-terminal>
+                </mat-expansion-panel>
+
+                <!-- PERL -->
+
+                <mat-expansion-panel>
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>Perl</mat-panel-title>
+                  </mat-expansion-panel-header>
+
+                  <app-terminal [command]="sudoPerl"></app-terminal>
+                </mat-expansion-panel>
+              </mat-accordion>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </mat-expansion-panel>
+
+        <!-- ================================================= -->
+        <!-- 3. SUID -->
+        <!-- ================================================= -->
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>3. SUID Binaries</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <p>
+            SUID binaries execute with the privileges of their owner. Root-owned SUID binaries can
+            potentially lead to privilege escalation.
+          </p>
+
+          <app-terminal [command]="suidEnumeration"></app-terminal>
+
+          <h3>Example</h3>
+
+          <app-terminal [command]="suidExample"></app-terminal>
+
+          <p>
+            After identifying interesting binaries, check whether they can be abused using GTFOBins.
+          </p>
+        </mat-expansion-panel>
+
+        <!-- ================================================= -->
+        <!-- 4. CAPABILITIES -->
+        <!-- ================================================= -->
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>4. Linux Capabilities</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <p>
+            Linux capabilities can grant privileged functionality to binaries without requiring full
+            root privileges.
+          </p>
+
+          <h3>Enumeration</h3>
+
+          <app-terminal [command]="capabilities"></app-terminal>
+
+          <h3>Dangerous Example</h3>
+
+          <app-terminal [command]="capabilitiesExample"></app-terminal>
+
+          <h3>Possible Abuse</h3>
+
+          <app-terminal [command]="capabilitiesExploit"></app-terminal>
+        </mat-expansion-panel>
+
+        <!-- ================================================= -->
+        <!-- 5. CRON JOBS -->
+        <!-- ================================================= -->
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>5. Cron Jobs</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <p>
+            Scheduled tasks are especially interesting when root executes scripts that can be
+            modified by a lower-privileged user.
+          </p>
+
+          <app-terminal [command]="cronEnumeration"></app-terminal>
+
+          <h3>Look for</h3>
+
+          <ul>
+            <li>Root-owned cron jobs.</li>
+            <li>Writable scripts executed by root.</li>
+            <li>Relative paths.</li>
+            <li>PATH hijacking opportunities.</li>
+          </ul>
+        </mat-expansion-panel>
+
+        <!-- ================================================= -->
+        <!-- 6. WRITABLE FILES -->
+        <!-- ================================================= -->
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>6. Writable Files & Permissions</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <p>
+            Not every writable file is useful. Prioritize files that influence authentication,
+            execution or privileged services.
+          </p>
+
+          <app-terminal [command]="writableFiles"></app-terminal>
+
+          <h3>High-Value Targets</h3>
+
+          <ol>
+            <li>/etc/sudoers</li>
+            <li>/etc/passwd</li>
+            <li>/etc/shadow</li>
+            <li>/etc/crontab</li>
+            <li>/etc/cron.*</li>
+            <li>Systemd service files.</li>
+            <li>Application configuration files.</li>
+          </ol>
+        </mat-expansion-panel>
+
+        <!-- ================================================= -->
+        <!-- 7. /ETC/PASSWD -->
+        <!-- ================================================= -->
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>7. Writable /etc/passwd</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <mat-accordion multi>
+            <!-- PERMISSIONS -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Check Permissions</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="passwdPermissions"></app-terminal>
+
+              <p>
+                A writable <code>/etc/passwd</code> can potentially allow the creation of a
+                privileged account.
+              </p>
+            </mat-expansion-panel>
+
+            <!-- HASH -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Generate Password Hash</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="passwdHash"></app-terminal>
+            </mat-expansion-panel>
+
+            <!-- INJECT -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Create UID 0 User</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <p>
+                Replace <code>HASH</code> with the generated password hash.
+              </p>
+
+              <app-terminal [command]="passwdInject"></app-terminal>
+            </mat-expansion-panel>
+
+            <!-- SWITCH -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Switch User</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="passwdSwitch"></app-terminal>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </mat-expansion-panel>
+
+        <!-- ================================================= -->
+        <!-- 8. DOCKER / LXD -->
+        <!-- ================================================= -->
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>8. Docker / LXD Groups</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <mat-accordion multi>
+            <!-- GROUP CHECK -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Check Groups</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="dockerGroups"></app-terminal>
+
+              <p>
+                Pay special attention to groups such as <code>docker</code>, <code>lxd</code> and
+                other privileged groups.
+              </p>
+            </mat-expansion-panel>
+
+            <!-- DOCKER -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Docker</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="dockerEscape"></app-terminal>
+            </mat-expansion-panel>
+
+            <!-- LXD -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>LXD</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="lxdEscape"></app-terminal>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </mat-expansion-panel>
+
+        <!-- ================================================= -->
+        <!-- 9. PATH HIJACKING -->
+        <!-- ================================================= -->
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>9. PATH Hijacking</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <mat-accordion multi>
+            <!-- RECON -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>PATH Reconnaissance</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="pathRecon"></app-terminal>
+            </mat-expansion-panel>
+
+            <!-- WRITABLE PATH -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Writable PATH Directories</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="pathWritable"></app-terminal>
+            </mat-expansion-panel>
+
+            <!-- HIJACK -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Create Hijack Binary</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="pathHijack"></app-terminal>
+
+              <p>
+                This becomes interesting when a privileged script executes commands without using
+                absolute paths.
+              </p>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </mat-expansion-panel>
+
+        <!-- ================================================= -->
+        <!-- 10. WILDCARD INJECTION -->
+        <!-- ================================================= -->
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>10. Wildcard Injection</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <p>
+            Wildcards can be dangerous when attacker-controlled filenames are expanded into
+            arguments for privileged commands.
+          </p>
+
+          <h3>Common Risk Patterns</h3>
+
+          <app-terminal [command]="wildcardExamples"></app-terminal>
+
+          <h3>Tar Example</h3>
+
+          <app-terminal [command]="wildcardTar"></app-terminal>
+
+          <p>
+            Always inspect the available options of the binary rather than guessing possible
+            arguments.
+          </p>
+        </mat-expansion-panel>
+
+        <!-- ================================================= -->
+        <!-- 11. PASSWORD HUNTING -->
+        <!-- ================================================= -->
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>11. Password & Credential Hunting</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <mat-accordion multi>
+            <!-- PASSWORDS -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Password Hunting</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="passwordHunting"></app-terminal>
+            </mat-expansion-panel>
+
+            <!-- SSH KEYS -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>SSH Private Keys</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <h3>Find Keys</h3>
+
+              <app-terminal [command]="sshKeys"></app-terminal>
+
+              <h3>Fix Permissions</h3>
+
+              <app-terminal [command]="sshKeyPermissions"></app-terminal>
+
+              <h3>Login Using the Key</h3>
+
+              <app-terminal [command]="sshLogin"></app-terminal>
+
+              <h3>Crack Protected Keys</h3>
+
+              <app-terminal [command]="sshKeyCrack"></app-terminal>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </mat-expansion-panel>
+
+        <!-- ================================================= -->
+        <!-- 12. LD_PRELOAD -->
+        <!-- ================================================= -->
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>12. LD_PRELOAD</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <mat-accordion multi>
+            <!-- CHECK -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Check Sudo Configuration</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="ldPreloadCheck"></app-terminal>
+
+              <p>Look for permissions related to environment preservation or SETENV.</p>
+            </mat-expansion-panel>
+
+            <!-- COMPILE -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Compile Shared Library</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="ldPreloadCompile"></app-terminal>
+            </mat-expansion-panel>
+
+            <!-- EXPLOIT -->
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Execute with LD_PRELOAD</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-terminal [command]="ldPreloadExploit"></app-terminal>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </mat-expansion-panel>
+
+        <!-- ================================================= -->
+        <!-- 13. KERNEL -->
+        <!-- ================================================= -->
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>13. Kernel Exploits</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <p>
+            Kernel exploitation should generally be considered after checking simpler and more
+            reliable privilege escalation vectors.
+          </p>
+
+          <app-terminal [command]="kernelEnumeration"></app-terminal>
+
+          <p>
+            Always verify the exact kernel version and exploit requirements before attempting
+            exploitation.
+          </p>
+        </mat-expansion-panel>
+
+        <!-- ================================================= -->
+        <!-- 14. OSCP MENTAL FLOW -->
+        <!-- ================================================= -->
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>14. OSCP Mental Flow</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <p>
+            A simple workflow to avoid missing the most common Linux privilege escalation vectors.
+          </p>
+
+          <app-terminal [command]="oscpMentalFlow"></app-terminal>
+
+          <h3>Quick Priority</h3>
+
+          <ol>
+            <li>Understand your current user and groups.</li>
+            <li>Run <code>sudo -l</code>.</li>
+            <li>Enumerate SUID binaries.</li>
+            <li>Check capabilities.</li>
+            <li>Inspect cron jobs and scheduled tasks.</li>
+            <li>Look for writable files and scripts.</li>
+            <li>Check Docker and LXD group membership.</li>
+            <li>Search for credentials.</li>
+            <li>Consider kernel exploits as a later option.</li>
+          </ol>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+  </ng-container>
+
+  <!-- ===================================================== -->
+  <!-- WINDOWS PRIVESC -->
+  <!-- ===================================================== -->
+
+  <ng-container *ngIf="selected === 'windows'">
+  <div class="detail">
+    <button class="back" (click)="back()">← Back to PrivEsc</button>
+
+    <h2>Windows Privilege Escalation</h2>
+
+    <p class="section-description">
+      Windows privilege escalation enumeration, exploitation and OSCP methodology.
+    </p>
+
+    <mat-accordion multi>
+
+      <!-- ================================================= -->
+      <!-- 1. IDENTITY & TOKEN ENUMERATION -->
+      <!-- ================================================= -->
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>1. Identity & Token Enumeration</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <p>
+          Always start by identifying the current user, groups, privileges and integrity level.
+        </p>
+
+        <app-terminal [command]="windowsIdentity"></app-terminal>
+
+        <p><strong>Important privileges:</strong></p>
+
+        <ul>
+          <li><strong>SeBackupPrivilege</strong> → Dump SAM / SYSTEM.</li>
+          <li><strong>SeRestorePrivilege</strong> → Overwrite protected files.</li>
+          <li><strong>SeImpersonatePrivilege</strong> → Token impersonation.</li>
+          <li><strong>High Integrity</strong> → Elevated token.</li>
+        </ul>
+      </mat-expansion-panel>
+
+      <!-- ================================================= -->
+      <!-- 2. USERS & GROUPS -->
+      <!-- ================================================= -->
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>2. Users & Groups</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <p>Enumerate local and domain users and identify privileged group membership.</p>
+
+        <app-terminal [command]="windowsUsersGroups"></app-terminal>
+      </mat-expansion-panel>
+
+      <!-- ================================================= -->
+      <!-- 3. SYSTEM ENUMERATION -->
+      <!-- ================================================= -->
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>3. System Enumeration</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="windowsSystem"></app-terminal>
+
+        <p><strong>Drivers:</strong></p>
+
+        <app-terminal [command]="windowsDrivers"></app-terminal>
+      </mat-expansion-panel>
+
+      <!-- ================================================= -->
+      <!-- 4. NETWORK ENUMERATION -->
+      <!-- ================================================= -->
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>4. Network Enumeration</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="windowsNetwork"></app-terminal>
+      </mat-expansion-panel>
+
+      <!-- ================================================= -->
+      <!-- 5. CREDENTIAL HUNTING -->
+      <!-- ================================================= -->
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>5. Credential Hunting</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <mat-accordion multi>
+
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>File Searching</mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <app-terminal [command]="windowsCredentialHunting"></app-terminal>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Registry Credentials</mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <app-terminal [command]="windowsRegistryCredentials"></app-terminal>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Saved Credentials</mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <app-terminal [command]="windowsSavedCredentials"></app-terminal>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>PowerShell History</mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <app-terminal [command]="windowsPowerShellHistory"></app-terminal>
+          </mat-expansion-panel>
+
+        </mat-accordion>
+      </mat-expansion-panel>
+
+      <!-- ================================================= -->
+      <!-- 6. INTERESTING FILES -->
+      <!-- ================================================= -->
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>6. Interesting Files Enumeration</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <p>
+          Search for configuration files, scripts, backups and documents that may contain
+          credentials, connection strings, tokens or other useful information.
+        </p>
+
+        <app-terminal [command]="windowsInterestingFiles"></app-terminal>
+      </mat-expansion-panel>
+
+      <!-- ================================================= -->
+      <!-- 7. SERVICES -->
+      <!-- ================================================= -->
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>7. Services Enumeration</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="windowsServices"></app-terminal>
+
+        <p><strong>Look for:</strong></p>
+
+        <ul>
+          <li>Unquoted service paths.</li>
+          <li>Writable service binaries.</li>
+          <li>Weak service permissions.</li>
+          <li>Services running as SYSTEM.</li>
+        </ul>
+      </mat-expansion-panel>
+
+      <!-- ================================================= -->
+      <!-- 8. UNQUOTED SERVICE PATHS -->
+      <!-- ================================================= -->
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>8. Unquoted Service Paths</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <p>
+          An unquoted service path containing spaces may allow Windows to execute an unexpected
+          binary if an intermediate directory is writable.
+        </p>
+
+        <app-terminal [command]="windowsUnquotedPaths"></app-terminal>
+
+        <p><strong>All conditions must be true:</strong></p>
+
+        <ul>
+          <li>The path contains spaces.</li>
+          <li>The executable path is not quoted.</li>
+          <li>An intermediate directory is writable.</li>
+          <li>The service can be triggered.</li>
+        </ul>
+
+        <p>
+          <strong>Important:</strong> An unquoted path alone does not make a service exploitable.
+        </p>
+      </mat-expansion-panel>
+
+      <!-- ================================================= -->
+      <!-- 9. SERVICE BINARY HIJACKING -->
+      <!-- ================================================= -->
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>9. Service Binary Hijacking</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <p>
+          If a service runs as SYSTEM and its executable is writable, replacing the binary can
+          result in SYSTEM code execution.
+        </p>
+
+        <app-terminal [command]="windowsServiceBinary"></app-terminal>
+
+        <p><strong>Exploitation conditions:</strong></p>
+
+        <ul>
+          <li>Service runs as LocalSystem.</li>
+          <li>Binary is writable.</li>
+          <li>The service can be restarted or triggered.</li>
+        </ul>
+
+        <p><strong>OSCP rule:</strong></p>
+
+        <app-terminal [command]="windowsServiceRule"></app-terminal>
+      </mat-expansion-panel>
+
+      <!-- ================================================= -->
+      <!-- 10. DLL HIJACKING -->
+      <!-- ================================================= -->
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>10. DLL Hijacking</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <p>
+          Look for applications or services loading DLLs from writable directories.
+        </p>
+
+        <app-terminal [command]="windowsDLLHijacking"></app-terminal>
+      </mat-expansion-panel>
+
+      <!-- ================================================= -->
+      <!-- 11. SCHEDULED TASKS -->
+      <!-- ================================================= -->
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>11. Scheduled Tasks</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <mat-accordion multi>
+
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Enumeration</mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <app-terminal [command]="windowsScheduledTasks"></app-terminal>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Task Filtering</mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <app-terminal [command]="windowsTaskFiltering"></app-terminal>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Inspect Task</mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <app-terminal [command]="windowsTaskInspect"></app-terminal>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Referenced Files</mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <app-terminal [command]="windowsTaskFiles"></app-terminal>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Permissions</mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <app-terminal [command]="windowsTaskPermissions"></app-terminal>
+          </mat-expansion-panel>
+
+        </mat-accordion>
+      </mat-expansion-panel>
+
+      <!-- ================================================= -->
+      <!-- 12. SEIMPERSONATE -->
+      <!-- ================================================= -->
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>12. SeImpersonatePrivilege Abuse</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <p>
+          Check whether the current account possesses SeImpersonatePrivilege.
+        </p>
+
+        <app-terminal [command]="windowsSeImpersonate"></app-terminal>
+
+        <p>
+          If the privilege is enabled, token impersonation techniques may allow escalation
+          to SYSTEM depending on the Windows version and execution context.
+        </p>
+
+        <app-terminal [command]="windowsPotato"></app-terminal>
+      </mat-expansion-panel>
+
+      <!-- ================================================= -->
+      <!-- 13. BACKUP OPERATORS -->
+      <!-- ================================================= -->
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>13. Backup Operators Abuse</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <p>
+          Backup-related privileges may allow access to protected registry hives and other
+          sensitive files.
+        </p>
+
+        <app-terminal [command]="windowsBackupOperators"></app-terminal>
+
+        <p><strong>Offline hash extraction:</strong></p>
+
+        <app-terminal [command]="windowsSecretsDump"></app-terminal>
+
+        <p><strong>Pass-the-Hash:</strong></p>
+
+        <app-terminal [command]="windowsPassTheHash"></app-terminal>
+      </mat-expansion-panel>
+
+      <!-- ================================================= -->
+      <!-- 14. KERNEL EXPLOITS -->
+      <!-- ================================================= -->
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>14. Kernel Exploits</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <p>
+          Consider kernel exploitation only after normal privilege escalation enumeration
+          has been exhausted.
+        </p>
+
+        <app-terminal [command]="windowsKernel"></app-terminal>
+      </mat-expansion-panel>
+
+      <!-- ================================================= -->
+      <!-- 15. AUTOMATED ENUMERATION -->
+      <!-- ================================================= -->
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>15. Automated Enumeration</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <p>
+          Automated tools are useful for finding potential misconfigurations, but every finding
+          should be manually verified.
+        </p>
+
+        <app-terminal [command]="windowsAutomatedEnum"></app-terminal>
+
+        <p><strong>Always verify manually:</strong></p>
+
+        <app-terminal [command]="windowsManualVerify"></app-terminal>
+      </mat-expansion-panel>
+
+      <!-- ================================================= -->
+      <!-- 16. OSCP MENTAL CHECKLIST -->
+      <!-- ================================================= -->
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>16. OSCP Mental Checklist</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <ol>
+          <li>Who am I?</li>
+          <li>What privileges do I have?</li>
+          <li>What groups am I a member of?</li>
+          <li>Any interesting credentials?</li>
+          <li>Any writable services?</li>
+          <li>Any unquoted service paths?</li>
+          <li>Any scheduled tasks?</li>
+          <li>Do I have SeImpersonatePrivilege?</li>
+          <li>Am I a member of Backup Operators?</li>
+          <li>Any writable files or directories?</li>
+          <li>Any interesting scripts or configuration files?</li>
+          <li>Any kernel-level vulnerability?</li>
+        </ol>
+      </mat-expansion-panel>
+
+      <!-- ================================================= -->
+      <!-- 17. PRACTICAL CHECKLIST -->
+      <!-- ================================================= -->
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>17. Windows PrivEsc Practical Checklist</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <mat-accordion multi>
+
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Initial Enumeration</mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <ul>
+              <li>Ran whoami /all.</li>
+              <li>Checked privileges.</li>
+              <li>Checked groups.</li>
+              <li>Identified Integrity Level.</li>
+            </ul>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>System & Patch Level</mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <ul>
+              <li>Ran systeminfo.</li>
+              <li>Checked installed hotfixes.</li>
+              <li>Identified OS architecture.</li>
+            </ul>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Credential Hunting</mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <ul>
+              <li>Searched for password files.</li>
+              <li>Checked registry credentials.</li>
+              <li>Checked cmdkey.</li>
+              <li>Checked PowerShell history.</li>
+            </ul>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Services & Tasks</mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <ul>
+              <li>Enumerated services.</li>
+              <li>Checked unquoted service paths.</li>
+              <li>Checked service binary permissions.</li>
+              <li>Enumerated scheduled tasks.</li>
+              <li>Checked task binary/script permissions.</li>
+            </ul>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Privilege Abuse</mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <ul>
+              <li>Checked SeImpersonatePrivilege.</li>
+              <li>Checked Backup Operators.</li>
+              <li>Checked writable files and directories.</li>
+            </ul>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Advanced</mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <ul>
+              <li>Ran automated enumeration tools.</li>
+              <li>Manually verified findings.</li>
+              <li>Checked for kernel vulnerabilities.</li>
+            </ul>
+          </mat-expansion-panel>
+
+        </mat-accordion>
+      </mat-expansion-panel>
+
+    </mat-accordion>
+  </div>
+</ng-container>
+</div>

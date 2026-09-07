@@ -25,5 +25,10 @@ export const routes: Routes = [
     path: 'web',
     loadComponent: () =>
       import('./pages/web/web').then(m => m.Web)
+  },
+  {
+    path: 'privesc',
+    loadComponent: () =>
+      import('./pages/privesc/privesc').then(m => m.Privesc)
   }
 ];
