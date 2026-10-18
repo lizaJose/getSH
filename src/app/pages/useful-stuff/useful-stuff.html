@@ -1,0 +1,44 @@
+<div class="useful-stuff-page">
+  <header class="page-header">
+    <div class="terminal-path"><span class="prompt">~/get.sh/</span>useful-stuff</div>
+    <h1 class="title">Useful Stuff</h1>
+    <p class="page-description">Practical workflows and quick references for common assessment tasks.</p>
+  </header>
+
+  <div class="section-workspace">
+    <app-section-index
+      class="section-workspace__index"
+      [items]="sections"
+      [activeId]="selectedSection"
+      (sectionChange)="selectSection($event)"
+    ></app-section-index>
+
+    <div class="section-workspace__content">
+  <section class="transfer-section" *ngIf="selectedSection === 'file-transfer'" aria-labelledby="file-transfer-title">
+    <div class="transfer-section__heading">
+      <div>
+        <span class="section-kicker">REFERENCE</span>
+        <h2 id="file-transfer-title">File Transfer</h2>
+        <p>Move files between Kali and Windows/Linux in either direction.</p>
+      </div>
+      <span class="transfer-section__count">{{ transferMethods.length }} METHODS</span>
+    </div>
+
+    <mat-accordion multi>
+      <mat-expansion-panel *ngFor="let method of transferMethods">
+        <mat-expansion-panel-header>
+          <mat-panel-title>{{ method.title }}</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <p class="method-description">{{ method.description }}</p>
+
+        <div class="transfer-command" *ngFor="let block of method.commands">
+          <h3>{{ block.context }}</h3>
+          <app-terminal [command]="block.command"></app-terminal>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </section>
+    </div>
+  </div>
+</div>

@@ -390,7 +390,8 @@
       <p class="section-description">
         Understand Kerberos authentication, identify accounts exposed
         to ticket-based attacks, and assess the security of service
-        accounts and ticket handling.
+        accounts and ticket handling. Use the commands only in an authorized lab;
+        check lockout policy before authentication tests and protect exported tickets.
       </p>
 
       <mat-expansion-panel>
@@ -409,6 +410,27 @@
 
       <mat-expansion-panel>
         <mat-expansion-panel-header>
+          <mat-panel-title>Kerbrute: User Enumeration &amp; Password Spray</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="attackKerbrute"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Delegation: Unconstrained &amp; Constrained</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="attackDelegation"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Resource-Based Constrained Delegation (RBCD)</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="attackRbcd"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
           <mat-panel-title>Ticket Enumeration</mat-panel-title>
         </mat-expansion-panel-header>
         <app-terminal [command]="attackTicketEnumeration"></app-terminal>
@@ -419,6 +441,13 @@
           <mat-panel-title>Pass-the-Ticket</mat-panel-title>
         </mat-expansion-panel-header>
         <app-terminal [command]="attackPassTheTicket"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Golden Tickets</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="attackGoldenTicket"></app-terminal>
       </mat-expansion-panel>
 
       <mat-expansion-panel>
@@ -505,12 +534,6 @@
         <app-terminal [command]="attackDcsyncDetection"></app-terminal>
       </mat-expansion-panel>
 
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title>Post-Compromise Checklist</mat-panel-title>
-        </mat-expansion-panel-header>
-        <app-terminal [command]="attackPostCompromise"></app-terminal>
-      </mat-expansion-panel>
     </ng-container>
 
     <!-- ===================================================== -->
@@ -607,10 +630,184 @@
 
         <app-terminal [command]="flowPostPivot"></app-terminal>
       </mat-expansion-panel>
+
+      <mat-expansion-panel
+        [expanded]="selectedFlowPhase === 'post-exploitation'"
+        (opened)="selectedFlowPhase = 'post-exploitation'"
+        (closed)="selectedFlowPhase = ''"
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title>08. Post-Exploitation &amp; Handoff</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <p class="section-description">
+          Reassess the current host after gaining an authorized administrative context.
+          Keep credential use within scope and avoid changing target configuration unnecessarily.
+        </p>
+
+        <h3>Situational Awareness</h3>
+        <app-terminal [command]="postExploitSituationalAwareness"></app-terminal>
+
+        <h3>Credential Sources &amp; Handling</h3>
+        <app-terminal [command]="flowCredentialAudit"></app-terminal>
+        <app-terminal [command]="postExploitCredentialRecovery"></app-terminal>
+
+        <h3>Choose the Next Path</h3>
+        <app-terminal [command]="postExploitCredentialRoutes"></app-terminal>
+        <p class="section-description">
+          For Kerberos tickets, SPNs and delegation, use Kerberos Attacks. For ACL paths,
+          use Object Permissions and BloodHound. Pivoting and MSSQL are covered above.
+        </p>
+
+        <h3>Optional: Local Administrator Access</h3>
+        <p class="section-description">
+          This modifies the target's local Administrators group. Use only when the lab or engagement
+          explicitly permits changing group membership.
+        </p>
+        <app-terminal [command]="postExploitAdminGroupAccess"></app-terminal>
+
+        <h3>Closeout &amp; Remediation</h3>
+        <app-terminal [command]="attackPostCompromise"></app-terminal>
+      </mat-expansion-panel>
     </ng-container>
 
 
-    
+    <ng-container *ngIf="selectedService === 'ad-example-three-host'">
+      <h2>Example: Three-Host Domain Chain</h2>
+      <p class="section-description">
+        Fictional authorized lab walkthrough: WEB01 is reached through a SQL injection,
+        credentials lead to APP02, and an account found on APP03 already has directory
+        replication rights. The PowerShell history helps discover credentials; it is not
+        itself a privilege-escalation technique.
+      </p>
+
+      <mat-accordion multi>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>01. WEB01: Initial Access Through SQL Injection</mat-panel-title>
+          </mat-expansion-panel-header>
+          <p>
+            In this fictional lab, the application exposes a SQL injection that leads to
+            command execution in the web service context. SQL injection does not guarantee
+            a shell; the result depends on the database, privileges and application setup.
+          </p>
+          <a class="workflow-link" routerLink="/web" [queryParams]="{ section: 'sqli' }">
+            Open the existing Web → SQL Injection guide
+          </a>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>02. WEB01: Establish Host Context</mat-panel-title>
+          </mat-expansion-panel-header>
+          <p>Record identity, privileges, domain and network position.</p>
+          <app-terminal [command]="flowHostEnumeration"></app-terminal>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>03. WEB01: PowerShell History &amp; Local Escalation</mat-panel-title>
+          </mat-expansion-panel-header>
+          <p>
+            The history reveals an in-scope administrative credential. Validate the actual
+            local privilege path using the existing Windows PrivEsc material; finding a
+            password in history alone does not elevate the current token.
+          </p>
+          <app-terminal [command]="flowPrivEscChecks"></app-terminal>
+          <a class="workflow-link" routerLink="/privesc" [queryParams]="{ system: 'windows' }">
+            Open Windows PrivEsc, including PowerShell History and SeImpersonate checks
+          </a>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>04. WEB01: Post-Exploitation &amp; LSASS Assessment</mat-panel-title>
+          </mat-expansion-panel-header>
+          <p>After authorized elevation, reassess the host and handle recovered secrets carefully.</p>
+          <app-terminal [command]="postExploitSituationalAwareness"></app-terminal>
+          <app-terminal [command]="postExploitCredentialRecovery"></app-terminal>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>05. APP02: Connect With the Recovered Credential</mat-panel-title>
+          </mat-expansion-panel-header>
+          <p>
+            Set Victim IP to APP02 and use the lab credential recovered from WEB01.
+            The command below reuses the existing WinRM workflow.
+          </p>
+          <app-terminal [command]="flowWinRM"></app-terminal>
+          <app-terminal [command]="flowHostEnumeration"></app-terminal>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>06. APP02: Local Escalation &amp; APP03 Credential</mat-panel-title>
+          </mat-expansion-panel-header>
+          <p>
+            In this scenario, an authorized local escalation path on APP02 exposes a
+            credential used for APP03. Confirm the host's actual privilege findings in the
+            existing Windows PrivEsc section rather than assuming PowerShell history elevates you.
+          </p>
+          <a class="workflow-link" routerLink="/privesc" [queryParams]="{ system: 'windows' }">
+            Open Windows PrivEsc guidance
+          </a>
+          <app-terminal [command]="postExploitCredentialRecovery"></app-terminal>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>07. Pivot from APP02 to the Internal Subnet</mat-panel-title>
+          </mat-expansion-panel-header>
+          <p>
+            In this lab, APP02 has a route to APP03 and the domain controller that Kali cannot
+            reach directly. Start the Ligolo-ng proxy on Kali, connect the agent from APP02,
+            select the session and configure the authorized subnet route.
+          </p>
+          <app-terminal [command]="flowPivotEnumeration"></app-terminal>
+          <app-terminal [command]="flowLigolo"></app-terminal>
+          <p>Verify the tunnel route before continuing to APP03.</p>
+          <app-terminal [command]="flowPostPivot"></app-terminal>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>08. APP03: Connect Through the Tunnel</mat-panel-title>
+          </mat-expansion-panel-header>
+          <p>
+            After validating the APP03 lab credential, set Victim IP to APP03 and use the
+            existing WinRM workflow through the established tunnel.
+          </p>
+          <app-terminal [command]="flowWinRM"></app-terminal>
+          <app-terminal [command]="flowHostEnumeration"></app-terminal>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>09. APP03: Verify Replication Rights &amp; Assess the DC</mat-panel-title>
+          </mat-expansion-panel-header>
+          <p>
+            The fictional APP03 account already has the required directory replication rights.
+            Local Administrator membership alone does not grant DCSync. Confirm authorization,
+            effective rights and target scope before using the existing procedure.
+          </p>
+          <app-terminal [command]="attackDcsyncRequirements"></app-terminal>
+          <app-terminal [command]="attackNtds"></app-terminal>
+          <app-terminal [command]="attackDcsyncDetection"></app-terminal>
+          <a class="workflow-link" routerLink="/ad" [queryParams]="{ service: 'compromise' }">
+            Open Domain Compromise prerequisites and detection
+          </a>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>10. Closeout</mat-panel-title>
+          </mat-expansion-panel-header>
+          <app-terminal [command]="attackPostCompromise"></app-terminal>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </ng-container>
+
 <ng-container *ngIf="selectedService === 'full-ad-compromise-linux'">
   <h2>Full AD Compromise from Linux</h2>
 

@@ -1,0 +1,119 @@
+.useful-stuff-page {
+  padding: 2rem 0;
+  color: #e5edf0;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+}
+
+.terminal-path {
+  margin-bottom: 0.5rem;
+  color: #aebbc1;
+  font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  font-size: 0.8rem;
+}
+
+.terminal-path .prompt {
+  color: #78d6cd;
+}
+
+.title {
+  margin: 0 0 0.45rem;
+  color: #f5f8f9;
+  font-size: 1.9rem;
+  font-weight: 700;
+}
+
+.page-description,
+.transfer-section__heading p {
+  margin: 0;
+  color: #b4c0c6;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.transfer-section__heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #29383d;
+}
+
+.section-kicker {
+  color: #78d6cd;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.transfer-section__heading h2 {
+  margin: 0.25rem 0 0.35rem;
+  color: #f1f6f7;
+  font-size: 1.35rem;
+  font-weight: 650;
+}
+
+.transfer-section__count {
+  flex: 0 0 auto;
+  color: #b4c0c6;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+}
+
+.transfer-section mat-expansion-panel {
+  margin-bottom: 0.55rem;
+  background: #111b1f;
+  border: 1px solid #2b3c41;
+  border-radius: 7px;
+  box-shadow: none;
+}
+
+.transfer-section mat-expansion-panel-header {
+  min-height: 3.25rem;
+  padding: 0 1rem;
+}
+
+.transfer-section mat-panel-title {
+  color: #e5edf0;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.method-description {
+  margin: 0.25rem 0 1rem;
+  color: #b4c0c6;
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+
+.transfer-command + .transfer-command {
+  margin-top: 1.1rem;
+}
+
+.transfer-command h3 {
+  margin: 0;
+  color: #d4e0e3;
+  font-size: 0.78rem;
+  font-weight: 650;
+}
+
+@media (max-width: 768px) {
+  .useful-stuff-page {
+    padding: 1rem 0;
+  }
+
+  .transfer-section__heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .transfer-section mat-expansion-panel-header {
+    padding: 0 0.75rem;
+  }
+}

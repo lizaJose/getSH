@@ -35,5 +35,10 @@ export const routes: Routes = [
     path: 'ad',
     loadComponent: () =>
       import('./pages/active-directory/active-directory').then(m => m.ActiveDirectory)
+  },
+  {
+    path: 'useful-stuff',
+    loadComponent: () =>
+      import('./pages/useful-stuff/useful-stuff').then(m => m.UsefulStuffComponent)
   }
 ];

