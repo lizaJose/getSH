@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal, HostListener } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
+import { TerminalContextService } from './core/services/terminal-context.service';
 import { SidebarComponent } from './shared/components/sidebar/sidebar';
 import { GlobalSearchComponent } from './global-search-component/global-search-component';
 
@@ -9,6 +11,7 @@ import { GlobalSearchComponent } from './global-search-component/global-search-c
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     RouterOutlet,
     SidebarComponent,
     GlobalSearchComponent
@@ -17,11 +20,11 @@ import { GlobalSearchComponent } from './global-search-component/global-search-c
   styleUrl: './app.scss'
 })
 export class App {
+  readonly context = inject(TerminalContextService);
 
   isSearchOpen = false;
 
   openSearch() {
-    console.log('OPEN');
     this.isSearchOpen = true;
   }
 

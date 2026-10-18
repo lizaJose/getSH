@@ -1,7 +1,7 @@
 .terminal {
-  background: #0b1220;
+  background: #0b1316;
 
-  border: 1px solid #1e293b;
+  border: 1px solid #29383d;
   border-radius: 8px;
 
   overflow: hidden;
@@ -14,8 +14,6 @@
     Consolas,
     monospace;
 
-  box-shadow:
-    0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 
@@ -31,9 +29,9 @@
 
   padding: 0 12px;
 
-  background: #111827;
+  background: #121c20;
 
-  border-bottom: 1px solid #1e293b;
+  border-bottom: 1px solid #29383d;
 
   position: relative;
 }
@@ -54,7 +52,7 @@
 
   border-radius: 50%;
 
-  background: #475569;
+  background: #65767b;
 }
 
 
@@ -69,7 +67,7 @@
 
   transform: translateX(-50%);
 
-  color: #64748b;
+  color: #a6b4b9;
 
   font-size: 11px;
 
@@ -88,7 +86,7 @@
 
   border: 1px solid transparent;
 
-  color: #64748b;
+  color: #b0bdc2;
 
   font-family: inherit;
 
@@ -107,11 +105,11 @@
 }
 
 .copy-button:hover {
-  color: #38bdf8;
+  color: #78d6cd;
 
-  background: #0f172a;
+  background: #182529;
 
-  border-color: #1e3a5f;
+  border-color: #365157;
 }
 
 
@@ -130,7 +128,7 @@
 
   overflow-x: auto;
 
-  color: #38bdf8;
+  color: #78d6cd;
 
   font-size: 13px;
 
@@ -219,14 +217,13 @@
 /* TERMINAL COMMENTS */
 /* ========================================================= */
 
-.terminal-comment {
-  color: #5a687c !important;
-
-  font-style: italic;
-
+.terminal-body code .terminal-comment {
+  color: #aebdc2 !important;
+  font-style: normal;
   opacity: 1;
 }
 
-.terminal-command {
-  color: #e2e8f0;
+.terminal-body code .terminal-command {
+  color: #89e1d8 !important;
+  font-weight: 600;
 }

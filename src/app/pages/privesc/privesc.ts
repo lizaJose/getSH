@@ -1,18 +1,37 @@
-import { Component } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { ActivatedRoute, Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Terminal } from '../../shared/terminal/terminal';
+import { SectionIndexComponent, SectionIndexItem } from '../../shared/components/section-index/section-index';
 
 @Component({
   selector: 'app-privesc',
   standalone: true,
-  imports: [CommonModule, MatExpansionModule, Terminal],
+  imports: [CommonModule, MatExpansionModule, Terminal, SectionIndexComponent],
   templateUrl: './privesc.html',
   styleUrl: './privesc.scss',
 })
-export class Privesc {
+export class Privesc implements OnInit {
 
-  selected: string | null = null;
+  selected: string | null = 'linux';
+  readonly systems: SectionIndexItem[] = [
+    { id: 'linux', label: 'Linux PrivEsc' },
+    { id: 'windows', label: 'Windows PrivEsc' }
+  ];
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
+
+  ngOnInit(): void {
+    this.route.queryParamMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(params => {
+        const system = params.get('system');
+        if (system && this.systems.some(item => item.id === system)) this.selected = system;
+      });
+  }
 
   // =========================================================
   // LINUX PRIVESC
@@ -646,10 +665,15 @@ whoami /priv
 
   selectTech(tech: string) {
     this.selected = tech;
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { system: tech },
+      replaceUrl: true
+    });
   }
 
   back() {
-    this.selected = null;
+    this.selected = 'linux';
   }
 
   // =========================================================

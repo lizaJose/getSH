@@ -1,0 +1,33 @@
+<nav class="section-index" [class.section-index--grouped]="hasGroups" aria-label="Section index">
+  <span class="section-index__label">Browse</span>
+  <ng-container *ngFor="let item of items; let index = index">
+    <button
+      *ngIf="item.group && (index === 0 || items[index - 1].group !== item.group)"
+      class="section-index__group"
+      type="button"
+      [attr.aria-expanded]="!isGroupCollapsed(item.group)"
+      (click)="toggleGroup(item.group)"
+    >
+      <span>{{ item.group }}</span>
+      <span class="section-index__count">{{ countGroupItems(item.group) }}</span>
+      <span
+        class="section-index__chevron"
+        [class.section-index__chevron--collapsed]="isGroupCollapsed(item.group)"
+        aria-hidden="true"
+      >⌄</span>
+    </button>
+    <button
+      *ngIf="!item.group || !isGroupCollapsed(item.group)"
+      type="button"
+      [class.active]="item.id === activeId"
+      [class.disabled]="item.disabled"
+      [class.section-index__item--nested]="!!item.group"
+      [disabled]="item.disabled"
+      [attr.aria-current]="item.id === activeId ? 'page' : null"
+      (click)="sectionChange.emit(item.id)"
+    >
+      <span class="section-index__marker" aria-hidden="true">›</span>
+      {{ item.label }}
+    </button>
+  </ng-container>
+</nav>

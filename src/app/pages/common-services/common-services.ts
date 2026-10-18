@@ -1,18 +1,53 @@
-import { Component } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { ActivatedRoute, Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Terminal } from '../../shared/terminal/terminal';
+import { SectionIndexComponent, SectionIndexItem } from '../../shared/components/section-index/section-index';
 
 @Component({
   selector: 'app-common-services',
   standalone: true,
-  imports: [CommonModule, MatExpansionModule, Terminal],
+  imports: [CommonModule, MatExpansionModule, Terminal, SectionIndexComponent],
   templateUrl: './common-services.html',
   styleUrl: './common-services.scss',
 })
-export class CommonServicesComponent {
+export class CommonServicesComponent implements OnInit {
 
-  selectedService: string | null = null;
+  selectedService: string | null = 'ssh';
+  readonly services: SectionIndexItem[] = [
+    { id: 'ssh', label: 'SSH' },
+    { id: 'ftp', label: 'FTP' },
+    { id: 'smb', label: 'SMB' },
+    { id: 'http', label: 'HTTP / HTTPS' },
+    { id: 'smtp', label: 'SMTP' },
+    { id: 'snmp', label: 'SNMP' },
+    { id: 'ldap', label: 'LDAP' },
+    { id: 'rdp', label: 'RDP' },
+    { id: 'databases', label: 'Databases' }
+  ];
+  sshAuthenticationExpanded = false;
+  ftpAuthenticationExpanded = false;
+
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
+
+  ngOnInit(): void {
+    this.route.queryParamMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(params => {
+        const service = params.get('service');
+        const panel = params.get('panel');
+
+        if (service && this.services.some(item => item.id === service)) {
+          this.selectedService = service;
+          this.sshAuthenticationExpanded = panel === 'ssh-authentication';
+          this.ftpAuthenticationExpanded = panel === 'ftp-authentication';
+        }
+      });
+  }
 
 
   // =========================================================
@@ -21,10 +56,25 @@ export class CommonServicesComponent {
 
   selectService(service: string): void {
     this.selectedService = service;
+    this.sshAuthenticationExpanded = false;
+    this.ftpAuthenticationExpanded = false;
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { service },
+      replaceUrl: true
+    });
   }
 
   clearService(): void {
-    this.selectedService = null;
+    this.selectedService = 'ssh';
+    this.sshAuthenticationExpanded = false;
+    this.ftpAuthenticationExpanded = false;
+
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {},
+      replaceUrl: true
+    });
   }
 
 
@@ -134,12 +184,12 @@ smbmap -H target_ip
 `;
 
   smbShares = `
-# Connect to an SMB share anonymously
-smbclient //target_ip/share -N
+# List the top-level contents of an SMB share anonymously
+smbclient //target_ip/share -N -c "ls"
 
-# Recursively list files inside the share
-smbclient //target_ip/share -N \\
--c "recurse ON; prompt OFF; ls"
+# Download files recursively into a local directory
+mkdir -p share-downloads
+smbclient //target_ip/share -N -c "lcd share-downloads; recurse ON; prompt OFF; mget *"
 `;
 
   smbCredentials = `
@@ -184,9 +234,9 @@ gobuster dir \\
 `;
 
   httpVhosts = `
-# Discover virtual hosts
+# Replace example.com with the target's discovered DNS domain
 ffuf -u http://target_ip/ \\
--H "Host: FUZZ.target_ip" \\
+-H "Host: FUZZ.example.com" \\
 -w subdomains.txt
 `;
 
@@ -236,9 +286,6 @@ snmpwalk -v2c -c public target_ip
 
 # Perform automated SNMP enumeration
 snmp-check target_ip -c public
-
-# Discover valid community strings
-onesixtyone -c community.txt target_ip
 `;
 
   snmpCommunity = `
@@ -246,7 +293,8 @@ onesixtyone -c community.txt target_ip
 onesixtyone -c community.txt target_ip
 
 # Query the target using a discovered community string
-snmpwalk -v2c -c public target_ip
+community="public"  # replace with the community string discovered above
+snmpwalk -v2c -c "$community" target_ip
 `;
 
   snmpInformation = `

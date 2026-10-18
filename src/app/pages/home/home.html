@@ -1,168 +1,115 @@
 <div class="home-page">
-  <!-- ===================================================== -->
-  <!-- HERO -->
-  <!-- ===================================================== -->
-
   <section class="hero">
-    <div class="hero-content">
-      <span class="terminal-label"> ~/get.sh </span>
-
+    <div class="hero__content">
+      <span class="hero__eyebrow">~/get.sh</span>
       <h1>get<span>.sh</span></h1>
-
-      <p class="hero-tagline">Get access. Get shell. Get root.</p>
-
-      <p class="hero-subdescription">
-        Enumeration, exploitation, privilege escalation, Active Directory, web security and
-        post-exploitation techniques organized for real-world labs, CTFs and security assessments.
+      <p class="hero__tagline">From recon to root.</p>
+      <p class="hero__description">
+        A practical OSCP-oriented knowledge base for enumeration, exploitation,
+        privilege escalation, web attacks, and AD compromise.
       </p>
+
+      <div class="hero__actions">
+        <a routerLink="/ad" class="button button--primary">Start with AD</a>
+        <a routerLink="/scan" class="button button--secondary">Scan flow</a>
+      </div>
+    </div>
+
+    <div class="hero__panel">
+      <div class="terminal-window">
+        <div class="terminal-window__header">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+
+        <div class="terminal-window__body">
+          <p><span class="prompt">$</span> ./get.sh --objective</p>
+          <p class="output">[+] Get access</p>
+          <p class="output">[+] Get shell</p>
+          <p class="output success">[+] Get root</p>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- ===================================================== -->
-  <!-- WHAT IS GET.SH -->
-  <!-- ===================================================== -->
-
-  <section class="about">
+  <section class="overview">
     <div class="section-heading">
-      <span class="section-label"> // ABOUT </span>
-
-      <h2>What is <span>get.sh</span>?</h2>
+      <span class="section-label">// overview</span>
+      <h2>What is this?</h2>
     </div>
 
-    <p>
-      get.sh is a practical webapp designed to help you move from initial reconnaissance to full
-      system compromise.
-    </p>
-
-    <p>
-      Instead of focusing on individual commands, the goal is to understand
-      <strong>what to enumerate, why to enumerate it and what to do next</strong>.
-    </p>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-card__value">06</span>
+        <small>execution phases</small>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__value">+30</span>
+        <small>checklists</small>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__value">AD</span>
+        <small>lateral movement</small>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__value">PT</span>
+        <small>post-exploitation</small>
+      </div>
+    </div>
   </section>
-
-  <!-- ===================================================== -->
-  <!-- SECTIONS -->
-  <!-- ===================================================== -->
 
   <section class="sections">
     <div class="section-heading">
-      <span class="section-label"> // KNOWLEDGE_BASE </span>
-
-      <h2>What's inside?</h2>
+      <span class="section-label">// knowledge base</span>
+      <h2>Build the path</h2>
     </div>
 
     <div class="section-grid">
-      <!-- SCANNING -->
-
-      <div class="info-card">
+      <article class="info-card">
         <div class="icon">&gt;_</div>
-
         <h3>Scanning</h3>
+        <p>Enumerate hosts, ports, services and weak exposure points before touching anything else.</p>
+      </article>
 
-        <p>
-          Discover hosts, identify open ports and enumerate exposed services using tools such as
-          Nmap, RustScan, Masscan and Nikto.
-        </p>
-      </div>
-
-      <!-- COMMON SERVICES -->
-
-      <div class="info-card">
+      <article class="info-card">
         <div class="icon">◉</div>
+        <h3>Common services</h3>
+        <p>Focus on SMB, SSH, HTTP, LDAP, DNS and other high-value services during assessments.</p>
+      </article>
 
-        <h3>Common Services</h3>
-
-        <p>
-          Practical enumeration for SSH, FTP, SMB, HTTP, DNS, SMTP, LDAP and other services commonly
-          found during penetration tests.
-        </p>
-      </div>
-
-      <!-- WEB -->
-
-      <div class="info-card">
+      <article class="info-card">
         <div class="icon">◈</div>
+        <h3>Web</h3>
+        <p>Map authentication flaws, directories, scripts and app logic that could become entry points.</p>
+      </article>
 
-        <h3>Web Security</h3>
-
-        <p>
-          Web enumeration, directory discovery, authentication, common vulnerabilities and
-          techniques for assessing web applications.
-        </p>
-      </div>
-
-      <!-- EXPLOITATION -->
-
-      <div class="info-card">
+      <article class="info-card">
         <div class="icon">⚔</div>
-
         <h3>Exploitation</h3>
+        <p>Turn findings into verified footholds with a clear understanding of the attack path.</p>
+      </article>
 
-        <p>
-          Turn enumeration into initial access by understanding vulnerabilities, attack surfaces and
-          exploitation techniques.
-        </p>
-      </div>
-
-      <!-- PRIVESC -->
-
-      <div class="info-card">
+      <article class="info-card">
         <div class="icon">↑</div>
+        <h3>Privilege escalation</h3>
+        <p>Find local/remote privilege escalation routes and chain them into complete compromise.</p>
+      </article>
 
-        <h3>Privilege Escalation</h3>
-
-        <p>
-          Linux and Windows privilege escalation techniques, misconfigurations, credentials,
-          services and common escalation paths.
-        </p>
-      </div>
-
-      <!-- ACTIVE DIRECTORY -->
-
-      <div class="info-card">
+      <article class="info-card">
         <div class="icon">◆</div>
-
-        <h3>Active Directory</h3>
-
-        <p>
-          Domain enumeration, Kerberos, credential attacks, lateral movement, delegation and Active
-          Directory attack paths.
-        </p>
-      </div>
-
-      <!-- POST EXPLOITATION -->
-
-      <div class="info-card">
-        <div class="icon">⌁</div>
-
-        <h3>Post-Exploitation</h3>
-
-        <p>
-          Credential access, lateral movement, pivoting and post-compromise workflows after
-          obtaining an initial foothold.
-        </p>
-      </div>
-
-      <!-- METHODOLOGY -->
-
-      <div class="info-card">
-        <div class="icon">/</div>
-
-        <h3>Methodology</h3>
-
-        <p>
-          Practical decision-making workflows designed to answer the most important question during
-          an assessment: what should I do next?
-        </p>
-      </div>
+        <h3>Active directory</h3>
+        <p>Map users, groups, trusts, sessions and ACL abuse to reach domain-level impact.</p>
+      </article>
     </div>
   </section>
 
-  <!-- ===================================================== -->
-  <!-- METHODOLOGY / TERMINAL -->
-  <!-- ===================================================== -->
-
   <section class="philosophy">
+    <div class="section-heading">
+      <span class="section-label">// workflow</span>
+      <h2>Methodology</h2>
+    </div>
+
     <div class="terminal-box">
       <div class="terminal-header">
         <span></span>
@@ -171,50 +118,19 @@
       </div>
 
       <div class="terminal-content">
-        <p>
-          <span class="prompt">$</span>
-          ./get.sh
-        </p>
-
-        <p class="output">[+] Initializing pentest toolkit...</p>
-
-        <p>
-          <span class="prompt">$</span>
-          ./get.sh --methodology
-        </p>
-
-        <p class="output">
-          [01] Reconnaissance<br />
-          [02] Enumeration<br />
-          [03] Exploitation<br />
-          [04] Initial Access<br />
-          [05] Privilege Escalation<br />
-          [06] Lateral Movement<br />
-          [07] Post-Exploitation
-        </p>
-
-        <p>
-          <span class="prompt">$</span>
-          ./get.sh --objective
-        </p>
-
-        <p class="output success">
-          Get access.<br />
-          Get shell.<br />
-          Get root.
-        </p>
+        <p><span class="prompt">$</span> ./get.sh --methodology</p>
+        <p class="output">[01] Reconnaissance</p>
+        <p class="output">[02] Enumeration</p>
+        <p class="output">[03] Exploitation</p>
+        <p class="output">[04] Privilege Escalation</p>
+        <p class="output">[05] Lateral Movement</p>
+        <p class="output success">[06] Post-Exploitation</p>
       </div>
     </div>
   </section>
 
-  <!-- ===================================================== -->
-  <!-- FOOTER -->
-  <!-- ===================================================== -->
-
-  <footer>
-    <span> get.sh </span>
-
-      <span>enumerate // exploit // escalate</span>
-
+  <footer class="footer">
+    <span>get.sh</span>
+    <span>enumerate // exploit // escalate</span>
   </footer>
 </div>

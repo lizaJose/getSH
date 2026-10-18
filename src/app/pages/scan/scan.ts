@@ -1,17 +1,38 @@
-import { Component } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { ActivatedRoute, Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Terminal } from '../../shared/terminal/terminal';
+import { SectionIndexComponent, SectionIndexItem } from '../../shared/components/section-index/section-index';
 
 @Component({
   selector: 'app-scan',
   standalone: true,
-  imports: [CommonModule, MatExpansionModule, Terminal],
+  imports: [CommonModule, MatExpansionModule, Terminal, SectionIndexComponent],
   templateUrl: './scan.html',
   styleUrl: './scan.scss',
 })
-export class ScanComponent {
-  selected: string | null = null;
+export class ScanComponent implements OnInit {
+  selected: string | null = 'nmap';
+  readonly tools: SectionIndexItem[] = [
+    { id: 'nmap', label: 'Nmap' },
+    { id: 'rustscan', label: 'RustScan' },
+    { id: 'masscan', label: 'Masscan' },
+    { id: 'nikto', label: 'Nikto' }
+  ];
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
+
+  ngOnInit(): void {
+    this.route.queryParamMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(params => {
+        const tool = params.get('tool');
+        if (tool && this.tools.some(item => item.id === tool)) this.selected = tool;
+      });
+  }
 
   // =========================================================
   // NMAP CONTENT
@@ -217,10 +238,15 @@ nikto -h http://target_ip -o nikto.html -Format htm
 
   selectTech(tech: string) {
     this.selected = tech;
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tool: tech },
+      replaceUrl: true
+    });
   }
 
   back() {
-    this.selected = null;
+    this.selected = 'nmap';
   }
 
   // =========================================================
@@ -230,4 +256,27 @@ nikto -h http://target_ip -o nikto.html -Format htm
   copy(text: string) {
     navigator.clipboard.writeText(text);
   }
+  
+  rustscanQuick = `# Scan the first 1,000 TCP ports, then identify discovered services with Nmap
+rustscan -a target_ip -r 1-1000 --ulimit 5000 -- -Pn -sV -sC -oN rustscan-services.txt
+`;
+  
+  rustscanFull = `# Scan all TCP ports and pass discovered ports to Nmap for service enumeration
+rustscan -a target_ip -r 1-65535 --ulimit 5000 -- -Pn -sV -sC -oN rustscan-full-services.txt
+
+# RustScan only checks TCP; check common UDP ports separately when in scope
+sudo nmap -sU --top-ports 100 -Pn target_ip -oN rustscan-udp.txt
+`;
+  
+  masscanDiscovery = `# Masscan requires raw-packet privileges; keep the rate conservative in a lab
+sudo masscan target_ip -p1-65535 --rate 500 -oL masscan-open-ports.txt
+
+# Extract discovered TCP ports and identify services with Nmap
+ports=$(awk '$1 == "open" && $2 == "tcp" {print $3}' masscan-open-ports.txt | sort -nu | paste -sd,)
+if [ -n "$ports" ]; then
+  sudo nmap -sC -sV -Pn -p "$ports" target_ip -oN masscan-services.txt
+else
+  echo "No open TCP ports found"
+fi
+`;
 }

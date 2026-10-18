@@ -1,41 +1,64 @@
 <div class="overlay" (click)="close.emit()">
+  <section
+    class="search-box"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="quick-search-title"
+    (click)="$event.stopPropagation()"
+  >
+    <header class="search-header">
+      <div class="search-heading">
+        <span class="search-mark" aria-hidden="true">⌕</span>
+        <h2 id="quick-search-title">Quick Search</h2>
+      </div>
 
-  <div class="search-box" (click)="$event.stopPropagation()">
-
-    <!-- HEADER -->
-    <div class="search-header">
-
-      <input
-        type="text"
-        [(ngModel)]="query"
-        (input)="onSearch()"
-        placeholder="Search..."
-      />
-
-      <!-- BOTÓN CERRAR -->
-      <button class="close-btn" (click)="close.emit()">
-        ✕
+      <button class="close-btn" type="button" aria-label="Close search" (click)="close.emit()">
+        ×
       </button>
+    </header>
 
+    <input
+      #searchInput
+      type="search"
+      [(ngModel)]="query"
+      (input)="onSearch()"
+      (keydown)="handleKeyboard($event)"
+      placeholder="Search tools, sections, commands..."
+      aria-label="Search tools, sections and commands"
+      aria-controls="quick-search-results"
+      autofocus
+    />
+
+    <div class="modes" role="group" aria-label="Filter search results">
+      <button type="button" [class.active]="mode === 'all'" (click)="setMode('all')">All</button>
+      <button type="button" [class.active]="mode === 'sections'" (click)="setMode('sections')">Sections</button>
+      <button type="button" [class.active]="mode === 'commands'" (click)="setMode('commands')">Commands</button>
     </div>
 
-    <!-- RESULTS -->
-    <div class="results">
-
-      <div
+    <div id="quick-search-results" class="results" role="listbox" aria-label="Search results" *ngIf="query">
+      <button
         class="result"
-        *ngFor="let item of results"
+        type="button"
+        role="option"
+        *ngFor="let item of results; let index = index"
+        [class.active]="selectedIndex === index"
+        [attr.aria-selected]="selectedIndex === index"
+        (mouseenter)="selectedIndex = index"
         (click)="go(item)"
       >
-        {{ item.title }}
-      </div>
+        <span class="result-copy">
+          <strong>{{ item.title }}</strong>
+          <span *ngIf="item.summary">{{ item.summary }}</span>
+        </span>
+        <span class="result-meta">
+          <span class="result-type">{{ item.type }}</span>
+          <span *ngIf="item.section">{{ item.section }}</span>
+        </span>
+      </button>
 
-      <div *ngIf="query && results.length === 0" class="no-results">
-        No results found
+      <div *ngIf="results.length === 0" class="no-results">
+        No results for “{{ query }}”
       </div>
-
     </div>
-
-  </div>
-
+  </section>
 </div>

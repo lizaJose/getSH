@@ -1,25 +1,59 @@
-import { Component } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { ActivatedRoute, Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Terminal } from '../../shared/terminal/terminal';
+import { SectionIndexComponent, SectionIndexItem } from '../../shared/components/section-index/section-index';
 
 @Component({
   selector: 'app-common-services',
   standalone: true,
-  imports: [CommonModule, MatExpansionModule, Terminal],
+  imports: [CommonModule, MatExpansionModule, Terminal, SectionIndexComponent],
   templateUrl: './web.html',
   styleUrl: './web.scss',
 })
-export class Web {
+export class Web implements OnInit {
 
-  selectedWebSection: string | null = null;
+  selectedWebSection: string | null = 'recon';
+  readonly sections: SectionIndexItem[] = [
+    { id: 'recon', label: 'Recon' },
+    { id: 'technology', label: 'Technology' },
+    { id: 'directories', label: 'Directories' },
+    { id: 'authentication', label: 'Authentication' },
+    { id: 'sqli', label: 'SQL Injection' },
+    { id: 'xss', label: 'XSS' },
+    { id: 'file-upload', label: 'File Upload' },
+    { id: 'lfi', label: 'LFI / RFI' },
+    { id: 'fileInclusions', label: 'File Inclusions' },
+    { id: 'ssrf', label: 'SSRF' }
+  ];
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
+
+  ngOnInit(): void {
+    this.route.queryParamMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(params => {
+        const section = params.get('section');
+        if (section && this.sections.some(item => item.id === section)) {
+          this.selectedWebSection = section;
+        }
+      });
+  }
 
   selectWebSection(section: string): void {
     this.selectedWebSection = section;
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { section },
+      replaceUrl: true
+    });
   }
 
   clearWebSection(): void {
-    this.selectedWebSection = null;
+    this.selectedWebSection = 'recon';
   }
 
   // =========================================================

@@ -1,5 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TerminalContextService } from '../../core/services/terminal-context.service';
 
 @Component({
   selector: 'app-terminal',
@@ -9,18 +10,16 @@ import { CommonModule } from '@angular/common';
   styleUrl: './terminal.scss'
 })
 export class Terminal {
+  private readonly context = inject(TerminalContextService);
 
   @Input() command: string = '';
 
   copied = false;
 
-
-  // =========================================================
-  // COMMAND FORMATTING
-  // =========================================================
-
   get formattedCommand(): string[] {
-    return this.command
+    const renderedCommand = this.context.replacePlaceholders(this.command);
+
+    return renderedCommand
       .trim()
       .split('\n')
       .map(line => line.replace(/\r$/, ''));
@@ -30,29 +29,18 @@ export class Terminal {
     return line.trimStart().startsWith('#');
   }
 
-
-  // =========================================================
-  // COPY
-  // =========================================================
-
   async copyCommand(): Promise<void> {
-
     try {
-
-      await navigator.clipboard.writeText(this.command);
+      const renderedCommand = this.context.replacePlaceholders(this.command);
+      await navigator.clipboard.writeText(renderedCommand);
 
       this.copied = true;
 
       setTimeout(() => {
         this.copied = false;
       }, 1800);
-
     } catch (error) {
-
       console.error('Failed to copy command:', error);
-
     }
-
   }
-
 }

@@ -17,174 +17,20 @@
   <!-- WEB SECTIONS -->
   <!-- ========================================================= -->
 
-  <div *ngIf="!selectedWebSection">
-    <!-- ======================================================= -->
-    <!-- RECONNAISSANCE -->
-    <!-- ======================================================= -->
-
-    <section class="web-section">
-      <div class="section-header">
-        <span class="section-line"></span>
-        <h2>RECONNAISSANCE</h2>
-        <span class="section-line"></span>
-      </div>
-
-      <div class="grid">
-        <div class="card" (click)="selectWebSection('recon')">
-          <div class="card-icon">&gt;_</div>
-
-          <div class="card-content">
-            <h2>Recon</h2>
-            <p>Initial web reconnaissance and attack surface discovery.</p>
-          </div>
-        </div>
-
-        <div class="card" (click)="selectWebSection('technology')">
-          <div class="card-icon">◆</div>
-
-          <div class="card-content">
-            <h2>Technology</h2>
-            <p>Identify servers, frameworks, CMS and technologies.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ======================================================= -->
-    <!-- DISCOVERY -->
-    <!-- ======================================================= -->
-
-    <section class="web-section">
-      <div class="section-header">
-        <span class="section-line"></span>
-        <h2>DISCOVERY</h2>
-        <span class="section-line"></span>
-      </div>
-
-      <div class="grid">
-        <div class="card" (click)="selectWebSection('directories')">
-          <div class="card-icon">▣</div>
-
-          <div class="card-content">
-            <h2>Directories</h2>
-            <p>Discover directories, files and hidden resources.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ======================================================= -->
-    <!-- AUTHENTICATION & ACCESS -->
-    <!-- ======================================================= -->
-
-    <section class="web-section">
-      <div class="section-header">
-        <span class="section-line"></span>
-        <h2>AUTHENTICATION &amp; ACCESS</h2>
-        <span class="section-line"></span>
-      </div>
-
-      <div class="grid">
-        <div class="card" (click)="selectWebSection('authentication')">
-          <div class="card-icon">@</div>
-
-          <div class="card-content">
-            <h2>Authentication</h2>
-            <p>Login mechanisms, sessions and access control.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ======================================================= -->
-    <!-- INPUT & INJECTION -->
-    <!-- ======================================================= -->
-
-    <section class="web-section">
-      <div class="section-header">
-        <span class="section-line"></span>
-        <h2>INPUT &amp; INJECTION</h2>
-        <span class="section-line"></span>
-      </div>
-
-      <div class="grid">
-        <div class="card" (click)="selectWebSection('sqli')">
-          <div class="card-icon">!</div>
-
-          <div class="card-content">
-            <h2>SQL Injection</h2>
-            <p>SQL injection techniques, enumeration and exploitation.</p>
-          </div>
-        </div>
-
-        <div class="card" (click)="selectWebSection('xss')">
-          <div class="card-icon">&lt;/&gt;</div>
-
-          <div class="card-content">
-            <h2>XSS</h2>
-            <p>Reflected, stored and DOM-based XSS.</p>
-          </div>
-        </div>
-
-        <div class="card" (click)="selectWebSection('file-upload')">
-          <div class="card-icon">↑</div>
-
-          <div class="card-content">
-            <h2>File Upload</h2>
-            <p>Upload validation and processing weaknesses.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ======================================================= -->
-    <!-- SERVER-SIDE -->
-    <!-- ======================================================= -->
-
-    <section class="web-section">
-      <div class="section-header">
-        <span class="section-line"></span>
-        <h2>SERVER-SIDE</h2>
-        <span class="section-line"></span>
-      </div>
-
-      <div class="grid">
-        <div class="card" (click)="selectWebSection('lfi')">
-          <div class="card-icon">⌁</div>
-
-          <div class="card-content">
-            <h2>LFI / RFI</h2>
-            <p>Local and remote file inclusion.</p>
-          </div>
-        </div>
-
-        <div class="card" (click)="selectWebSection('fileInclusions')">
-          <div class="card-icon">⌁</div>
-
-          <div class="card-content">
-            <h2>File Inclusions</h2>
-            <p>LFI, RFI, PHP wrappers and log poisoning.</p>
-          </div>
-        </div>
-
-        <div class="card" (click)="selectWebSection('ssrf')">
-          <div class="card-icon">↗</div>
-
-          <div class="card-content">
-            <h2>SSRF</h2>
-            <p>Internal resources and server-side requests.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-  </div>
+  <div class="section-workspace">
+    <app-section-index
+      class="section-workspace__index"
+      [items]="sections"
+      [activeId]="selectedWebSection ?? ''"
+      (sectionChange)="selectWebSection($event)"
+    ></app-section-index>
+    <div class="section-workspace__content">
 
   <!-- ========================================================= -->
   <!-- DETAIL VIEW -->
   <!-- ========================================================= -->
 
-  <div class="detail" *ngIf="selectedWebSection">
-    <button class="back" (click)="clearWebSection()">← Back to Web</button>
+  <div class="detail">
 
     <!-- ======================================================= -->
     <!-- RECON -->
@@ -573,5 +419,6 @@
         <app-terminal [command]="ssrf"></app-terminal>
       </mat-expansion-panel>
     </ng-container>
+    </div>
   </div>
 </div>

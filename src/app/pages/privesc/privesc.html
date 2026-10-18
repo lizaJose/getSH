@@ -7,47 +7,19 @@
 
   <br />
 
-  <ng-container *ngIf="!selected">
-    <h1 class="title">Privilege Escalation</h1>
+  <h1 class="title">Privilege Escalation</h1>
+  <p class="page-description">
+    Linux and Windows privilege escalation enumeration, misconfigurations and common vectors.
+  </p>
 
-    <p class="page-description">
-      Linux privilege escalation enumeration, misconfigurations and common escalation vectors.
-    </p>
-
-    <div class="grid">
-      <!-- LINUX -->
-
-      <div class="card" (click)="selectTech('linux')">
-        <div class="card-icon">
-          <span>🐧</span>
-        </div>
-
-        <div class="card-content">
-          <h2>Linux PrivEsc</h2>
-
-          <p>
-            Enumeration, misconfigurations, credentials and privilege escalation techniques.
-          </p>
-        </div>
-      </div>
-
-      <!-- WINDOWS -->
-
-      <div class="card" (click)="selectTech('windows')">
-        <div class="card-icon">
-          <span>⊞</span>
-        </div>
-
-        <div class="card-content">
-          <h2>Windows PrivEsc</h2>
-
-          <p>
-            Windows privilege escalation techniques and common misconfigurations.
-          </p>
-        </div>
-      </div>
-    </div>
-  </ng-container>
+  <div class="section-workspace">
+    <app-section-index
+      class="section-workspace__index"
+      [items]="systems"
+      [activeId]="selected ?? ''"
+      (sectionChange)="selectTech($event)"
+    ></app-section-index>
+    <div class="section-workspace__content">
 
   <!-- ===================================================== -->
   <!-- LINUX PRIVESC -->
@@ -55,8 +27,6 @@
 
   <ng-container *ngIf="selected === 'linux'">
     <div class="detail">
-      <button class="back" (click)="back()">← Back to PrivEsc</button>
-
       <h2>Linux Privilege Escalation</h2>
 
       <p class="section-description">
@@ -714,8 +684,6 @@
 
   <ng-container *ngIf="selected === 'windows'">
   <div class="detail">
-    <button class="back" (click)="back()">← Back to PrivEsc</button>
-
     <h2>Windows Privilege Escalation</h2>
 
     <p class="section-description">
@@ -1208,4 +1176,6 @@
     </mat-accordion>
   </div>
 </ng-container>
+    </div>
+  </div>
 </div>

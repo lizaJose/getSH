@@ -22,10 +22,39 @@ html {
 /* Base app styling */
 body {
   margin: 0;
-  height: 100%;
+  min-height: 100%;
   color-scheme: dark;
+  background: #080e12;
+  color: #e5edf0;
+}
 
-  /* IMPORTANT:
-     No forces colors hardcoded.
-     Let Material + Tailwind handle it. */
+app-root .content .page-description,
+app-root .content .section-description,
+app-root .content .terminal-path,
+app-root .content .card p,
+app-root .content .section-header h2 {
+  color: #b4c0c6 !important;
+}
+
+app-root .content .card {
+  border-radius: 8px !important;
+  transition: border-color 0.18s ease, background 0.18s ease !important;
+}
+
+app-root .content .card:hover {
+  transform: none !important;
+  border-color: #477b7d !important;
+  background: #172326 !important;
+  box-shadow: none !important;
+}
+
+app-root .content mat-expansion-panel {
+  background: #111b1f !important;
+  border-color: #2b3c41 !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+
+app-root .content mat-expansion-panel-header:hover {
+  background: #1a282c !important;
 }

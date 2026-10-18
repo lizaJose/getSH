@@ -4,70 +4,17 @@
   <!-- ===================================================== -->
   <div class="terminal-path"><span class="prompt">~</span>/get.sh/scan</div>
   <br />
-  <ng-container *ngIf="!selected">
-    <h1 class="title">Scan</h1>
+  <h1 class="title">Scan</h1>
+  <p class="page-description">Network discovery, enumeration and scanning techniques.</p>
 
-    <p class="page-description">Network discovery, enumeration and scanning techniques.</p>
-    <p class="page-description">Network discovery, enumeration and scanning techniques.</p>
-
-    <div class="grid">
-      <!-- NMAP -->
-
-      <div class="card" (click)="selectTech('nmap')">
-        <div class="card-icon">
-          <span>&gt;_</span>
-        </div>
-
-        <div class="card-content">
-          <h2>Nmap</h2>
-
-          <p>Network discovery, port scanning and service enumeration.</p>
-        </div>
-      </div>
-
-      <!-- RUSTSCAN -->
-
-      <div class="card" (click)="selectTech('rustscan')">
-        <div class="card-icon">
-          <span>⚡</span>
-        </div>
-
-        <div class="card-content">
-          <h2>Rustscan</h2>
-
-          <p>Fast port discovery and initial enumeration.</p>
-        </div>
-      </div>
-
-      <!-- MASSCAN -->
-
-      <div class="card" (click)="selectTech('masscan')">
-        <div class="card-icon">
-          <span>◉</span>
-        </div>
-
-        <div class="card-content">
-          <h2>Masscan</h2>
-
-          <p>High-speed network and port scanning.</p>
-        </div>
-      </div>
-
-      <!-- NIKTO -->
-
-      <div class="card" (click)="selectTech('nikto')">
-        <div class="card-icon">
-          <span>⌕</span>
-        </div>
-
-        <div class="card-content">
-          <h2>Nikto</h2>
-
-          <p>Web server scanning and vulnerability discovery.</p>
-        </div>
-      </div>
-    </div>
-  </ng-container>
+  <div class="section-workspace">
+    <app-section-index
+      class="section-workspace__index"
+      [items]="tools"
+      [activeId]="selected ?? ''"
+      (sectionChange)="selectTech($event)"
+    ></app-section-index>
+    <div class="section-workspace__content">
 
   <!-- ===================================================== -->
   <!-- NMAP DETAIL -->
@@ -75,8 +22,6 @@
 
   <ng-container *ngIf="selected === 'nmap'">
     <div class="detail">
-      <button class="back" (click)="back()">← Back to Scan</button>
-
       <h2>Nmap</h2>
 
       <p class="section-description">Network discovery, port scanning and service enumeration.</p>
@@ -390,12 +335,68 @@
   </ng-container>
 
   <!-- ===================================================== -->
+  <!-- RUSTSCAN DETAIL -->
+  <!-- ===================================================== -->
+  <ng-container *ngIf="selected === 'rustscan'">
+    <div class="detail">
+      <h2>RustScan</h2>
+
+      <p class="section-description">
+        Fast TCP port discovery with Nmap service detection for the ports found.
+        RustScan does not replace UDP enumeration or careful service analysis.
+        Scan only systems included in your authorized scope.
+      </p>
+
+      <mat-accordion multi>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Quick TCP Scan</mat-panel-title>
+          </mat-expansion-panel-header>
+          <p>Check the first 1,000 TCP ports, then run Nmap scripts and version detection on open ports.</p>
+          <app-terminal [command]="rustscanQuick"></app-terminal>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Full TCP &amp; UDP Follow-up</mat-panel-title>
+          </mat-expansion-panel-header>
+          <p>Use the full TCP range when the quick scan is insufficient; UDP is a separate Nmap scan.</p>
+          <app-terminal [command]="rustscanFull"></app-terminal>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+  </ng-container>
+
+  <!-- ===================================================== -->
+  <!-- MASSCAN DETAIL -->
+  <!-- ===================================================== -->
+  <ng-container *ngIf="selected === 'masscan'">
+    <div class="detail">
+      <h2>Masscan</h2>
+
+      <p class="section-description">
+        High-speed TCP port discovery. Masscan does not identify services, so
+        follow its results with Nmap. Keep the rate low for a single lab host;
+        use subnet ranges only when explicitly authorized.
+      </p>
+
+      <mat-accordion multi>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Discover Ports &amp; Enumerate Services</mat-panel-title>
+          </mat-expansion-panel-header>
+          <p>Save open ports in list format, extract the TCP port numbers and pass them to Nmap.</p>
+          <app-terminal [command]="masscanDiscovery"></app-terminal>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+  </ng-container>
+
+  <!-- ===================================================== -->
   <!-- NIKTO DETAIL -->
   <!-- ===================================================== -->
   <ng-container *ngIf="selected === 'nikto'">
     <div class="detail">
-      <button class="back" (click)="back()">← Back to Scan</button>
-
       <h2>Nikto</h2>
 
       <p class="section-description">
@@ -619,4 +620,6 @@
       </mat-accordion>
     </div>
   </ng-container>
+    </div>
+  </div>
 </div>

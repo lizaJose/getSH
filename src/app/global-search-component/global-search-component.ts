@@ -1,9 +1,12 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { SearchService } from '../core/services/search.service';
+import type { SearchMode } from '../core/services/search.service';
+import type { SearchEntry } from '../core/moldels/search-index';
+import { TerminalContextService } from '../core/services/terminal-context.service';
 
 @Component({
   selector: 'app-global-search',
@@ -20,48 +23,35 @@ export class GlobalSearchComponent {
   @Output() close = new EventEmitter<void>();
 
   query = '';
-  mode: 'all' | 'sections' | 'commands' = 'all';
+  mode: SearchMode = 'all';
 
-  results: any[] = [];
+  results: SearchEntry[] = [];
   selectedIndex = 0;
 
-  constructor(
-    private searchService: SearchService,
-    private router: Router
-  ) {}
+  private readonly searchService = inject(SearchService);
+  private readonly context = inject(TerminalContextService);
+  private readonly router = inject(Router);
 
-  // 🔍 SEARCH PRINCIPAL
-  onSearch() {
-    console.log('SEARCH INPUT:', this.query);
-
+  onSearch(): void {
     this.results = this.searchService.search(this.query, this.mode);
-
-    console.log('RESULTS:', this.results);
-
     this.selectedIndex = 0;
   }
 
-  // 🔀 CAMBIO DE MODO
-  setMode(mode: 'all' | 'sections' | 'commands') {
+  setMode(mode: SearchMode): void {
     this.mode = mode;
     this.onSearch();
   }
 
-  // 🚀 EJECUTAR RESULTADO
-  go(item: any) {
-
-    // navegación a sección
+  async go(item: SearchEntry): Promise<void> {
     if (item.route) {
-      this.router.navigate([item.route]);
+      await this.router.navigate([item.route], { queryParams: item.queryParams });
     }
 
-    // comando
     if (item.command) {
-      console.log('COMMAND:', item.command);
-      navigator.clipboard.writeText(item.command);
+      const command = this.context.replacePlaceholders(item.command);
+      await navigator.clipboard.writeText(command);
     }
 
-    // reset
     this.query = '';
     this.results = [];
     this.selectedIndex = 0;
@@ -69,8 +59,13 @@ export class GlobalSearchComponent {
     this.close.emit();
   }
 
-  // ⌨️ navegación teclado
-  handleKeyboard(event: KeyboardEvent) {
+  handleKeyboard(event: KeyboardEvent): void {
+    switch (event.key) {
+      case 'Escape':
+        event.preventDefault();
+        this.close.emit();
+        return;
+    }
 
     if (!this.results.length) return;
 
@@ -94,11 +89,7 @@ export class GlobalSearchComponent {
 
       case 'Enter':
         event.preventDefault();
-        this.go(this.results[this.selectedIndex]);
-        break;
-
-      case 'Escape':
-        this.close.emit();
+        void this.go(this.results[this.selectedIndex]);
         break;
     }
   }

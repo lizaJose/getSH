@@ -1,36 +1,46 @@
 <nav class="sidebar">
-  <div class="sidebar-header">
-    <div class="terminal-dots">
+  <div class="sidebar__brand">
+    <div class="brand__dots" aria-hidden="true">
       <span></span>
       <span></span>
       <span></span>
     </div>
 
-    <h2>get.sh</h2>
+    <div class="brand__meta">
+      <span class="brand__label">OSCP</span>
+      <h2>get.sh</h2>
+    </div>
   </div>
 
-  <div class="sidebar-content">
-    <ul>
+  <div class="sidebar__section">
+    <span class="sidebar__label">Navigation</span>
+
+    <ul class="sidebar__nav">
       <li>
         <a routerLink="/home" routerLinkActive="active">Home</a>
       </li>
-
       <li>
         <a routerLink="/scan" routerLinkActive="active">Scan</a>
       </li>
-
       <li>
-        <a routerLink="/common-services" routerLinkActive="active"> Common services </a>
+        <a routerLink="/common-services" routerLinkActive="active">Common services</a>
       </li>
       <li>
-        <a routerLink="/web" routerLinkActive="active"> Web </a>
+        <a routerLink="/web" routerLinkActive="active">Web</a>
       </li>
       <li>
-        <a routerLink="/privesc" routerLinkActive="active"> Privesc </a>
+        <a routerLink="/privesc" routerLinkActive="active">Privesc</a>
       </li>
       <li>
-        <a routerLink="/ad" routerLinkActive="active"> Active directory </a>
+        <a routerLink="/ad" routerLinkActive="active">Active directory</a>
       </li>
     </ul>
+  </div>
+
+  <div class="sidebar__footer">
+    <div class="status-pill">
+      <span class="status-pill__dot"></span>
+      Ready
+    </div>
   </div>
 </nav>

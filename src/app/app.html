@@ -1,20 +1,72 @@
-<div class="layout">
-
+<div class="layout-shell">
   <app-sidebar></app-sidebar>
 
-  <div class="content">
-    <router-outlet></router-outlet>
+  <div class="main-panel">
+    <header class="topbar">
+      <div class="topbar__meta">
+        <span class="topbar__eyebrow">workspace</span>
+        <span class="topbar__path">/fullOSCP</span>
+      </div>
+
+      <div class="context-bar" aria-label="Command context">
+        <div class="context-field">
+          <div class="context-field__header">
+            <label class="context-field__name" for="victim-ip">Victim IP</label>
+            <label class="context-toggle" title="Apply victim IP to command placeholders">
+              <input type="checkbox" [(ngModel)]="context.useVictimIp" aria-label="Apply victim IP" />
+              <span>Apply</span>
+            </label>
+          </div>
+          <input id="victim-ip" type="text" [(ngModel)]="context.victimIp" placeholder="10.10.10.10" />
+        </div>
+
+        <div class="context-field">
+          <div class="context-field__header">
+            <label class="context-field__name" for="victim-port">Victim port</label>
+            <label class="context-toggle" title="Apply victim port to command placeholders">
+              <input type="checkbox" [(ngModel)]="context.useVictimPort" aria-label="Apply victim port" />
+              <span>Apply</span>
+            </label>
+          </div>
+          <input id="victim-port" type="text" [(ngModel)]="context.victimPort" placeholder="80" />
+        </div>
+
+        <div class="context-field">
+          <div class="context-field__header">
+            <label class="context-field__name" for="local-ip">Local IP</label>
+            <label class="context-toggle" title="Apply local IP to command placeholders">
+              <input type="checkbox" [(ngModel)]="context.useLocalIp" aria-label="Apply local IP" />
+              <span>Apply</span>
+            </label>
+          </div>
+          <input id="local-ip" type="text" [(ngModel)]="context.localIp" placeholder="10.0.2.15" />
+        </div>
+
+        <div class="context-field">
+          <div class="context-field__header">
+            <label class="context-field__name" for="local-port">Local port</label>
+            <label class="context-toggle" title="Apply local port to command placeholders">
+              <input type="checkbox" [(ngModel)]="context.useLocalPort" aria-label="Apply local port" />
+              <span>Apply</span>
+            </label>
+          </div>
+          <input id="local-port" type="text" [(ngModel)]="context.localPort" placeholder="4444" />
+        </div>
+      </div>
+
+      <button class="search-button" type="button" (click)="openSearch()">
+        <span class="search-button__icon">⌕</span>
+        Quick search
+      </button>
+    </header>
+
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
   </div>
 
-  <!-- BOTÓN (mejor fuera del layout visual principal) -->
-  <button class="search-button" (click)="openSearch()">
-    Open Search
-  </button>
-
-  <!-- SEARCH CONTROLADO -->
   <app-global-search
     *ngIf="isSearchOpen"
     (close)="closeSearch()"
   ></app-global-search>
-
 </div>

@@ -18,203 +18,21 @@
     </p>
   </div>
 
-  <!-- ======================================================= -->
-  <!-- MAIN MENU -->
-  <!-- Only visible when no service is selected -->
-  <!-- ======================================================= -->
-
-  <ng-container *ngIf="!selectedService">
-
-    <!-- ===================================================== -->
-    <!-- AD SET FLOW -->
-    <!-- ===================================================== -->
-
-    <div class="section-header">
-      <span class="section-line"></span>
-      <h2>AD Set Flow</h2>
-      <span class="section-line"></span>
-    </div>
-
-    <div class="grid">
-      <!--<div class="card" (click)="selectService('ad-flow')">
-        <div class="card-icon">FLOW</div>
-        <div class="card-content">
-          <h2>AD Set Flow</h2>
-          <p>
-            Follow a structured Active Directory workflow, from scanning
-            and enumeration to privilege escalation and pivoting.
-          </p>
-        </div>
-      </div>-->
-      
-<div class="card" (click)="selectService('full-ad-compromise-linux')">
-    <div class="card-icon">AD</div>
-        <div class="card-content">
-          <h2>Full Single Target AD Compromise from Linux</h2>
-          <p> Single Target!
-             Active Directory attack workflow from Kali Linux:
-    enumeration, credential attacks, lateral movement
-    and domain compromise.
-          </p>
-        </div>
-  <h3></h3>
-  <p>
-   
-  </p>
-</div>
-
-    </div>
-
-    <!-- ===================================================== -->
-    <!-- ENUMERATION -->
-    <!-- ===================================================== -->
-
-    <div class="section-header">
-      <span class="section-line"></span>
-      <h2>Enumeration</h2>
-      <span class="section-line"></span>
-    </div>
-
-    <div class="grid">
-
-      <div class="card" (click)="selectService('windows')">
-        <div class="card-icon">WIN</div>
-        <div class="card-content">
-          <h2>Windows Commands</h2>
-          <p>
-            Enumerate domain users and groups using native Windows commands.
-          </p>
-        </div>
-      </div>
-
-      <div class="card" (click)="selectService('powerview')">
-        <div class="card-icon">PV</div>
-        <div class="card-content">
-          <h2>PowerView</h2>
-          <p>
-            Enumerate domain objects, users, groups and relationships.
-          </p>
-        </div>
-      </div>
-
-      <div class="card" (click)="selectService('manual')">
-        <div class="card-icon">MAN</div>
-        <div class="card-content">
-          <h2>Manual Enumeration</h2>
-          <p>
-            Discover computers, operating systems, sessions and local admin access.
-          </p>
-        </div>
-      </div>
-
-      <div class="card" (click)="selectService('spn')">
-        <div class="card-icon">SPN</div>
-        <div class="card-content">
-          <h2>SPN Enumeration</h2>
-          <p>
-            Identify service principal names and service accounts.
-          </p>
-        </div>
-      </div>
-
-      <div class="card" (click)="selectService('acl')">
-        <div class="card-icon">ACL</div>
-        <div class="card-content">
-          <h2>Object Permissions</h2>
-          <p>
-            Inspect Active Directory ACLs and delegated permissions.
-          </p>
-        </div>
-      </div>
-
-      <div class="card" (click)="selectService('shares')">
-        <div class="card-icon">SMB</div>
-        <div class="card-content">
-          <h2>Domain Shares</h2>
-          <p>
-            Discover accessible shares, SYSVOL and exposed configuration data.
-          </p>
-        </div>
-      </div>
-
-      <div class="card" (click)="selectService('bloodhound')">
-        <div class="card-icon">BH</div>
-        <div class="card-content">
-          <h2>BloodHound</h2>
-          <p>
-            Visualize domain relationships, privileges and potential attack paths.
-          </p>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- ===================================================== -->
-    <!-- ATTACKING -->
-    <!-- ===================================================== -->
-
-    <div class="section-header">
-      <span class="section-line"></span>
-      <h2>Attacking</h2>
-      <span class="section-line"></span>
-    </div>
-
-    <div class="grid">
-
-      <div class="card" (click)="selectService('credentials')">
-        <div class="card-icon">CR</div>
-        <div class="card-content">
-          <h2>Credential Access</h2>
-          <p>
-            Assess LSASS, cached credentials, SAM, DPAPI and stored secrets.
-          </p>
-        </div>
-      </div>
-
-      <div class="card" (click)="selectService('kerberos')">
-        <div class="card-icon">KR</div>
-        <div class="card-content">
-          <h2>Kerberos Attacks</h2>
-          <p>
-            Study AS-REP Roasting, Kerberoasting and ticket-based attacks.
-          </p>
-        </div>
-      </div>
-
-      <div class="card" (click)="selectService('passwords')">
-        <div class="card-icon">PW</div>
-        <div class="card-content">
-          <h2>Password Attacks</h2>
-          <p>
-            Assess authentication weaknesses and password security.
-          </p>
-        </div>
-      </div>
-
-      <div class="card" (click)="selectService('compromise')">
-        <div class="card-icon">DA</div>
-        <div class="card-content">
-          <h2>Domain Compromise</h2>
-          <p>
-            Understand DCSync, replication privileges and domain-level impact.
-          </p>
-        </div>
-      </div>
-
-    </div>
-
-  </ng-container>
+  <div class="section-workspace">
+    <app-section-index
+      class="section-workspace__index"
+      [items]="sections"
+      [activeId]="selectedService ?? ''"
+      (sectionChange)="selectService($event)"
+    ></app-section-index>
+    <div class="section-workspace__content">
 
   <!-- ======================================================= -->
   <!-- DETAIL VIEW -->
   <!-- Only visible when a service is selected -->
   <!-- ======================================================= -->
 
-  <div class="detail" *ngIf="selectedService">
-
-    <button class="back" (click)="clearService()">
-      ← Back to Active Directory
-    </button>
+  <div class="detail">
 
     <!-- ===================================================== -->
     <!-- WINDOWS COMMANDS -->
@@ -842,6 +660,8 @@
 </ng-container>
 
 
+  </div>
+    </div>
   </div>
 
 </div>
