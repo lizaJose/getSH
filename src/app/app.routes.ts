@@ -30,5 +30,10 @@ export const routes: Routes = [
     path: 'privesc',
     loadComponent: () =>
       import('./pages/privesc/privesc').then(m => m.Privesc)
+  },
+  {
+    path: 'ad',
+    loadComponent: () =>
+      import('./pages/active-directory/active-directory').then(m => m.ActiveDirectory)
   }
 ];

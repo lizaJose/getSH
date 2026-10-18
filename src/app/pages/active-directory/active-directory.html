@@ -1,0 +1,847 @@
+
+<div class="common-services-page active-directory-page">
+
+  <!-- ======================================================= -->
+  <!-- PAGE HEADER -->
+  <!-- ======================================================= -->
+
+  <div class="page-header">
+    <div class="terminal-path">
+      <span class="prompt">~/get.sh/</span>active-directory
+    </div>
+
+    <h1 class="title">Active Directory</h1>
+
+    <p class="page-description">
+      Domain enumeration, object permissions, sessions and relationship
+      analysis for Active Directory assessments.
+    </p>
+  </div>
+
+  <!-- ======================================================= -->
+  <!-- MAIN MENU -->
+  <!-- Only visible when no service is selected -->
+  <!-- ======================================================= -->
+
+  <ng-container *ngIf="!selectedService">
+
+    <!-- ===================================================== -->
+    <!-- AD SET FLOW -->
+    <!-- ===================================================== -->
+
+    <div class="section-header">
+      <span class="section-line"></span>
+      <h2>AD Set Flow</h2>
+      <span class="section-line"></span>
+    </div>
+
+    <div class="grid">
+      <!--<div class="card" (click)="selectService('ad-flow')">
+        <div class="card-icon">FLOW</div>
+        <div class="card-content">
+          <h2>AD Set Flow</h2>
+          <p>
+            Follow a structured Active Directory workflow, from scanning
+            and enumeration to privilege escalation and pivoting.
+          </p>
+        </div>
+      </div>-->
+      
+<div class="card" (click)="selectService('full-ad-compromise-linux')">
+    <div class="card-icon">AD</div>
+        <div class="card-content">
+          <h2>Full Single Target AD Compromise from Linux</h2>
+          <p> Single Target!
+             Active Directory attack workflow from Kali Linux:
+    enumeration, credential attacks, lateral movement
+    and domain compromise.
+          </p>
+        </div>
+  <h3></h3>
+  <p>
+   
+  </p>
+</div>
+
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- ENUMERATION -->
+    <!-- ===================================================== -->
+
+    <div class="section-header">
+      <span class="section-line"></span>
+      <h2>Enumeration</h2>
+      <span class="section-line"></span>
+    </div>
+
+    <div class="grid">
+
+      <div class="card" (click)="selectService('windows')">
+        <div class="card-icon">WIN</div>
+        <div class="card-content">
+          <h2>Windows Commands</h2>
+          <p>
+            Enumerate domain users and groups using native Windows commands.
+          </p>
+        </div>
+      </div>
+
+      <div class="card" (click)="selectService('powerview')">
+        <div class="card-icon">PV</div>
+        <div class="card-content">
+          <h2>PowerView</h2>
+          <p>
+            Enumerate domain objects, users, groups and relationships.
+          </p>
+        </div>
+      </div>
+
+      <div class="card" (click)="selectService('manual')">
+        <div class="card-icon">MAN</div>
+        <div class="card-content">
+          <h2>Manual Enumeration</h2>
+          <p>
+            Discover computers, operating systems, sessions and local admin access.
+          </p>
+        </div>
+      </div>
+
+      <div class="card" (click)="selectService('spn')">
+        <div class="card-icon">SPN</div>
+        <div class="card-content">
+          <h2>SPN Enumeration</h2>
+          <p>
+            Identify service principal names and service accounts.
+          </p>
+        </div>
+      </div>
+
+      <div class="card" (click)="selectService('acl')">
+        <div class="card-icon">ACL</div>
+        <div class="card-content">
+          <h2>Object Permissions</h2>
+          <p>
+            Inspect Active Directory ACLs and delegated permissions.
+          </p>
+        </div>
+      </div>
+
+      <div class="card" (click)="selectService('shares')">
+        <div class="card-icon">SMB</div>
+        <div class="card-content">
+          <h2>Domain Shares</h2>
+          <p>
+            Discover accessible shares, SYSVOL and exposed configuration data.
+          </p>
+        </div>
+      </div>
+
+      <div class="card" (click)="selectService('bloodhound')">
+        <div class="card-icon">BH</div>
+        <div class="card-content">
+          <h2>BloodHound</h2>
+          <p>
+            Visualize domain relationships, privileges and potential attack paths.
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- ATTACKING -->
+    <!-- ===================================================== -->
+
+    <div class="section-header">
+      <span class="section-line"></span>
+      <h2>Attacking</h2>
+      <span class="section-line"></span>
+    </div>
+
+    <div class="grid">
+
+      <div class="card" (click)="selectService('credentials')">
+        <div class="card-icon">CR</div>
+        <div class="card-content">
+          <h2>Credential Access</h2>
+          <p>
+            Assess LSASS, cached credentials, SAM, DPAPI and stored secrets.
+          </p>
+        </div>
+      </div>
+
+      <div class="card" (click)="selectService('kerberos')">
+        <div class="card-icon">KR</div>
+        <div class="card-content">
+          <h2>Kerberos Attacks</h2>
+          <p>
+            Study AS-REP Roasting, Kerberoasting and ticket-based attacks.
+          </p>
+        </div>
+      </div>
+
+      <div class="card" (click)="selectService('passwords')">
+        <div class="card-icon">PW</div>
+        <div class="card-content">
+          <h2>Password Attacks</h2>
+          <p>
+            Assess authentication weaknesses and password security.
+          </p>
+        </div>
+      </div>
+
+      <div class="card" (click)="selectService('compromise')">
+        <div class="card-icon">DA</div>
+        <div class="card-content">
+          <h2>Domain Compromise</h2>
+          <p>
+            Understand DCSync, replication privileges and domain-level impact.
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+  </ng-container>
+
+  <!-- ======================================================= -->
+  <!-- DETAIL VIEW -->
+  <!-- Only visible when a service is selected -->
+  <!-- ======================================================= -->
+
+  <div class="detail" *ngIf="selectedService">
+
+    <button class="back" (click)="clearService()">
+      ← Back to Active Directory
+    </button>
+
+    <!-- ===================================================== -->
+    <!-- WINDOWS COMMANDS -->
+    <!-- ===================================================== -->
+
+    <ng-container *ngIf="selectedService === 'windows'">
+      <h2>Windows Commands</h2>
+
+      <p class="section-description">
+        Use built-in Windows commands to enumerate domain users and groups.
+        These commands are a useful starting point when working from a
+        domain-joined Windows machine.
+      </p>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Domain Users</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="windowsUsers"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Domain Groups</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="windowsGroups"></app-terminal>
+      </mat-expansion-panel>
+    </ng-container>
+
+    <!-- ===================================================== -->
+    <!-- POWERVIEW -->
+    <!-- ===================================================== -->
+
+    <ng-container *ngIf="selectedService === 'powerview'">
+      <h2>PowerView</h2>
+
+      <p class="section-description">
+        PowerView provides PowerShell functions for querying Active Directory.
+        Use it to map the domain, enumerate accounts and inspect group memberships.
+      </p>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Import &amp; Domain Information</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="powerViewImport"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>User Enumeration</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="powerViewUsers"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Group Enumeration</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="powerViewGroups"></app-terminal>
+      </mat-expansion-panel>
+    </ng-container>
+
+    <!-- ===================================================== -->
+    <!-- MANUAL ENUMERATION -->
+    <!-- ===================================================== -->
+
+    <ng-container *ngIf="selectedService === 'manual'">
+      <h2>Manual Enumeration</h2>
+
+      <p class="section-description">
+        Map domain computers, identify operating systems, discover where the
+        current account has local administrator access and inspect active sessions.
+      </p>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Computers &amp; Operating Systems</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="manualComputers"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Local Administrator Access</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="manualLocalAdmin"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Sessions &amp; Logged-on Users</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="manualSessions"></app-terminal>
+      </mat-expansion-panel>
+    </ng-container>
+
+    <!-- ===================================================== -->
+    <!-- SPN ENUMERATION -->
+    <!-- ===================================================== -->
+
+    <ng-container *ngIf="selectedService === 'spn'">
+      <h2>SPN Enumeration</h2>
+
+      <p class="section-description">
+        Service Principal Names identify services associated with domain accounts.
+        Enumerating them can help identify accounts that warrant further assessment,
+        including potential Kerberoasting exposure.
+      </p>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Enumerate SPNs with setspn</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="spnSetspn"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Enumerate SPNs with PowerView</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="spnPowerView"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>DNS Lookup</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="spnDns"></app-terminal>
+      </mat-expansion-panel>
+    </ng-container>
+
+    <!-- ===================================================== -->
+    <!-- OBJECT PERMISSIONS / ACLs -->
+    <!-- ===================================================== -->
+
+    <ng-container *ngIf="selectedService === 'acl'">
+      <h2>Object Permissions</h2>
+
+      <p class="section-description">
+        Active Directory ACLs control which security principals can read or modify
+        objects. Review delegated rights carefully to identify potentially
+        significant permissions.
+      </p>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Common Permission Types</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="aclRights"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Enumerate Object ACLs</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="aclEnumeration"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Find GenericAll Permissions</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="aclGenericAll"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Group Membership Changes</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="aclGroupMembership"></app-terminal>
+      </mat-expansion-panel>
+    </ng-container>
+
+    <!-- ===================================================== -->
+    <!-- DOMAIN SHARES -->
+    <!-- ===================================================== -->
+
+    <ng-container *ngIf="selectedService === 'shares'">
+      <h2>Domain Shares</h2>
+
+      <p class="section-description">
+        Enumerate domain shares and review accessible files for configuration
+        data, scripts or other information relevant to the assessment.
+      </p>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Share Enumeration</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="sharesEnumeration"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Access SYSVOL</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="sharesAccess"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>GPP Passwords</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="sharesGpp"></app-terminal>
+      </mat-expansion-panel>
+    </ng-container>
+
+    <!-- ===================================================== -->
+    <!-- BLOODHOUND / SHARPHOUND -->
+    <!-- ===================================================== -->
+
+    <ng-container *ngIf="selectedService === 'bloodhound'">
+      <h2>BloodHound / SharpHound</h2>
+
+      <p class="section-description">
+        SharpHound collects Active Directory data. BloodHound visualizes the
+        relationships between users, groups, computers, permissions and sessions
+        to help identify potential attack paths.
+      </p>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Overview &amp; Useful Queries</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="bloodhoundOverview"></app-terminal>
+        <app-terminal [command]="bloodhoundQueries"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Download SharpHound</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="sharpHoundDownload"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>SharpHound Collection (Windows)</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="sharpHoundCollection"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>PowerShell Collection</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="sharpHoundPowerShell"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Start BloodHound (Kali)</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="bloodhoundKali"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Transfer Results from Evil-WinRM</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="bloodhoundTransfer"></app-terminal>
+      </mat-expansion-panel>
+
+      <p class="section-description">
+        After collecting the data, import the generated ZIP into BloodHound.
+        Authenticate to the configured database and use the available analysis
+        queries to explore the collected relationships.
+      </p>
+    </ng-container>
+
+    <!-- ===================================================== -->
+    <!-- CREDENTIAL ACCESS -->
+    <!-- ===================================================== -->
+
+    <ng-container *ngIf="selectedService === 'credentials'">
+      <h2>Credential Access</h2>
+
+      <p class="section-description">
+        Assess where Windows stores authentication material, identify
+        the privileges required to access it, and understand the impact
+        of exposed credentials in an authorized environment.
+      </p>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Security Context &amp; Logged-on Users</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="attackCredentialOverview"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>LSASS &amp; Logon Credentials</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="attackLsass"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Cached Domain Credentials</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="attackCachedCredentials"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Local SAM Database</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="attackSam"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>LSA Secrets</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="attackLsaSecrets"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Credential Manager &amp; Windows Vault</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="attackCredentialManager"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>DPAPI</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="attackDpapi"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Domain Controller Credential Exposure</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="attackNtds"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Credential Hunting Workflow</mat-panel-title>
+        </mat-expansion-panel-header>
+      </mat-expansion-panel>
+    </ng-container>
+
+    <!-- ===================================================== -->
+    <!-- KERBEROS ATTACKS -->
+    <!-- ===================================================== -->
+
+    <ng-container *ngIf="selectedService === 'kerberos'">
+      <h2>Kerberos Attacks</h2>
+
+      <p class="section-description">
+        Understand Kerberos authentication, identify accounts exposed
+        to ticket-based attacks, and assess the security of service
+        accounts and ticket handling.
+      </p>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>AS-REP Roasting</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="attackAsrep"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Kerberoasting</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="attackKerberoast"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Ticket Enumeration</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="attackTicketEnumeration"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Pass-the-Ticket</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="attackPassTheTicket"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Silver Tickets</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="attackSilverTicket"></app-terminal>
+      </mat-expansion-panel>
+    </ng-container>
+
+    <!-- ===================================================== -->
+    <!-- PASSWORD ATTACKS -->
+    <!-- ===================================================== -->
+
+    <ng-container *ngIf="selectedService === 'passwords'">
+      <h2>Password Attacks</h2>
+
+      <p class="section-description">
+        Assess password policy and authentication weaknesses while
+        respecting account lockout thresholds, test scope and approved
+        authentication-attempt limits.
+      </p>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Password &amp; Lockout Policy</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="attackPasswordPolicy"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>LDAP &amp; ADSI Authentication</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="attackCredentialValidation"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Password Spraying</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="attackPasswordSpray"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>SMB Authentication — Kali</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="attackSmbValidation"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Kerbrute — Authentication Testing</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="attackKerbrute"></app-terminal>
+      </mat-expansion-panel>
+    </ng-container>
+
+    <!-- ===================================================== -->
+    <!-- DOMAIN COMPROMISE -->
+    <!-- ===================================================== -->
+
+    <ng-container *ngIf="selectedService === 'compromise'">
+      <h2>Domain Compromise</h2>
+
+      <p class="section-description">
+        Evaluate high-impact Active Directory privileges, understand directory
+        replication abuse, and document the exposure and remediation of
+        privileged credentials.
+      </p>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>DCSync Prerequisites</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="attackDcsyncRequirements"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>DCSync Detection &amp; Remediation</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="attackDcsyncDetection"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Post-Compromise Checklist</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="attackPostCompromise"></app-terminal>
+      </mat-expansion-panel>
+    </ng-container>
+
+    <!-- ===================================================== -->
+    <!-- AD SET FLOW -->
+    <!-- ===================================================== -->
+
+    <ng-container *ngIf="selectedService === 'ad-flow'">
+      <h2>AD Set Flow</h2>
+
+      <p class="section-description">
+        Follow a structured Active Directory workflow, from port scanning and
+        initial access to privilege escalation, post-compromise enumeration and pivoting.
+      </p>
+
+      <!-- SCAN -->
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>01. Scan &amp; Service Enumeration</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="flowScan"></app-terminal>
+        <app-terminal [command]="flowServices"></app-terminal>
+      </mat-expansion-panel>
+
+      <!-- ACCESS -->
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>02. Access to the Server</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="flowWinRM"></app-terminal>
+        <app-terminal [command]="flowHostEnumeration"></app-terminal>
+      </mat-expansion-panel>
+
+      <!-- ENUMERATION -->
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>03. Domain &amp; Host Enumeration</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="manualComputers"></app-terminal>
+        <app-terminal [command]="manualLocalAdmin"></app-terminal>
+        <app-terminal [command]="manualSessions"></app-terminal>
+        <app-terminal [command]="spnSetspn"></app-terminal>
+        <app-terminal [command]="spnPowerView"></app-terminal>
+        <app-terminal [command]="spnDns"></app-terminal>
+        <app-terminal [command]="aclRights"></app-terminal>
+      </mat-expansion-panel>
+
+      <!-- PRIVILEGE ESCALATION -->
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>04. Privilege Escalation</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="flowPrivEscChecks"></app-terminal>
+        <app-terminal [command]="flowPrivEscReview"></app-terminal>
+      </mat-expansion-panel>
+
+      <!-- POST-COMPROMISE -->
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>05. Post-Compromise Workflow</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="flowPostCompromise"></app-terminal>
+        <app-terminal [command]="flowCredentialAudit"></app-terminal>
+        <app-terminal [command]="flowKerberosAudit"></app-terminal>
+        <app-terminal [command]="flowMssqlAudit"></app-terminal>
+      </mat-expansion-panel>
+
+      <!-- PIVOTING -->
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>06. Pivoting with Ligolo-ng</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="flowPivotEnumeration"></app-terminal>
+        <app-terminal [command]="flowLigolo"></app-terminal>
+      </mat-expansion-panel>
+
+      <!-- AFTER PIVOTING -->
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>07. Post-Pivoting Enumeration</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="flowPostPivot"></app-terminal>
+      </mat-expansion-panel>
+    </ng-container>
+
+
+    
+<ng-container *ngIf="selectedService === 'full-ad-compromise-linux'">
+  <h2>Full AD Compromise from Linux</h2>
+
+  <p>
+    Structured Active Directory assessment workflow using Kali Linux.
+    Perform these steps only in systems you are authorized to test.
+  </p>
+
+  <mat-accordion multi>
+
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Phase 0 – Initial Scan</mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-terminal [command]="linuxAdInitialScan"></app-terminal>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Phase 1 – Enumeration Without Credentials</mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-terminal [command]="linuxAdNoCredentials"></app-terminal>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Phase 2 – Enumeration With Credentials</mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-terminal [command]="linuxAdWithCredentials"></app-terminal>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Phase 3 – Lateral Movement</mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-terminal [command]="linuxAdLateralMovement"></app-terminal>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Phase 4 – Credential Dumping</mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-terminal [command]="linuxAdCredentialDumping"></app-terminal>
+    </mat-expansion-panel>
+
+  </mat-accordion>
+</ng-container>
+
+
+  </div>
+
+</div>

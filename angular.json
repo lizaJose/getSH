@@ -72,7 +72,11 @@
           "builder": "@angular/build:unit-test"
         },
         "deploy": {
-          "builder": "angular-cli-ghpages:deploy"
+          "builder": "angular-cli-ghpages:deploy",
+          "options": {
+            "baseHref": "/getSH/",
+            "dir": "dist/frontend/browser"
+          }
         }
       }
     }
