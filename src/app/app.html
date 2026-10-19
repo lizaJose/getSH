@@ -5,7 +5,7 @@
     <header class="topbar">
       <div class="topbar__meta">
         <span class="topbar__eyebrow">workspace</span>
-        <span class="topbar__path">/fullOSCP</span>
+        <span class="topbar__path">~/get.sh</span>
       </div>
 
       <div class="context-bar" aria-label="Command context">
@@ -57,6 +57,16 @@
       <button class="search-button" type="button" (click)="openSearch()">
         <span class="search-button__icon">⌕</span>
         Quick search
+      </button>
+
+      <button
+        class="theme-toggle"
+        type="button"
+        (click)="toggleTheme()"
+        [attr.title]="theme.mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'"
+      >
+        <span class="theme-toggle__icon">{{ theme.mode === 'dark' ? '☀' : '☾' }}</span>
+        {{ theme.mode === 'dark' ? 'Light' : 'Dark' }}
       </button>
     </header>
 

@@ -6,6 +6,7 @@ export interface SectionIndexItem {
   label: string;
   group?: string;
   disabled?: boolean;
+  important?: boolean;
 }
 
 @Component({
@@ -54,5 +55,9 @@ export class SectionIndexComponent implements OnChanges {
 
   countGroupItems(group: string): number {
     return this.items.filter(item => item.group === group).length;
+  }
+
+  groupHasImportant(group: string): boolean {
+    return this.items.some(item => item.group === group && item.important);
   }
 }

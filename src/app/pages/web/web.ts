@@ -22,11 +22,11 @@ export class Web implements OnInit {
     { id: 'directories', label: 'Directories' },
     { id: 'wordpress', label: 'WordPress' },
     { id: 'authentication', label: 'Authentication' },
-    { id: 'sqli', label: 'SQL Injection' },
-    { id: 'os-command', label: 'OS Command Injection' },
+    { id: 'sqli', label: 'SQL Injection', important: true },
+    { id: 'os-command', label: 'OS Command Injection', important: true },
     { id: 'xss', label: 'XSS' },
-    { id: 'file-upload', label: 'File Upload' },
-    { id: 'lfi', label: 'LFI / RFI' },
+    { id: 'file-upload', label: 'File Upload', important: true },
+    { id: 'lfi', label: 'LFI / RFI', important: true },
     { id: 'fileInclusions', label: 'File Inclusions' },
     { id: 'ssrf', label: 'SSRF' }
   ];

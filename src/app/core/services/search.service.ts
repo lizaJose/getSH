@@ -45,6 +45,7 @@ function scoreEntry(entry: SearchEntry, queryTerms: string[]): number {
     for (const word of words) {
       if (word === queryTerm) bestScore = Math.max(bestScore, 100);
       else if (word.startsWith(queryTerm)) bestScore = Math.max(bestScore, 85);
+      else if (queryTerm.length >= 3 && word.includes(queryTerm)) bestScore = Math.max(bestScore, 65);
       else if (queryTerm.length >= 3) {
         const distance = damerauLevenshtein(queryTerm, word);
         const allowedDistance = queryTerm.length >= 7 ? 2 : 1;

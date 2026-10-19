@@ -4,11 +4,13 @@
     <button
       *ngIf="item.group && (index === 0 || items[index - 1].group !== item.group)"
       class="section-index__group"
+      [class.section-index__group--important]="groupHasImportant(item.group)"
       type="button"
       [attr.aria-expanded]="!isGroupCollapsed(item.group)"
       (click)="toggleGroup(item.group)"
     >
       <span>{{ item.group }}</span>
+      <span class="section-index__important-badge" *ngIf="groupHasImportant(item.group)" title="Contains an important section">★ Important</span>
       <span class="section-index__count">{{ countGroupItems(item.group) }}</span>
       <span
         class="section-index__chevron"
@@ -22,12 +24,14 @@
       [class.active]="item.id === activeId"
       [class.disabled]="item.disabled"
       [class.section-index__item--nested]="!!item.group"
+      [class.section-index__item--important]="item.important"
       [disabled]="item.disabled"
       [attr.aria-current]="item.id === activeId ? 'page' : null"
       (click)="sectionChange.emit(item.id)"
     >
       <span class="section-index__marker" aria-hidden="true">›</span>
       {{ item.label }}
+      <span class="section-index__important-badge" *ngIf="item.important" title="Important section">★ Important</span>
     </button>
   </ng-container>
 </nav>

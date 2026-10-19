@@ -28,6 +28,32 @@ body {
   color: #e5edf0;
 }
 
+/*
+ * Light theme.
+ * The whole app is built dark-mode-first with hundreds of hardcoded dark
+ * colors spread across every page. Rather than retrofitting a token system
+ * everywhere, invert the rendered pixels (hue-rotated to keep correct color
+ * relationships) to derive a consistent, readable light palette "for free".
+ * The app has no raster images, so inverting produces no visual artifacts.
+ */
+html.theme-light {
+  color-scheme: light;
+}
+
+html.theme-light body {
+  /* Full invert would flip near-black backgrounds to near-white; dial the
+     brightness/contrast down a touch so the result reads as a muted grey
+     surface instead of stark white. */
+  filter: invert(1) hue-rotate(180deg) brightness(0.88) contrast(0.94);
+}
+
+/* Keep terminal/code blocks dark in light mode (same convention used by
+   most docs sites: code blocks stay dark regardless of the page theme). */
+html.theme-light app-terminal {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+
 app-root .content .page-description,
 app-root .content .section-description,
 app-root .content .terminal-path,

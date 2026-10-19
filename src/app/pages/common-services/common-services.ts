@@ -19,11 +19,11 @@ export class CommonServicesComponent implements OnInit {
   readonly services: SectionIndexItem[] = [
     { id: 'ssh', label: 'SSH' },
     { id: 'ftp', label: 'FTP' },
-    { id: 'smb', label: 'SMB' },
+    { id: 'smb', label: 'SMB', important: true },
     { id: 'http', label: 'HTTP / HTTPS' },
     { id: 'smtp', label: 'SMTP' },
     { id: 'snmp', label: 'SNMP' },
-    { id: 'ldap', label: 'LDAP' },
+    { id: 'ldap', label: 'LDAP', important: true },
     { id: 'rdp', label: 'RDP' },
     { id: 'databases', label: 'Databases' }
   ];

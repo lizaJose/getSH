@@ -40,5 +40,15 @@ export const routes: Routes = [
     path: 'useful-stuff',
     loadComponent: () =>
       import('./pages/useful-stuff/useful-stuff').then(m => m.UsefulStuffComponent)
+  },
+  {
+    path: 'password-cracking',
+    loadComponent: () =>
+      import('./pages/password-cracking/password-cracking').then(m => m.PasswordCrackingComponent)
+  },
+  {
+    path: 'tool-cheatsheet',
+    loadComponent: () =>
+      import('./pages/tool-cheatsheet/tool-cheatsheet').then(m => m.ToolCheatsheetComponent)
   }
 ];

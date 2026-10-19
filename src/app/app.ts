@@ -3,6 +3,7 @@ import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
 import { TerminalContextService } from './core/services/terminal-context.service';
+import { ThemeService } from './core/services/theme.service';
 import { SidebarComponent } from './shared/components/sidebar/sidebar';
 import { GlobalSearchComponent } from './global-search-component/global-search-component';
 
@@ -21,6 +22,7 @@ import { GlobalSearchComponent } from './global-search-component/global-search-c
 })
 export class App {
   readonly context = inject(TerminalContextService);
+  readonly theme = inject(ThemeService);
 
   isSearchOpen = false;
 
@@ -30,5 +32,9 @@ export class App {
 
   closeSearch() {
     this.isSearchOpen = false;
+  }
+
+  toggleTheme() {
+    this.theme.toggle();
   }
 }

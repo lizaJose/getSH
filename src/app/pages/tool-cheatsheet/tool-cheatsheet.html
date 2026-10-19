@@ -1,0 +1,44 @@
+<div class="tool-cheatsheet-page">
+  <header class="page-header">
+    <div class="terminal-path"><span class="prompt">~/get.sh/</span>tool-cheatsheet</div>
+    <h1 class="title">Tool Cheatsheet</h1>
+    <p class="page-description">Every tool used across this site, grouped by name, in one quick reference.</p>
+  </header>
+
+  <div class="section-workspace">
+    <app-section-index
+      class="section-workspace__index"
+      [items]="sections"
+      [activeId]="selectedSection"
+      (sectionChange)="selectSection($event)"
+    ></app-section-index>
+
+    <div class="section-workspace__content">
+  <section class="reference-section" aria-labelledby="tool-cheatsheet-section-title">
+    <div class="reference-section__heading">
+      <div>
+        <span class="section-kicker">REFERENCE</span>
+        <h2 id="tool-cheatsheet-section-title">{{ currentSection.title }}</h2>
+        <p>{{ currentSection.description }}</p>
+      </div>
+      <span class="reference-section__count">{{ currentSection.blocks.length }} BLOCKS</span>
+    </div>
+
+    <nav class="reference-links" *ngIf="currentSection.links?.length" aria-label="Related guides">
+      <a *ngFor="let link of currentSection.links" [routerLink]="link.route" [queryParams]="link.queryParams">
+        {{ link.label }} <span aria-hidden="true">›</span>
+      </a>
+    </nav>
+
+    <mat-accordion multi>
+      <mat-expansion-panel *ngFor="let block of currentSection.blocks">
+        <mat-expansion-panel-header>
+          <mat-panel-title>{{ block.context }}</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="block.command"></app-terminal>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </section>
+    </div>
+  </div>
+</div>

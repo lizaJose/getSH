@@ -192,6 +192,34 @@ body {
   color: var(--primary);
 }
 
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.76rem 1rem;
+  border: 1px solid #365157;
+  border-radius: 8px;
+  background: #121c20;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.theme-toggle:hover {
+  border-color: #67d5cb;
+  background: #182529;
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid #67d5cb;
+  outline-offset: 2px;
+}
+
+.theme-toggle__icon {
+  font-size: 1.1rem;
+  color: var(--primary);
+}
+
 .content {
   flex: 1;
   overflow-y: auto;
@@ -243,7 +271,8 @@ app-global-search {
     justify-content: flex-start;
   }
 
-  .search-button {
+  .search-button,
+  .theme-toggle {
     width: 100%;
     justify-content: center;
   }
@@ -291,7 +320,8 @@ app-global-search {
     width: calc(50% - 0.25rem);
   }
 
-  .search-button {
+  .search-button,
+  .theme-toggle {
     font-size: 0.85rem;
   }
 }

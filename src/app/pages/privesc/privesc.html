@@ -710,12 +710,33 @@
           <app-terminal [command]="kernelExploitTransfer"></app-terminal>
         </mat-expansion-panel>
 
-        <!-- 14. OSCP MENTAL FLOW -->
+        <!-- 14. AUTOMATED ENUMERATION -->
         <!-- ================================================= -->
 
         <mat-expansion-panel>
           <mat-expansion-panel-header>
-            <mat-panel-title>14. OSCP Mental Flow</mat-panel-title>
+            <mat-panel-title>14. Automated Enumeration</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <p>
+            Automated tools such as <strong>LinPEAS</strong> are useful for finding potential
+            misconfigurations quickly, but every finding should still be manually verified.
+          </p>
+
+          <app-terminal [command]="linuxAutomatedEnum"></app-terminal>
+
+          <p><strong>Always verify manually:</strong></p>
+
+          <app-terminal [command]="linuxManualVerify"></app-terminal>
+        </mat-expansion-panel>
+
+        <!-- ================================================= -->
+        <!-- 15. OSCP MENTAL FLOW -->
+        <!-- ================================================= -->
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>15. OSCP Mental Flow</mat-panel-title>
           </mat-expansion-panel-header>
 
           <p>

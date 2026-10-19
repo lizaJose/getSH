@@ -16,7 +16,7 @@ import { SectionIndexComponent, SectionIndexItem } from '../../shared/components
 export class ScanComponent implements OnInit {
   selected: string | null = 'nmap';
   readonly tools: SectionIndexItem[] = [
-    { id: 'nmap', label: 'Nmap' },
+    { id: 'nmap', label: 'Nmap', important: true },
     { id: 'rustscan', label: 'RustScan' },
     { id: 'masscan', label: 'Masscan' },
     { id: 'nikto', label: 'Nikto' }

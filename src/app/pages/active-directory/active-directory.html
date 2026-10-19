@@ -577,6 +577,47 @@
     </ng-container>
 
     <!-- ===================================================== -->
+    <!-- GPO ABUSE -->
+    <!-- ===================================================== -->
+
+    <ng-container *ngIf="selectedService === 'gpo-abuse'">
+      <h2>GPO Abuse</h2>
+      <p class="section-description">
+        If the current principal has edit rights (GenericWrite / WriteProperty / WriteDacl)
+        over a Group Policy Object, an immediate scheduled task or startup script can be
+        pushed to every computer or user in that GPO's scope &mdash; often resulting in
+        domain-wide or OU-wide local administrator access.
+      </p>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Enumerate Editable GPOs</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="gpoEnumeration"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Abuse with SharpGPOAbuse</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="gpoAbuseSharpGpo"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Alternative: PowerView Immediate Task</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="gpoImmediateTask"></app-terminal>
+        <p>
+          Policy changes only take effect on hosts within the GPO's linked OU scope and
+          after a refresh (forced with <code>gpupdate /force</code> or the default
+          ~90&ndash;120 minute client interval). Always confirm scope, security filtering
+          and WMI filters before relying on this technique against a specific host.
+        </p>
+      </mat-expansion-panel>
+    </ng-container>
+
+    <!-- ===================================================== -->
     <!-- DOMAIN COMPROMISE -->
     <!-- ===================================================== -->
 
@@ -792,10 +833,12 @@
     <ng-container *ngIf="selectedService === 'ad-example-three-host'">
       <h2>Example: Three-Host Domain Chain</h2>
       <p class="section-description">
-        Fictional authorized lab walkthrough: WEB01 is reached through a SQL injection,
-        credentials lead to APP02, and an account found on APP03 already has directory
-        replication rights. The PowerShell history helps discover credentials; it is not
-        itself a privilege-escalation technique.
+        Fictional authorized lab walkthrough (domain <code>CORP.LOCAL</code>): WEB01
+        (10.10.10.21, DMZ) is reached through a SQL injection, a PowerShell history leak
+        leads to APP02 (10.10.20.22, internal segment), a local escalation on APP02 exposes
+        a service account valid on APP03 (10.10.30.23) that already holds directory
+        replication rights. Two separate pivots are required, since neither APP02 nor APP03
+        is directly reachable from Kali.
       </p>
 
       <mat-accordion multi>
@@ -817,7 +860,10 @@
           <mat-expansion-panel-header>
             <mat-panel-title>02. WEB01: Establish Host Context</mat-panel-title>
           </mat-expansion-panel-header>
-          <p>Record identity, privileges, domain and network position.</p>
+          <p>
+            Record identity, privileges, domain and network position. In this lab, the
+            SQLi shell lands as the low-privileged <code>CORP\svc_web</code> service account.
+          </p>
           <app-terminal [command]="flowHostEnumeration"></app-terminal>
         </mat-expansion-panel>
 
@@ -826,10 +872,12 @@
             <mat-panel-title>03. WEB01: PowerShell History &amp; Local Escalation</mat-panel-title>
           </mat-expansion-panel-header>
           <p>
-            The history reveals an in-scope administrative credential. Validate the actual
-            local privilege path using the existing Windows PrivEsc material; finding a
-            password in history alone does not elevate the current token.
+            Review the PowerShell history before anything else; it is one of the fastest
+            ways to find leftover administrative activity. Finding a password in history
+            alone does not elevate the current token, so validate the actual local
+            privilege path with the existing Windows PrivEsc material.
           </p>
+          <app-terminal [command]="examplePowerShellHistory"></app-terminal>
           <app-terminal [command]="flowPrivEscChecks"></app-terminal>
           <a class="workflow-link" routerLink="/privesc" [queryParams]="{ system: 'windows' }">
             Open Windows PrivEsc, including PowerShell History and SeImpersonate checks
@@ -847,39 +895,52 @@
 
         <mat-expansion-panel>
           <mat-expansion-panel-header>
-            <mat-panel-title>05. APP02: Connect With the Recovered Credential</mat-panel-title>
+            <mat-panel-title>05. Pivot: WEB01 → APP02</mat-panel-title>
           </mat-expansion-panel-header>
           <p>
-            Set Victim IP to APP02 and use the lab credential recovered from WEB01.
-            The command below reuses the existing WinRM workflow.
+            APP02 sits on the internal 10.10.20.0/24 segment, which WEB01 can reach but Kali
+            cannot. This is the first of two pivots in this chain: tunnel through WEB01 before
+            touching APP02 at all.
           </p>
-          <app-terminal [command]="flowWinRM"></app-terminal>
+          <app-terminal [command]="exampleWebToAppPivot"></app-terminal>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>06. APP02: Connect With the Recovered Credential</mat-panel-title>
+          </mat-expansion-panel-header>
+          <p>
+            Through the WEB01 tunnel, authenticate to APP02 using the fictional
+            <code>svc_backup</code> credential recovered from the PowerShell history.
+          </p>
+          <app-terminal [command]="exampleApp02Login"></app-terminal>
           <app-terminal [command]="flowHostEnumeration"></app-terminal>
         </mat-expansion-panel>
 
         <mat-expansion-panel>
           <mat-expansion-panel-header>
-            <mat-panel-title>06. APP02: Local Escalation &amp; APP03 Credential</mat-panel-title>
+            <mat-panel-title>07. APP02: Local Escalation &amp; APP03 Credential</mat-panel-title>
           </mat-expansion-panel-header>
           <p>
-            In this scenario, an authorized local escalation path on APP02 exposes a
-            credential used for APP03. Confirm the host's actual privilege findings in the
-            existing Windows PrivEsc section rather than assuming PowerShell history elevates you.
+            In this scenario, an authorized local escalation path on APP02 (backup
+            privileges) exposes a credential later used for APP03. Confirm the host's
+            actual privilege findings in the existing Windows PrivEsc section rather than
+            assuming any single artifact elevates you.
           </p>
           <a class="workflow-link" routerLink="/privesc" [queryParams]="{ system: 'windows' }">
             Open Windows PrivEsc guidance
           </a>
-          <app-terminal [command]="postExploitCredentialRecovery"></app-terminal>
+          <app-terminal [command]="exampleApp02CredentialFinding"></app-terminal>
         </mat-expansion-panel>
 
         <mat-expansion-panel>
           <mat-expansion-panel-header>
-            <mat-panel-title>07. Pivot from APP02 to the Internal Subnet</mat-panel-title>
+            <mat-panel-title>08. Pivot: APP02 → APP03 (Internal Subnet)</mat-panel-title>
           </mat-expansion-panel-header>
           <p>
-            In this lab, APP02 has a route to APP03 and the domain controller that Kali cannot
-            reach directly. Start the Ligolo-ng proxy on Kali, connect the agent from APP02,
-            select the session and configure the authorized subnet route.
+            This is the second pivot of the chain. In this lab, APP02 has a route to APP03
+            and the domain controller that Kali still cannot reach directly. Start a fresh
+            Ligolo-ng session from APP02, select it and configure the authorized subnet route.
           </p>
           <app-terminal [command]="flowPivotEnumeration"></app-terminal>
           <app-terminal [command]="flowLigolo"></app-terminal>
@@ -889,27 +950,29 @@
 
         <mat-expansion-panel>
           <mat-expansion-panel-header>
-            <mat-panel-title>08. APP03: Connect Through the Tunnel</mat-panel-title>
+            <mat-panel-title>09. APP03: Connect Through the Tunnel</mat-panel-title>
           </mat-expansion-panel-header>
           <p>
-            After validating the APP03 lab credential, set Victim IP to APP03 and use the
-            existing WinRM workflow through the established tunnel.
+            After validating the fictional <code>svc_adcs</code> credential recovered on
+            APP02, connect to APP03 through the newly established tunnel.
           </p>
-          <app-terminal [command]="flowWinRM"></app-terminal>
+          <app-terminal [command]="exampleApp03Login"></app-terminal>
           <app-terminal [command]="flowHostEnumeration"></app-terminal>
         </mat-expansion-panel>
 
         <mat-expansion-panel>
           <mat-expansion-panel-header>
-            <mat-panel-title>09. APP03: Verify Replication Rights &amp; Assess the DC</mat-panel-title>
+            <mat-panel-title>10. APP03: Verify Replication Rights &amp; Assess the DC</mat-panel-title>
           </mat-expansion-panel-header>
           <p>
-            The fictional APP03 account already has the required directory replication rights.
-            Local Administrator membership alone does not grant DCSync. Confirm authorization,
-            effective rights and target scope before using the existing procedure.
+            The fictional <code>svc_adcs</code> account already has the required directory
+            replication rights. Local Administrator membership alone does not grant DCSync.
+            Confirm authorization, effective rights and target scope before using the
+            existing procedure.
           </p>
           <app-terminal [command]="attackDcsyncRequirements"></app-terminal>
           <app-terminal [command]="attackNtds"></app-terminal>
+          <app-terminal [command]="exampleDcsyncFinding"></app-terminal>
           <app-terminal [command]="attackDcsyncDetection"></app-terminal>
           <a class="workflow-link" routerLink="/ad" [queryParams]="{ service: 'compromise' }">
             Open Domain Compromise prerequisites and detection
@@ -918,7 +981,7 @@
 
         <mat-expansion-panel>
           <mat-expansion-panel-header>
-            <mat-panel-title>10. Closeout</mat-panel-title>
+            <mat-panel-title>11. Closeout</mat-panel-title>
           </mat-expansion-panel-header>
           <app-terminal [command]="attackPostCompromise"></app-terminal>
         </mat-expansion-panel>
