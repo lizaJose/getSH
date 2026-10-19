@@ -29,6 +29,12 @@ export const SEARCH_INDEX: SearchEntry[] = [
   { type: 'section', title: 'RDP', keywords: ['rdp', 'remote desktop', 'xfreerdp', '3389'], route: '/common-services', queryParams: { service: 'rdp' }, section: 'Common Services', summary: 'RDP configuration and connection.' },
   { type: 'section', title: 'Databases', keywords: ['database', 'mysql', 'mssql', 'postgresql', 'sql'], route: '/common-services', queryParams: { service: 'databases' }, section: 'Common Services', summary: 'Database service identification and access.' },
   { type: 'section', title: 'File Transfer', keywords: ['transfer', 'file transfer', 'upload', 'download', 'scp', 'smbserver', 'netcat', 'base64', 'wget', 'curl'], route: '/useful-stuff', queryParams: { section: 'file-transfer' }, section: 'Useful Stuff', summary: 'Transfer files between Kali and Windows/Linux.' },
+  { type: 'section', title: 'Git & File Hunting', keywords: ['git-dumper', 'exposed git', 'secret hunting', 'file hunting', 'configuration files'], route: '/useful-stuff', queryParams: { section: 'git-files' }, section: 'Useful Stuff / Recon', summary: 'Find exposed repository history and scoped secret files.' },
+  { type: 'section', title: 'Database References', keywords: ['postgresql', 'mysql', 'mssql', 'database rce', 'xp_cmdshell', 'copy program'], route: '/useful-stuff', queryParams: { section: 'database-reference' }, section: 'Useful Stuff / Services', summary: 'Links to existing database enumeration and SQLi guides.' },
+  { type: 'section', title: 'Tunneling & Port Forwarding', keywords: ['chisel', 'ssh tunnel', 'port forward', 'socks proxy', 'pivot'], route: '/useful-stuff', queryParams: { section: 'tunneling' }, section: 'Useful Stuff / Networking', summary: 'SSH and Chisel forwarding with a link to the Ligolo flow.' },
+  { type: 'section', title: 'Payload Formats', keywords: ['msfvenom', 'exe payload', 'elf payload', 'php payload', 'listener'], route: '/useful-stuff', queryParams: { section: 'payload-formats' }, section: 'Useful Stuff / Tooling', summary: 'Payload format examples using the configured callback values.' },
+  { type: 'section', title: 'Python Environments', keywords: ['venv', 'virtualenv', 'pep 668', 'impacket install'], route: '/useful-stuff', queryParams: { section: 'python-environments' }, section: 'Useful Stuff / Tooling', summary: 'Isolate Python tools and avoid changing system Python.' },
+  { type: 'section', title: 'RDP Toolkit', keywords: ['xfreerdp', 'rdp', 'remote desktop', 'clipboard'], route: '/useful-stuff', queryParams: { section: 'rdp' }, section: 'Useful Stuff / Remote Access', summary: 'RDP connection options and troubleshooting.' },
   { type: 'section', title: 'Hydra SSH Authentication', keywords: ['hydra', 'ssh', 'password list', 'authentication'], route: '/common-services', section: 'Common Services / SSH / Authentication', summary: 'Open SSH authentication commands using Hydra.', queryParams: { service: 'ssh', panel: 'ssh-authentication' } },
   { type: 'section', title: 'Hydra FTP Authentication', keywords: ['hydra', 'ftp', 'password list', 'authentication'], route: '/common-services', section: 'Common Services / FTP / Authentication', summary: 'Open FTP authentication commands using Hydra.', queryParams: { service: 'ftp', panel: 'ftp-authentication' } },
 
@@ -51,7 +57,8 @@ export const SEARCH_INDEX: SearchEntry[] = [
 
   // Privilege escalation
   { type: 'section', title: 'Linux Privilege Escalation', keywords: ['linux', 'privesc', 'sudo', 'suid', 'capabilities', 'cron', 'docker'], route: '/privesc', queryParams: { system: 'linux' }, section: 'Privilege Escalation', summary: 'Linux host enumeration and privilege checks.' },
-  { type: 'section', title: 'Windows Privilege Escalation', keywords: ['windows', 'privesc', 'services', 'scheduled tasks', 'seimpersonate'], route: '/privesc', queryParams: { system: 'windows' }, section: 'Privilege Escalation', summary: 'Windows services, tasks and local privilege checks.' },
+  { type: 'section', title: 'Windows Privilege Escalation', keywords: ['windows', 'privesc', 'services', 'service permissions', 'alwaysinstallelevated', 'installer policy', 'scheduled tasks', 'seimpersonate'], route: '/privesc', queryParams: { system: 'windows' }, section: 'Privilege Escalation', summary: 'Windows services, installer policy, tasks and local privilege checks.' },
+  { type: 'section', title: 'pspy Process Monitor', keywords: ['pspy', 'cron', 'scheduled jobs', 'linux processes'], route: '/privesc', queryParams: { system: 'linux' }, section: 'Privilege Escalation / Linux / Cron', summary: 'Observe short-lived processes and scheduled jobs.' },
 
   // Commands
   { type: 'command', title: 'Nmap full TCP port scan', keywords: ['nmap', 'full port scan', 'open ports', 'tcp'], command: 'sudo nmap -p- --open -sS -n -Pn {{TARGET_IP}} -oN open-ports.txt', section: 'Scan / Nmap', summary: 'Find open TCP ports on the target.' },
@@ -66,4 +73,20 @@ export const SEARCH_INDEX: SearchEntry[] = [
   { type: 'command', title: 'SNMP system information', keywords: ['snmp', 'snmpwalk', 'system'], command: 'snmpwalk -v2c -c public {{TARGET_IP}} 1.3.6.1.2.1.1', section: 'Common Services / SNMP', summary: 'Query basic system information with the public community.' },
   { type: 'command', title: 'Nmap AD ports scan', keywords: ['nmap', 'active directory', 'kerberos', 'ldap', 'smb'], command: 'nmap -sC -sV -p 53,88,135,139,389,445,464,636,3268,3389,5985 {{TARGET_IP}}', section: 'Active Directory', summary: 'Check common Active Directory services.' },
   { type: 'command', title: 'Linux sudo permissions', keywords: ['linux', 'sudo', 'privesc'], command: 'sudo -l', section: 'Privilege Escalation / Linux', summary: 'Review commands available through sudo.' },
+
+  // Active Directory (additional)
+  { type: 'section', title: 'AD Certificate Services (ADCS)', keywords: ['adcs', 'certificate services', 'esc1', 'esc8', 'certify', 'certipy'], route: '/ad', queryParams: { service: 'adcs' }, section: 'Active Directory', summary: 'Enumerate and abuse misconfigured certificate templates.' },
+  { type: 'section', title: 'DCOM Lateral Movement', keywords: ['dcom', 'mmc20', 'shellwindows', 'lateral movement', 'com objects'], route: '/ad', queryParams: { service: 'dcom' }, section: 'Active Directory', summary: 'Execute commands remotely via DCOM application objects.' },
+  { type: 'section', title: 'AD Post-Exploitation Checklist', keywords: ['checklist', 'post exploitation', 'post compromise', 'domain admin'], route: '/ad', queryParams: { service: 'post-exploitation-checklist' }, section: 'Active Directory', summary: 'Structured checklist to follow after compromising a domain host.' },
+
+  // Web (additional)
+  { type: 'section', title: 'OS Command Injection', keywords: ['os command injection', 'rce', 'command injection', 'shell metacharacters'], route: '/web', queryParams: { section: 'os-command' }, section: 'Web', summary: 'Detect and exploit operating system command injection.' },
+  { type: 'section', title: 'WordPress Assessment', keywords: ['wordpress', 'wpscan', 'wp-login', 'plugin vulnerabilities', 'cms'], route: '/web', queryParams: { section: 'wordpress' }, section: 'Web', summary: 'Fingerprint and attack WordPress installations.' },
+
+  // Common Services (additional)
+  { type: 'section', title: 'RDP Credential Brute Force', keywords: ['rdp', 'brute force', 'crowbar', 'hydra', 'credential spraying'], route: '/common-services', queryParams: { service: 'rdp' }, section: 'Common Services', summary: 'Spray or brute-force RDP credentials.' },
+  { type: 'section', title: 'HTTP POST Login Brute Force', keywords: ['http', 'login form', 'hydra', 'brute force', 'post request'], route: '/common-services', queryParams: { service: 'http' }, section: 'Common Services', summary: 'Brute-force HTTP POST login forms.' },
+
+  // Useful Stuff (additional)
+  { type: 'section', title: 'Password Cracking & Hashes', keywords: ['hashcat', 'john', 'ntlm', 'keepass', 'ssh2john', 'pass the hash', 'ntlmrelayx', 'responder', 'credential guard'], route: '/useful-stuff', queryParams: { section: 'password-cracking' }, section: 'Useful Stuff', summary: 'Offline hash cracking, wordlist mutation and NTLM capture/pass/relay workflows.' },
 ];

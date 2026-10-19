@@ -138,6 +138,25 @@
     </ng-container>
 
     <!-- ======================================================= -->
+    <!-- ======================================================= -->
+    <!-- WORDPRESS -->
+    <!-- ======================================================= -->
+
+    <ng-container *ngIf="selectedWebSection === 'wordpress'">
+      <h2>WordPress</h2>
+      <p class="section-description">
+        Fingerprint WordPress, enumerate users and components, and assess authentication and
+        administrative attack surfaces.
+      </p>
+      <mat-expansion-panel><mat-expansion-panel-header><mat-panel-title>WordPress Fingerprinting</mat-panel-title></mat-expansion-panel-header><app-terminal [command]="wordpressFingerprint"></app-terminal></mat-expansion-panel>
+      <mat-expansion-panel><mat-expansion-panel-header><mat-panel-title>WPScan</mat-panel-title></mat-expansion-panel-header><app-terminal [command]="wordpressWpscan"></app-terminal></mat-expansion-panel>
+      <mat-expansion-panel><mat-expansion-panel-header><mat-panel-title>Manual Plugin Enumeration</mat-panel-title></mat-expansion-panel-header><app-terminal [command]="wordpressManual"></app-terminal></mat-expansion-panel>
+      <mat-expansion-panel><mat-expansion-panel-header><mat-panel-title>XML-RPC</mat-panel-title></mat-expansion-panel-header><app-terminal [command]="wordpressXmlrpc"></app-terminal></mat-expansion-panel>
+      <mat-expansion-panel><mat-expansion-panel-header><mat-panel-title>Authentication Assessment</mat-panel-title></mat-expansion-panel-header><app-terminal [command]="wordpressAuthentication"></app-terminal></mat-expansion-panel>
+      <mat-expansion-panel><mat-expansion-panel-header><mat-panel-title>Post-Enumeration Assessment</mat-panel-title></mat-expansion-panel-header><app-terminal [command]="wordpressPostEnumeration"></app-terminal></mat-expansion-panel>
+      <mat-expansion-panel><mat-expansion-panel-header><mat-panel-title>Assessment Workflow</mat-panel-title></mat-expansion-panel-header><app-terminal [command]="wordpressWorkflow"></app-terminal></mat-expansion-panel>
+    </ng-container>
+
     <!-- AUTHENTICATION -->
     <!-- ======================================================= -->
 
@@ -271,6 +290,26 @@
       </mat-expansion-panel>
     </ng-container>
     <!-- ======================================================= -->
+    <!-- ======================================================= -->
+    <!-- OS COMMAND INJECTION -->
+    <!-- ======================================================= -->
+
+    <ng-container *ngIf="selectedWebSection === 'os-command'">
+      <h2>OS Command Injection</h2>
+      <p class="section-description">
+        Test user-controlled inputs that may be incorporated into operating-system commands, identify
+        the execution context and validate impact safely.
+      </p>
+      <mat-expansion-panel><mat-expansion-panel-header><mat-panel-title>Concept</mat-panel-title></mat-expansion-panel-header><app-terminal [command]="osCommandConcept"></app-terminal></mat-expansion-panel>
+      <mat-expansion-panel><mat-expansion-panel-header><mat-panel-title>Detection</mat-panel-title></mat-expansion-panel-header><app-terminal [command]="osCommandDetection"></app-terminal></mat-expansion-panel>
+      <mat-expansion-panel><mat-expansion-panel-header><mat-panel-title>OS and Environment Enumeration</mat-panel-title></mat-expansion-panel-header><app-terminal [command]="osCommandEnumeration"></app-terminal></mat-expansion-panel>
+      <mat-expansion-panel><mat-expansion-panel-header><mat-panel-title>Command Separators</mat-panel-title></mat-expansion-panel-header><app-terminal [command]="osCommandSeparators"></app-terminal></mat-expansion-panel>
+      <mat-expansion-panel><mat-expansion-panel-header><mat-panel-title>Bypass Techniques</mat-panel-title></mat-expansion-panel-header><app-terminal [command]="osCommandBypass"></app-terminal></mat-expansion-panel>
+      <mat-expansion-panel><mat-expansion-panel-header><mat-panel-title>Exploitation</mat-panel-title></mat-expansion-panel-header><app-terminal [command]="osCommandExploitation"></app-terminal></mat-expansion-panel>
+      <mat-expansion-panel><mat-expansion-panel-header><mat-panel-title>Reverse Shell</mat-panel-title></mat-expansion-panel-header><app-terminal [command]="osCommandReverseShell"></app-terminal></mat-expansion-panel>
+      <mat-expansion-panel><mat-expansion-panel-header><mat-panel-title>Notes</mat-panel-title></mat-expansion-panel-header><app-terminal [command]="osCommandNotes"></app-terminal></mat-expansion-panel>
+    </ng-container>
+
     <!-- XSS -->
     <!-- ======================================================= -->
 
@@ -288,6 +327,20 @@
         </mat-expansion-panel-header>
 
         <app-terminal [command]="reflectedXss"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Payload Variants by Context</mat-panel-title>
+        </mat-expansion-panel-header>
+        <mat-accordion multi>
+          <mat-expansion-panel *ngFor="let variant of xssPayloadVariants">
+            <mat-expansion-panel-header>
+              <mat-panel-title>{{ variant.title }}</mat-panel-title>
+            </mat-expansion-panel-header>
+            <app-terminal [command]="variant.command"></app-terminal>
+          </mat-expansion-panel>
+        </mat-accordion>
       </mat-expansion-panel>
 
       <mat-expansion-panel>
@@ -326,6 +379,12 @@
 
         <app-terminal [command]="fileUpload"></app-terminal>
       </mat-expansion-panel>
+      <mat-expansion-panel><mat-expansion-panel-header><mat-panel-title>Concept &amp; Potential Impact</mat-panel-title></mat-expansion-panel-header><app-terminal [command]="uploadConcept"></app-terminal></mat-expansion-panel>
+      <mat-expansion-panel><mat-expansion-panel-header><mat-panel-title>Detection &amp; Request Inspection</mat-panel-title></mat-expansion-panel-header><app-terminal [command]="uploadDetection"></app-terminal></mat-expansion-panel>
+      <mat-expansion-panel><mat-expansion-panel-header><mat-panel-title>Filename Manipulation</mat-panel-title></mat-expansion-panel-header><app-terminal [command]="uploadFilename"></app-terminal></mat-expansion-panel>
+      <mat-expansion-panel><mat-expansion-panel-header><mat-panel-title>Traversal &amp; File Overwrite</mat-panel-title></mat-expansion-panel-header><app-terminal [command]="uploadTraversal"></app-terminal></mat-expansion-panel>
+      <mat-expansion-panel><mat-expansion-panel-header><mat-panel-title>Privilege Escalation Considerations</mat-panel-title></mat-expansion-panel-header><app-terminal [command]="uploadPrivilege"></app-terminal></mat-expansion-panel>
+      <mat-expansion-panel><mat-expansion-panel-header><mat-panel-title>Operational Notes</mat-panel-title></mat-expansion-panel-header><app-terminal [command]="uploadNotes"></app-terminal></mat-expansion-panel>
     </ng-container>
 
     <!-- ======================================================= -->
@@ -346,6 +405,11 @@
 
         <app-terminal [command]="directoryTraversal"></app-terminal>
       </mat-expansion-panel>
+      <mat-expansion-panel><mat-expansion-panel-header><mat-panel-title>Parameter Enumeration</mat-panel-title></mat-expansion-panel-header><app-terminal [command]="directoryTraversalParameters"></app-terminal></mat-expansion-panel>
+      <mat-expansion-panel><mat-expansion-panel-header><mat-panel-title>Traversal &amp; Filter Bypass Payloads</mat-panel-title></mat-expansion-panel-header><app-terminal [command]="directoryTraversalPayloads"></app-terminal></mat-expansion-panel>
+      <mat-expansion-panel><mat-expansion-panel-header><mat-panel-title>Useful Files</mat-panel-title></mat-expansion-panel-header><app-terminal [command]="directoryTraversalFiles"></app-terminal></mat-expansion-panel>
+      <mat-expansion-panel><mat-expansion-panel-header><mat-panel-title>Testing Tools</mat-panel-title></mat-expansion-panel-header><app-terminal [command]="directoryTraversalTools"></app-terminal></mat-expansion-panel>
+      <mat-expansion-panel><mat-expansion-panel-header><mat-panel-title>Notes</mat-panel-title></mat-expansion-panel-header><app-terminal [command]="directoryTraversalNotes"></app-terminal></mat-expansion-panel>
     </ng-container>
 
     <!-- ======================================================= -->
@@ -360,6 +424,10 @@
         </mat-expansion-panel-header>
 
         <app-terminal [command]="lfi"></app-terminal>
+      </mat-expansion-panel>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header><mat-panel-title>LFI Detection &amp; Goals</mat-panel-title></mat-expansion-panel-header>
+        <app-terminal [command]="lfiDetection"></app-terminal>
       </mat-expansion-panel>
 
       <!-- LOG POISONING -->

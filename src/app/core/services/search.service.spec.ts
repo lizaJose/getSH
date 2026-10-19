@@ -65,6 +65,29 @@ describe('SearchService', () => {
     expect(result?.queryParams).toEqual({ service: 'ad-example-three-host' });
   });
 
+  it('finds pspy and opens Linux PrivEsc', () => {
+    const result = service.search('pspy', 'sections')
+      .find(entry => entry.title === 'pspy Process Monitor');
+
+    expect(result?.route).toBe('/privesc');
+    expect(result?.queryParams).toEqual({ system: 'linux' });
+  });
+
+  it('opens the Useful Stuff tunnel reference from search', () => {
+    const result = service.search('chisel', 'sections')
+      .find(entry => entry.title === 'Tunneling & Port Forwarding');
+
+    expect(result?.route).toBe('/useful-stuff');
+    expect(result?.queryParams).toEqual({ section: 'tunneling' });
+  });
+
+  it('finds the Windows PrivEsc guide for AlwaysInstallElevated', () => {
+    const result = service.search('alwaysinstallelevated', 'sections')
+      .find(entry => entry.title === 'Windows Privilege Escalation');
+
+    expect(result?.queryParams).toEqual({ system: 'windows' });
+  });
+
   it('returns no results for an empty query', () => {
     expect(service.search('   ')).toEqual([]);
   });

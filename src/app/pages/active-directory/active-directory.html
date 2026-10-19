@@ -205,6 +205,13 @@
         </mat-expansion-panel-header>
         <app-terminal [command]="aclGroupMembership"></app-terminal>
       </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>ACL Abuse Assessment: GenericAll, WriteDACL &amp; WriteOwner</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="aclAbuseWorkflow"></app-terminal>
+      </mat-expansion-panel>
     </ng-container>
 
     <!-- ===================================================== -->
@@ -508,6 +515,68 @@
     </ng-container>
 
     <!-- ===================================================== -->
+    <!-- ACTIVE DIRECTORY CERTIFICATE SERVICES -->
+    <!-- ===================================================== -->
+
+    <ng-container *ngIf="selectedService === 'adcs'">
+      <h2>Active Directory Certificate Services (ADCS)</h2>
+      <p class="section-description">
+        Review certificate authorities, templates and enrollment permissions for
+        misconfigurations. Template changes and certificate requests are limited
+        to explicitly authorized lab validation.
+      </p>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>ADCS Overview &amp; Assessment Scope</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="adcsOverview"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Enumerate CAs &amp; Vulnerable Templates</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="adcsEnumeration"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>ESC4: Template Permission Review</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="adcsTemplateReview"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Certificate Request, SID &amp; Authentication</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="adcsCertificateRequest"></app-terminal>
+        <app-terminal [command]="adcsCertificateAuth"></app-terminal>
+      </mat-expansion-panel>
+    </ng-container>
+
+    <!-- ===================================================== -->
+    <!-- DCOM LATERAL MOVEMENT -->
+    <!-- ===================================================== -->
+
+    <ng-container *ngIf="selectedService === 'dcom'">
+      <h2>DCOM Lateral Movement</h2>
+      <p class="section-description">
+        DCOM may provide remote command execution when the authenticated account
+        has the required host permissions and RPC is reachable. It does not grant
+        additional privileges by itself.
+      </p>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Requirements, Enumeration &amp; Controlled Validation</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="attackDcom"></app-terminal>
+      </mat-expansion-panel>
+    </ng-container>
+
+    <!-- ===================================================== -->
     <!-- DOMAIN COMPROMISE -->
     <!-- ===================================================== -->
 
@@ -671,6 +740,54 @@
       </mat-expansion-panel>
     </ng-container>
 
+
+    <!-- ===================================================== -->
+    <!-- POST-COMPROMISE CHECKLIST -->
+    <!-- ===================================================== -->
+
+    <ng-container *ngIf="selectedService === 'post-exploitation-checklist'">
+      <h2>Post-Compromise Checklist</h2>
+      <p class="section-description">
+        Repeat this host-focused review after authorized Administrator or SYSTEM access
+        on a domain machine. Protect recovered credentials and keep all validation in scope.
+      </p>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Quick Checklist &amp; Active Sessions</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="postChecklistQuick"></app-terminal>
+        <app-terminal [command]="postChecklistSessions"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>LSASS, Kerberos, DPAPI &amp; Credential Manager</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="postChecklistCredentials"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>User Profiles, Scheduled Tasks, Services &amp; Configurations</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="postChecklistHostAudit"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Certificates, BloodHound, Delegation &amp; LAPS</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="postChecklistDirectory"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Decision Tree, Next Actions &amp; Closeout</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-terminal [command]="postChecklistDecision"></app-terminal>
+      </mat-expansion-panel>
+    </ng-container>
 
     <ng-container *ngIf="selectedService === 'ad-example-three-host'">
       <h2>Example: Three-Host Domain Chain</h2>

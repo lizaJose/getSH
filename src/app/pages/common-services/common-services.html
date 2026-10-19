@@ -207,6 +207,18 @@
         <app-terminal [command]="httpVhosts"></app-terminal>
       </mat-expansion-panel>
 
+      <mat-expansion-panel
+        [expanded]="httpPostBruteForceExpanded"
+        (opened)="httpPostBruteForceExpanded = true"
+        (closed)="httpPostBruteForceExpanded = false"
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title>HTTP POST Login Brute Force</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="httpPostBruteForce"></app-terminal>
+      </mat-expansion-panel>
+
     </ng-container>
 
 
@@ -350,6 +362,18 @@
         </mat-expansion-panel-header>
 
         <app-terminal [command]="rdpEnumeration"></app-terminal>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel
+        [expanded]="rdpAuthenticationExpanded"
+        (opened)="rdpAuthenticationExpanded = true"
+        (closed)="rdpAuthenticationExpanded = false"
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title>Credential Brute Force</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-terminal [command]="rdpAuthentication"></app-terminal>
       </mat-expansion-panel>
 
       <mat-expansion-panel>

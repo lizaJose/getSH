@@ -29,6 +29,8 @@ export class CommonServicesComponent implements OnInit {
   ];
   sshAuthenticationExpanded = false;
   ftpAuthenticationExpanded = false;
+  rdpAuthenticationExpanded = false;
+  httpPostBruteForceExpanded = false;
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -45,6 +47,8 @@ export class CommonServicesComponent implements OnInit {
           this.selectedService = service;
           this.sshAuthenticationExpanded = panel === 'ssh-authentication';
           this.ftpAuthenticationExpanded = panel === 'ftp-authentication';
+          this.rdpAuthenticationExpanded = panel === 'rdp-authentication';
+          this.httpPostBruteForceExpanded = panel === 'http-post-brute-force';
         }
       });
   }
@@ -58,6 +62,8 @@ export class CommonServicesComponent implements OnInit {
     this.selectedService = service;
     this.sshAuthenticationExpanded = false;
     this.ftpAuthenticationExpanded = false;
+    this.rdpAuthenticationExpanded = false;
+    this.httpPostBruteForceExpanded = false;
     void this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { service },
@@ -69,6 +75,8 @@ export class CommonServicesComponent implements OnInit {
     this.selectedService = 'ssh';
     this.sshAuthenticationExpanded = false;
     this.ftpAuthenticationExpanded = false;
+    this.rdpAuthenticationExpanded = false;
+    this.httpPostBruteForceExpanded = false;
 
     void this.router.navigate([], {
       relativeTo: this.route,
@@ -99,6 +107,23 @@ hydra -l root -P rockyou.txt ssh://target_ip
 
 # Test multiple usernames and passwords
 hydra -L users.txt -P rockyou.txt ssh://target_ip
+
+# Prepare rockyou if it is still compressed
+cd /usr/share/wordlists/
+ls
+sudo gzip -d rockyou.txt.gz
+
+# Target a non-default SSH port
+hydra -l george -P /usr/share/wordlists/rockyou.txt -s 2222 ssh://target_ip
+
+# Show each attempted login
+hydra -l george -P /usr/share/wordlists/rockyou.txt -vV ssh://target_ip
+
+# Limit concurrent tasks
+hydra -l george -P /usr/share/wordlists/rockyou.txt -t 4 ssh://target_ip
+
+# Stop after the first valid password
+hydra -l george -P /usr/share/wordlists/rockyou.txt -f ssh://target_ip
 
 # Authenticate using discovered credentials
 ssh user@target_ip
@@ -241,6 +266,23 @@ ffuf -u http://target_ip/ \\
 `;
 
 
+  httpPostBruteForce = `
+# Capture a login request and identify its path, POST fields, and failed-login response in Burp or a browser
+# Replace the failure text with a distinctive message returned by the application
+hydra -l user -P /usr/share/wordlists/rockyou.txt target_ip http-post-form "/index.php:fm_usr=user&fm_pwd=^PASS^:Login failed. Invalid"
+
+# Generic syntax
+hydra -l <USER> -P <WORDLIST> target_ip http-post-form "<PATH>:<POST_DATA>:<FAIL_STRING>"
+
+# Example using a non-default port and an explicit failure condition
+hydra -l admin -P /usr/share/wordlists/rockyou.txt -s 8089 target_ip http-post-form "/login.php:user=^USER^&pass=^PASS^&submit=Login:F=Password incorrect."
+
+# Show attempts, limit concurrency, or stop on the first success
+hydra -l user -P /usr/share/wordlists/rockyou.txt -vV -t 4 -f target_ip http-post-form "/index.php:fm_usr=user&fm_pwd=^PASS^:Login failed"
+
+# WAFs and rate limits can block attempts; web form testing is noisy
+`;
+
   // =========================================================
   // SMTP
   // =========================================================
@@ -351,6 +393,25 @@ nmap --script rdp-ntlm-info \\
 # Check RDP security and encryption settings
 nmap --script rdp-enum-encryption \\
 -p 3389 target_ip
+`;
+
+  rdpAuthentication = `
+# Create a smaller list containing only targeted users
+printf "daniel\\njustin\\n" > users.txt
+
+# Use one known password against a list of usernames (password spraying)
+hydra -L /usr/share/wordlists/dirb/others/names.txt -p "KnownPassword" rdp://target_ip
+
+# Reduce concurrency and show each attempt
+hydra -L users.txt -p "KnownPassword" -t 4 -vV rdp://target_ip
+
+# Stop after the first valid credential
+hydra -L users.txt -p "KnownPassword" -f rdp://target_ip
+
+# Generic password-spraying syntax
+hydra -L <USER_LIST> -p "<PASSWORD>" rdp://target_ip
+
+# Consider lockout policies and monitoring; large lists create more noise
 `;
 
   rdpConnection = `

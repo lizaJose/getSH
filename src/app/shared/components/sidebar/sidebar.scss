@@ -113,9 +113,27 @@
 }
 
 .sidebar__nav a.active {
-  background: #17302f;
-  border-color: #4c9992;
-  color: #f8fafc;
+  position: relative;
+  background: linear-gradient(100deg, #183527 0%, #15302a 72%, #17342b 100%);
+  border-color: #78c87a;
+  color: #eaffdf;
+  box-shadow: 0 0 0 1px rgba(173, 255, 153, 0.1), 0 0 14px rgba(99, 242, 112, 0.14);
+}
+
+.sidebar__nav a.active::after {
+  position: absolute;
+  top: 18%;
+  bottom: 18%;
+  left: 0.12rem;
+  width: 2px;
+  content: '';
+  background: #baff9f;
+  box-shadow: 0 0 7px 2px rgba(145, 255, 134, 0.62), 0 0 16px rgba(93, 244, 114, 0.34);
+}
+
+.sidebar__nav a.active::before {
+  color: #c1ffa6;
+  text-shadow: 0 0 8px rgba(147, 255, 128, 0.75);
 }
 
 .sidebar__footer {
