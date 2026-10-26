@@ -13,6 +13,13 @@ interface DecisionLink {
   queryParams?: Record<string, string>;
 }
 
+interface PortOption {
+  id: string;
+  label: string;
+  ports: string;
+  nextId: string;
+}
+
 interface DecisionNode {
   stage: string;
   title: string;
@@ -31,20 +38,35 @@ interface DecisionNode {
   styleUrl: './decision-tree.scss'
 })
 export class DecisionTreeComponent {
+  readonly portOptions: PortOption[] = [
+    { id: 'web', label: 'Web (HTTP / HTTPS)', ports: '80, 443, 8080, 8443', nextId: 'web-check' },
+    { id: 'ad', label: 'Active Directory / dominio', ports: '53, 88, 389, 445, 464, 636, 3268, 3269', nextId: 'ad-check' },
+    { id: 'smb', label: 'SMB / compartición Windows', ports: '139, 445', nextId: 'service-smb' },
+    { id: 'remote', label: 'Acceso remoto (SSH / RDP)', ports: '22, 3389', nextId: 'service-remote' },
+    { id: 'file', label: 'Transferencia de archivos (FTP)', ports: '21', nextId: 'service-file' },
+    { id: 'database', label: 'Base de datos', ports: '1433, 1521, 3306, 5432, 6379', nextId: 'service-database' },
+    { id: 'other', label: 'Otro servicio o puerto', ports: 'Cualquier otro', nextId: 'service-unknown' }
+  ];
+  selectedPortIds: string[] = [];
+
   readonly nodes: Record<string, DecisionNode> = {
     start: {
-      stage: '01 / Starting point',
-      title: 'What do you know so far?',
-      question: 'Choose the closest match to your current lab notes.',
-      guidance: 'Work only with the target and actions allowed by the lab rules. Start from observations, keep notes, and follow one lead at a time.',
+      stage: '01 / Service discovery',
+      title: 'Which ports or services are open?',
+      question: 'Select every service you identified on the authorized lab target.',
+      guidance: 'Choose the closest service category based on the scan results; a port number alone does not prove which service is running. You can select more than one.',
       choices: [
-        { label: 'I have no reliable service findings yet', nextId: 'no-findings' },
-        { label: 'I found a web service', nextId: 'web-check' },
-        { label: 'I found other network services', nextId: 'service-check' },
-        { label: 'The host appears to be part of a domain', nextId: 'ad-check' },
+        { label: 'I have not identified any services yet', nextId: 'no-findings' },
         { label: 'I already have an authorized lab foothold', nextId: 'foothold-check' }
       ],
       links: [{ label: 'Open Nmap and scan references', route: '/scan', queryParams: { tool: 'nmap' } }]
+    },
+    'selected-ports': {
+      stage: '02 / Choose a service',
+      title: 'Start with one of the selected services',
+      question: 'Which service do you want to investigate first?',
+      guidance: 'Follow one evidence-backed lead at a time. You can go back to review your selections or start over.',
+      choices: []
     },
     'no-findings': {
       stage: '01 / Validate discovery',
@@ -72,7 +94,7 @@ export class DecisionTreeComponent {
       stage: '02 / Web reconnaissance',
       title: 'Build a clearer picture of the web service',
       question: 'After checking the available evidence, can you reach a page on the intended host?',
-      guidance: 'Compare HTTP and HTTPS behavior, check the response and redirect destination, and verify whether the lab provides a hostname that must resolve to the target. Keep discovery limited to the lab scope.',
+      guidance: 'Check HTTP and HTTPS behavior, redirects, and any login panel. Use only credentials or default test accounts explicitly supplied by the lab. Map directories, subdomains, and virtual hosts only from lab-provided names or other authorized evidence.',
       choices: [
         { label: 'Yes — continue with the application surface', nextId: 'web-surface' },
         { label: 'No — return to service discovery', nextId: 'no-findings' }
@@ -281,7 +303,7 @@ export class DecisionTreeComponent {
       stage: '04 / Domain enumeration',
       title: 'Map the authorized domain context',
       question: 'Which domain information can you establish with the access provided by the lab?',
-      guidance: 'Start with domain, host, user, group, and share relationships visible to your authorized account. Keep a relationship map and do not attempt actions outside the exercise scope.',
+      guidance: 'Establish domain, host, user, group, and share context from lab-provided information or directory data visible to your authorized account. Keep a relationship map; do not guess passwords or enumerate accounts outside the exercise scope.',
       choices: [
         { label: 'I have domain information to review', nextId: 'ad-leads' },
         { label: 'I need to establish the basics first', nextId: 'ad-check' }
@@ -413,6 +435,10 @@ export class DecisionTreeComponent {
     return this.nodes[this.currentNodeId];
   }
 
+  get canContinueFromPorts(): boolean {
+    return this.selectedPortIds.length > 0;
+  }
+
   get stepNumber(): number {
     return this.history.length + 1;
   }
@@ -426,6 +452,21 @@ export class DecisionTreeComponent {
     this.currentNodeId = choice.nextId;
   }
 
+  togglePort(id: string): void {
+    this.selectedPortIds = this.selectedPortIds.includes(id)
+      ? this.selectedPortIds.filter(selectedId => selectedId !== id)
+      : [...this.selectedPortIds, id];
+  }
+
+  continueFromPorts(): void {
+    if (!this.canContinueFromPorts) return;
+
+    this.nodes['selected-ports'].choices = this.portOptions
+      .filter(option => this.selectedPortIds.includes(option.id))
+      .map(option => ({ label: `${option.label} (${option.ports})`, nextId: option.nextId }));
+    this.selectChoice({ label: 'Continue', nextId: 'selected-ports' });
+  }
+
   goBack(): void {
     const previousNodeId = this.history.pop();
     if (previousNodeId) this.currentNodeId = previousNodeId;
@@ -434,5 +475,6 @@ export class DecisionTreeComponent {
   startOver(): void {
     this.history.length = 0;
     this.currentNodeId = 'start';
+    this.selectedPortIds = [];
   }
 }

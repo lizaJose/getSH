@@ -16,8 +16,9 @@ import { SectionIndexComponent, SectionIndexItem } from '../../shared/components
 })
 export class ActiveDirectory implements OnInit {
 
-  selectedService: string | null = 'full-ad-compromise-linux';
+  selectedService: string | null = 'ad-roadmap';
   readonly sections: SectionIndexItem[] = [
+    { id: 'ad-roadmap', label: 'AD Assessment Roadmap', group: 'AD Flow', important: true },
     { id: 'full-ad-compromise-linux', label: 'Kali Single-Host Flow', group: 'AD Flow', important: true },
     { id: 'ad-flow', label: 'Windows Pivot Flow', group: 'AD Flow', important: true },
     { id: 'windows', label: 'Windows Commands', group: 'Enumeration' },
@@ -71,7 +72,7 @@ export class ActiveDirectory implements OnInit {
   }
 
   clearService(): void {
-    this.selectedService = 'full-ad-compromise-linux';
+    this.selectedService = 'ad-roadmap';
   }
 
   // =========================================================

@@ -3,40 +3,58 @@ import { describe, expect, it } from 'vitest';
 import { DecisionTreeComponent } from './decision-tree';
 
 describe('DecisionTreeComponent', () => {
-  it('starts at the initial discovery question', () => {
+  it('starts by asking which ports or services are open', () => {
     const component = new DecisionTreeComponent();
 
-    expect(component.currentNode.title).toBe('What do you know so far?');
+    expect(component.currentNode.title).toBe('Which ports or services are open?');
+    expect(component.canContinueFromPorts).toBe(false);
     expect(component.canGoBack).toBe(false);
   });
 
-  it('follows a selected branch and can return to the previous question', () => {
+  it('builds the next-step choices from all selected services', () => {
     const component = new DecisionTreeComponent();
-    const choice = component.currentNode.choices?.find(item => item.nextId === 'web-check');
 
-    if (!choice) throw new Error('The start node must offer the web branch.');
-    component.selectChoice(choice);
+    component.togglePort('web');
+    component.togglePort('ad');
+    component.continueFromPorts();
 
-    expect(component.currentNode.title).toBe('Can you identify the application and its public surface?');
+    expect(component.currentNode.title).toBe('Start with one of the selected services');
+    expect(component.currentNode.choices?.map(choice => choice.nextId)).toEqual(['web-check', 'ad-check']);
     expect(component.canGoBack).toBe(true);
 
+    const webChoice = component.currentNode.choices?.find(choice => choice.nextId === 'web-check');
+    if (!webChoice) throw new Error('The selected services must include the web branch.');
+    component.selectChoice(webChoice);
+
+    expect(component.currentNode.title).toBe('Can you identify the application and its public surface?');
     component.goBack();
 
-    expect(component.currentNode.title).toBe('What do you know so far?');
+    expect(component.currentNode.title).toBe('Start with one of the selected services');
+    component.goBack();
+
+    expect(component.currentNode.title).toBe('Which ports or services are open?');
     expect(component.canGoBack).toBe(false);
   });
 
-  it('resets the selected branch and history', () => {
+  it('resets the selected services and history', () => {
     const component = new DecisionTreeComponent();
-    const firstChoice = component.currentNode.choices?.[0];
-    if (!firstChoice) throw new Error('The start node must offer at least one choice.');
-    component.selectChoice(firstChoice);
+    component.togglePort('web');
+    component.continueFromPorts();
 
     component.startOver();
 
-    expect(component.currentNode.title).toBe('What do you know so far?');
+    expect(component.currentNode.title).toBe('Which ports or services are open?');
+    expect(component.selectedPortIds).toEqual([]);
     expect(component.stepNumber).toBe(1);
     expect(component.canGoBack).toBe(false);
+  });
+
+  it('does not continue until at least one service is selected', () => {
+    const component = new DecisionTreeComponent();
+
+    component.continueFromPorts();
+
+    expect(component.currentNodeId).toBe('start');
   });
 
   it('only links to nodes that exist in the workflow', () => {

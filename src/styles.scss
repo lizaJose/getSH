@@ -84,3 +84,125 @@ app-root .content mat-expansion-panel {
 app-root .content mat-expansion-panel-header:hover {
   background: #1a282c !important;
 }
+
+.active-directory-page .ad-roadmap {
+  display: grid;
+  justify-items: center;
+  gap: 0.55rem;
+  max-width: 900px;
+  margin: 1.5rem auto;
+}
+
+.active-directory-page .ad-roadmap__step {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  width: min(100%, 720px);
+  padding: 1.1rem 1.25rem;
+  border: 1px solid #28505b;
+  border-radius: 10px;
+  background: linear-gradient(120deg, #111c27, #10232b);
+  color: #e2e8f0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.active-directory-page .ad-roadmap__step:hover {
+  transform: translateY(-2px);
+  border-color: #38bdf8;
+  background: #172a37;
+}
+
+.active-directory-page .ad-roadmap__step:focus-visible,
+.active-directory-page .ad-roadmap__link:focus-visible {
+  outline: 2px solid #38bdf8;
+  outline-offset: 3px;
+}
+
+.active-directory-page .ad-roadmap__number {
+  display: grid;
+  flex: 0 0 2.6rem;
+  width: 2.6rem;
+  height: 2.6rem;
+  place-items: center;
+  border: 1px solid #286276;
+  border-radius: 8px;
+  background: #0b1b25;
+  color: #67e8f9;
+  font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.active-directory-page .ad-roadmap__content {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.active-directory-page .ad-roadmap__content strong {
+  color: #f8fafc;
+  font-size: 0.98rem;
+}
+
+.active-directory-page .ad-roadmap__content span {
+  color: #aebbc7;
+  font-size: 0.86rem;
+  line-height: 1.6;
+}
+
+.active-directory-page .ad-roadmap__connector {
+  color: #67e8f9;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.active-directory-page .ad-roadmap__branch {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  justify-items: center;
+  gap: 0.75rem;
+  width: min(100%, 720px);
+}
+
+.active-directory-page .ad-roadmap__branch .ad-roadmap__step {
+  width: 100%;
+}
+
+.active-directory-page .ad-roadmap__branch--compact {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.active-directory-page .ad-roadmap__link {
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid #344b59;
+  border-radius: 8px;
+  background: #101c27;
+  color: #bdeafa;
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.active-directory-page .ad-roadmap__link:hover {
+  border-color: #38bdf8;
+  background: #172a37;
+}
+
+@media (max-width: 900px) {
+  .active-directory-page .ad-roadmap__branch {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .active-directory-page .ad-roadmap__step {
+    transition: none;
+  }
+
+  .active-directory-page .ad-roadmap__step:hover {
+    transform: none;
+  }
+}

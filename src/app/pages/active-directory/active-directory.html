@@ -34,6 +34,74 @@
 
   <div class="detail">
 
+    <ng-container *ngIf="selectedService === 'ad-roadmap'">
+      <h2>Active Directory Assessment Roadmap</h2>
+      <p class="section-description">
+        A high-level, evidence-led workflow for an authorized lab or assessment. Select a box
+        to open the relevant reference; revisit earlier steps when new evidence changes the picture.
+      </p>
+
+      <div class="ad-roadmap" aria-label="Active Directory assessment steps">
+        <button type="button" class="ad-roadmap__step" (click)="selectService('manual')">
+          <span class="ad-roadmap__number">01</span>
+          <span class="ad-roadmap__content">
+            <strong>Confirm domain context</strong>
+            <span>Identify the domain, likely domain controllers, and exposed directory services.</span>
+          </span>
+        </button>
+        <div class="ad-roadmap__connector" aria-hidden="true">↓</div>
+
+        <button type="button" class="ad-roadmap__step" (click)="selectService('manual')">
+          <span class="ad-roadmap__number">02</span>
+          <span class="ad-roadmap__content">
+            <strong>Collect available directory information</strong>
+            <span>Record domain, users, groups, computers, and policy clues available within scope.</span>
+          </span>
+        </button>
+        <div class="ad-roadmap__connector" aria-hidden="true">↓</div>
+
+        <div class="ad-roadmap__branch">
+          <button type="button" class="ad-roadmap__step" (click)="selectService('shares')">
+            <span class="ad-roadmap__number">03A</span>
+            <span class="ad-roadmap__content">
+              <strong>Review shares and SYSVOL</strong>
+              <span>Check accessible, in-scope resources for configuration and assessment clues.</span>
+            </span>
+          </button>
+          <button type="button" class="ad-roadmap__step" (click)="selectService('bloodhound')">
+            <span class="ad-roadmap__number">03B</span>
+            <span class="ad-roadmap__content">
+              <strong>Map relationships</strong>
+              <span>When authorized data is available, review group membership and object relationships.</span>
+            </span>
+          </button>
+        </div>
+        <div class="ad-roadmap__connector" aria-hidden="true">↓</div>
+
+        <button type="button" class="ad-roadmap__step" (click)="selectService('acl')">
+          <span class="ad-roadmap__number">04</span>
+          <span class="ad-roadmap__content">
+            <strong>Follow evidence-backed leads</strong>
+            <span>Review permissions, service accounts, Kerberos, or certificate services only when evidence points there.</span>
+          </span>
+        </button>
+        <div class="ad-roadmap__branch ad-roadmap__branch--compact">
+          <button type="button" class="ad-roadmap__link" (click)="selectService('kerberos')">Kerberos</button>
+          <button type="button" class="ad-roadmap__link" (click)="selectService('spn')">Service accounts / SPNs</button>
+          <button type="button" class="ad-roadmap__link" (click)="selectService('adcs')">Certificate services</button>
+        </div>
+        <div class="ad-roadmap__connector" aria-hidden="true">↓</div>
+
+        <button type="button" class="ad-roadmap__step" (click)="selectService('post-exploitation-checklist')">
+          <span class="ad-roadmap__number">05</span>
+          <span class="ad-roadmap__content">
+            <strong>Validate, document, and close out</strong>
+            <span>Use the least-impacting validation, record evidence and impact, and follow the engagement rules.</span>
+          </span>
+        </button>
+      </div>
+    </ng-container>
+
     <!-- ===================================================== -->
     <!-- WINDOWS COMMANDS -->
     <!-- ===================================================== -->

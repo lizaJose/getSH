@@ -24,6 +24,32 @@
     <p class="decision-question">{{ currentNode.question }}</p>
     <p class="decision-guidance">{{ currentNode.guidance }}</p>
 
+    <div class="port-options" *ngIf="currentNodeId === 'start'">
+      <label
+        class="port-option"
+        *ngFor="let option of portOptions"
+        [class.port-option--selected]="selectedPortIds.includes(option.id)"
+      >
+        <input
+          type="checkbox"
+          [checked]="selectedPortIds.includes(option.id)"
+          (change)="togglePort(option.id)"
+        />
+        <span class="port-option__text">
+          <strong>{{ option.label }}</strong>
+          <span>{{ option.ports }}</span>
+        </span>
+      </label>
+      <button
+        type="button"
+        class="continue-button"
+        [disabled]="!canContinueFromPorts"
+        (click)="continueFromPorts()"
+      >
+        Show next steps <span aria-hidden="true">›</span>
+      </button>
+    </div>
+
     <div class="decision-choices" *ngIf="currentNode.choices?.length">
       <button
         *ngFor="let choice of currentNode.choices"
