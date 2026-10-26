@@ -19,7 +19,105 @@ export class ScanComponent implements OnInit {
     { id: 'nmap', label: 'Nmap', important: true },
     { id: 'rustscan', label: 'RustScan' },
     { id: 'masscan', label: 'Masscan' },
-    { id: 'nikto', label: 'Nikto' }
+    { id: 'nikto', label: 'Nikto' },
+    { id: 'google-dorks', label: 'Google Dorks', important: true }
+  ];
+  readonly googleDorkGroups = [
+    {
+      title: '1. Basic operators and scope',
+      description: 'Start by limiting each query to the test domain. example.org is reserved for documentation: replace it only with a domain you own or that is explicitly included in your authorization.',
+      examples: [
+        { title: 'All indexed content on a domain', query: 'site:example.org' },
+        { title: 'Pages on the main website', query: 'site:www.example.org' },
+        { title: 'Documentation portal', query: 'site:docs.example.org' },
+        { title: 'Support subdomain', query: 'site:support.example.org' },
+        { title: 'Include multiple authorized sites', query: 'site:example.org OR site:docs.example.org' },
+        { title: 'Exclude a specific public section', query: 'site:example.org -inurl:blog' }
+      ]
+    },
+    {
+      title: '2. Searching for phrases and terms',
+      description: 'Quotation marks search for an exact phrase. Combine relevant terms to find public pages by topic; do not search for credentials, personal information, or private content.',
+      examples: [
+        { title: 'Exact phrase anywhere on the page', query: 'site:example.org "press contact"' },
+        { title: 'Two related concepts', query: 'site:example.org "help center" support' },
+        { title: 'Either one term or another', query: 'site:example.org (university OR research)' },
+        { title: 'Exclude an ambiguous term', query: 'site:example.org "climate change" -careers' },
+        { title: 'Search for a phrase in documentation', query: 'site:docs.example.org "getting started"' },
+        { title: 'Find a frequently asked questions page', query: 'site:example.org ("frequently asked questions" OR FAQ)' }
+      ]
+    },
+    {
+      title: '3. Public titles and URL paths',
+      description: 'intitle: searches for terms in a page title; inurl: searches for text in a URL. Use them to map published editorial content, documentation, and service pages.',
+      examples: [
+        { title: 'Pages with documentation in the title', query: 'site:example.org intitle:documentation' },
+        { title: 'Website news', query: 'site:example.org intitle:news' },
+        { title: 'Articles under a blog path', query: 'site:example.org inurl:blog' },
+        { title: 'Help center pages', query: 'site:example.org inurl:help OR inurl:support' },
+        { title: 'Contact pages', query: 'site:example.org inurl:contact' },
+        { title: 'Event calendar', query: 'site:example.org inurl:events intitle:calendar' }
+      ]
+    },
+    {
+      title: '4. Published documents',
+      description: 'filetype: filters indexed formats. Limit searches to material intended for public release, such as reports, manuals, and press releases. An indexed file is not automatically licensed for redistribution.',
+      examples: [
+        { title: 'Annual reports in PDF format', query: 'site:example.org filetype:pdf "annual report"' },
+        { title: 'Public manuals and guides', query: 'site:example.org filetype:pdf (manual OR guide)' },
+        { title: 'Press releases in PDF format', query: 'site:example.org filetype:pdf "press release"' },
+        { title: 'Published presentations', query: 'site:example.org filetype:pptx (conference OR presentation)' },
+        { title: 'Published technical documentation', query: 'site:docs.example.org filetype:pdf (API OR reference)' },
+        { title: 'Public training material', query: 'site:example.org filetype:pdf "training material"' }
+      ]
+    },
+    {
+      title: '5. Content by topic and page type',
+      description: 'Combine the domain with relevant terminology to map public pages by topic. Review each result in context before recording it.',
+      examples: [
+        { title: 'Product pages', query: 'site:example.org (product OR catalog) -inurl:blog' },
+        { title: 'Public information for customers', query: 'site:example.org (customers OR services) "learn more"' },
+        { title: 'Public policies', query: 'site:example.org (privacy OR accessibility OR cookies)' },
+        { title: 'Developer resources', query: 'site:example.org (developers OR development) (API OR SDK)' },
+        { title: 'Careers and job opportunities', query: 'site:example.org (careers OR jobs OR "join our team")' },
+        { title: 'Pages that mention a language option', query: 'site:example.org (language OR English) -inurl:es' }
+      ]
+    },
+    {
+      title: '6. Public technology references and footprint',
+      description: 'These examples search for references displayed by the site on public pages. Results are clues, not technical confirmation; verify them against an authorized inventory before drawing conclusions.',
+      examples: [
+        { title: 'Visible WordPress references', query: 'site:example.org "Powered by WordPress"' },
+        { title: 'Public pages mentioning Drupal', query: 'site:example.org "Drupal" (theme OR module)' },
+        { title: 'Public API documentation', query: 'site:docs.example.org (OpenAPI OR Swagger) -inurl:api-key' },
+        { title: 'Resources mentioning a published version', query: 'site:example.org "version" (release OR changelog)' },
+        { title: 'Public release notes', query: 'site:example.org (changelog OR "release notes")' },
+        { title: 'Public brand resources', query: 'site:example.org (branding OR "brand guidelines" OR logo)' }
+      ]
+    },
+    {
+      title: '7. Recent content, dates, and changes',
+      description: 'after: and before: can narrow results by date when Google has that information. Dates and index coverage may be approximate.',
+      examples: [
+        { title: 'Pages published after a date', query: 'site:example.org after:2025-01-01 news' },
+        { title: 'Publications within a date range', query: 'site:example.org after:2025-01-01 before:2026-01-01 (report OR review)' },
+        { title: 'Recent product updates', query: 'site:example.org after:2025-06-01 (product OR launch)' },
+        { title: 'Events during a specific period', query: 'site:example.org after:2025-01-01 before:2025-12-31 events' },
+        { title: 'Documentation updates', query: 'site:docs.example.org after:2025-01-01 (updated OR changes)' }
+      ]
+    },
+    {
+      title: '8. Combined queries: example workflows',
+      description: 'Build queries incrementally: domain, topic, operator, and exclusions. Google is not a complete inventory; compare results with approved sources and document the limitations of this method.',
+      examples: [
+        { title: 'Initial map of editorial pages', query: 'site:example.org (blog OR news OR press)' },
+        { title: 'Recent public reports', query: 'site:example.org filetype:pdf after:2024-01-01 (report OR review)' },
+        { title: 'Integration documentation', query: 'site:docs.example.org (integration OR webhook OR API)' },
+        { title: 'Help pages mentioning a feature', query: 'site:example.org inurl:help "notifications"' },
+        { title: 'Public materials for an event', query: 'site:example.org (event OR conference) (filetype:pdf OR filetype:pptx)' },
+        { title: 'Search for a phrase while excluding a section', query: 'site:example.org "customer service" -inurl:blog -inurl:tag' }
+      ]
+    }
   ];
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -255,6 +353,10 @@ nikto -h http://target_ip -o nikto.html -Format htm
 
   copy(text: string) {
     navigator.clipboard.writeText(text);
+  }
+
+  googleSearchUrl(query: string): string {
+    return `https://www.google.com/search?q=${encodeURIComponent(query)}`;
   }
   
   rustscanQuick = `# Scan the first 1,000 TCP ports, then identify discovered services with Nmap

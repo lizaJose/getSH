@@ -36,6 +36,8 @@ export class ActiveDirectory implements OnInit {
     { id: 'post-exploitation-checklist', label: 'Post-Compromise Checklist', group: 'Post-Exploitation' },
     { id: 'compromise', label: 'Domain Compromise', group: 'Attacking' },
     { id: 'ad-example-three-host', label: 'Three-Host Domain Chain', group: 'Examples', important: true },
+    { id: 'forest-writeup', label: 'HTB Forest', group: 'Examples', important: true },
+    { id: 'active-writeup', label: 'HTB Active', group: 'Examples', important: true },
     { id: 'planned-privesc', label: 'Privilege Escalation', group: 'Coming later', disabled: true }
   ];
   selectedFlowPhase = '';
@@ -1065,6 +1067,59 @@ nxc ldap <DC_IP> -u <USER> -p '<PASSWORD>' --query "(objectClass=computer)" "ms-
 # services, certificates, BloodHound, scripts/configs and lateral paths reviewed.
 # Redact secrets in notes and follow evidence-retention / cleanup requirements.
 `;
+
+  forestRecon = String.raw`# Set the retired HTB Forest target address
+export TARGET_IP=<FOREST_IP>
+
+# Identify exposed services and versions
+nmap -Pn -n -p 53,88,135,139,389,445,464,636,3268,3269,5985,9389 -sC -sV "$TARGET_IP"
+
+# Check for anonymously accessible SMB shares and LDAP users
+nxc smb "$TARGET_IP" -u '' -p '' --shares
+nxc ldap "$TARGET_IP" -u '' -p '' --users`;
+
+  forestLdapAudit = String.raw`# Query the HTB.LOCAL naming context for users configured without Kerberos pre-authentication.
+# This is a directory configuration audit; it does not request or crack tickets.
+ldapsearch -x -H "ldap://$TARGET_IP" -b "DC=htb,DC=local" \
+  '(&(objectCategory=person)(objectClass=user)(userAccountControl:1.2.840.113556.1.4.803:=4194304))' \
+  sAMAccountName userAccountControl
+
+# Expected account to investigate in the retired lab: svc-alfresco`;
+
+  forestDirectoryReview = String.raw`# Run from an authorized, domain-joined Windows session with the ActiveDirectory module
+Import-Module ActiveDirectory
+Get-ADDomain
+Get-ADUser -Identity svc-alfresco -Properties MemberOf,UserAccountControl
+Get-ADGroupMember -Identity "Account Operators" -Recursive
+Get-ADGroupMember -Identity "Exchange Windows Permissions" -Recursive
+
+# Review effective directory relationships and ACLs in BloodHound.
+# Replace placeholders with the lab account and collect only approved data.
+bloodhound-python -d htb.local -u '<USER>' -p '<PASSWORD>' \
+  -dc forest.htb.local -c Group,ACL`;
+
+  activeRecon = String.raw`# Set the retired HTB Active target address
+export TARGET_IP=<ACTIVE_IP>
+
+# Identify exposed services and versions
+nmap -Pn -n -p 53,88,135,139,389,445,464,593,636,3268,3269,5985,9389 -sC -sV "$TARGET_IP"
+
+# List SMB shares with a null session
+smbclient -N -L "//$TARGET_IP"
+
+# Review directory and file names in the readable Replication share
+# This lists names only; it does not download or display file contents.
+smbclient -N "//$TARGET_IP/Replication" -c 'recurse;ls'`;
+
+  activeGpoAudit = String.raw`# Run on a domain-joined Windows system with authorized access to SYSVOL
+# Inventory Group Policy Preference XML files without printing their contents.
+Get-ChildItem '\\active.htb\SYSVOL\active.htb\Policies' -Recurse -File -Filter '*.xml' |
+  Select-Object FullName, Length, LastWriteTime
+
+# Review GPO inventory and security filtering through standard AD read operations
+Import-Module GroupPolicy
+Get-GPO -All -Domain 'active.htb' |
+  Select-Object DisplayName, Id, GpoStatus, ModificationTime`;
 
   // =========================================================
   // AD SET FLOW - SCAN

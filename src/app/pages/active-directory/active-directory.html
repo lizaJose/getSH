@@ -988,6 +988,183 @@
       </mat-accordion>
     </ng-container>
 
+    <ng-container *ngIf="selectedService === 'forest-writeup'">
+      <h2>HTB Forest: Active Directory Writeup</h2>
+      <p class="section-description">
+        Forest is a Windows domain-controller lab. This walkthrough summarizes the
+        reasoning and privilege path; use it only in the retired Hack The Box machine
+        or another explicitly authorized environment.
+      </p>
+
+      <mat-accordion multi>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>01. Reconnaissance &amp; Domain Enumeration</mat-panel-title>
+          </mat-expansion-panel-header>
+          <p>
+            The exposed directory services identify the host as a domain controller.
+            Anonymous domain enumeration reveals the domain context and a useful set of
+            user accounts. Record the domain name and validate each account before
+            selecting an attack path.
+          </p>
+          <app-terminal [command]="forestRecon"></app-terminal>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>02. Check the Kerberos Pre-Authentication Setting</mat-panel-title>
+          </mat-expansion-panel-header>
+          <p>
+            Check the directory flag for accounts that do not require Kerberos
+            pre-authentication. In this lab the finding is <code>svc-alfresco</code>.
+            The query below is read-only and identifies the misconfiguration without
+            requesting ticket material.
+          </p>
+          <app-terminal [command]="forestLdapAudit"></app-terminal>
+          <a class="workflow-link" routerLink="/ad" [queryParams]="{ service: 'kerberos' }">
+            Review the Kerberos assessment guide
+          </a>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>03. Validate Access &amp; User Proof</mat-panel-title>
+          </mat-expansion-panel-header>
+          <p>
+            After obtaining an authorized lab credential through the platform's own
+            exercise flow, verify the account and its scope before connecting. Keep
+            passwords out of shell history and notes; retrieve the user proof only
+            within the retired machine.
+          </p>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>04. Review Group Memberships &amp; Directory ACLs</mat-panel-title>
+          </mat-expansion-panel-header>
+          <p>
+            With authorized domain credentials, inspect the relevant memberships and
+            use BloodHound to review the effective ACL path. In the lab, investigate
+            <code>Account Operators</code>, <code>Exchange Windows Permissions</code>,
+            and the domain object's replication-related rights. The commands below
+            perform directory reads only.
+          </p>
+          <app-terminal [command]="forestDirectoryReview"></app-terminal>
+          <a class="workflow-link" routerLink="/ad" [queryParams]="{ service: 'bloodhound' }">
+            Review BloodHound relationship analysis
+          </a>
+          <a class="workflow-link" routerLink="/ad" [queryParams]="{ service: 'acl' }">
+            Review Active Directory ACLs
+          </a>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>05. Confirm Impact &amp; Root Proof</mat-panel-title>
+          </mat-expansion-panel-header>
+          <p>
+            If the ACL review confirms replication privileges, document the impact
+            and validate the lab's root proof using the authorized exercise process.
+            This walkthrough intentionally omits commands that alter directory
+            permissions or extract domain credential material.
+          </p>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Key Lessons &amp; Defensive Checks</mat-panel-title>
+          </mat-expansion-panel-header>
+          <ul>
+            <li>Require Kerberos pre-authentication unless a documented exception exists.</li>
+            <li>Use unique, strong passwords for service accounts and review their privileges.</li>
+            <li>Restrict account-creation and group-management rights to approved administrators.</li>
+            <li>Audit domain ACL changes and replication-right assignments.</li>
+            <li>Alert on unexpected account or group changes and unusual directory replication.</li>
+          </ul>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </ng-container>
+
+<ng-container *ngIf="selectedService === 'active-writeup'">
+  <h2>HTB Active: SYSVOL &amp; Kerberos Audit Walkthrough</h2>
+  <p class="section-description">
+    Active is a retired Windows domain-controller lab. The key lesson is that
+    anonymously readable SYSVOL replication data can expose legacy Group Policy
+    Preferences, while a service account can provide a Kerberos attack surface.
+    Commands below are limited to service discovery, share listing and policy
+    inventory; use them only against the authorized HTB target.
+  </p>
+
+  <mat-accordion multi>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>01. Port Scan &amp; SMB Share Discovery</mat-panel-title>
+      </mat-expansion-panel-header>
+      <p>
+        Confirm the domain-controller services and check whether SMB permits an
+        anonymous session. In this machine, the notable share is
+        <code>Replication</code>.
+      </p>
+      <app-terminal [command]="activeRecon"></app-terminal>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>02. Review the SYSVOL Exposure</mat-panel-title>
+      </mat-expansion-panel-header>
+      <p>
+        The share contains replicated Group Policy data, including a legacy
+        Group Policy Preferences XML file. A <code>cpassword</code> value in a
+        preference file is a known insecure storage pattern, not a secure secret.
+        Do not copy, decrypt or reuse the value; report the exposure and treat
+        affected credentials as compromised.
+      </p>
+      <app-terminal [command]="activeGpoAudit"></app-terminal>
+      <a class="workflow-link" routerLink="/ad" [queryParams]="{ service: 'shares' }">
+        Review domain shares and SYSVOL
+      </a>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>03. Assess the Service-Account Kerberos Risk</mat-panel-title>
+      </mat-expansion-panel-header>
+      <p>
+        The lab's exposed preference is associated with the
+        <code>svc_tgs</code> service account. Assess whether service accounts have
+        registered SPNs and whether their passwords meet current policy. Keep the
+        review to directory metadata and authorized configuration checks; this
+        guide does not request or crack Kerberos tickets.
+      </p>
+      <a class="workflow-link" routerLink="/ad" [queryParams]="{ service: 'spn' }">
+        Review SPN enumeration guidance
+      </a>
+      <a class="workflow-link" routerLink="/ad" [queryParams]="{ service: 'kerberos' }">
+        Review Kerberos security checks
+      </a>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>04. Validate Impact &amp; Remediate</mat-panel-title>
+      </mat-expansion-panel-header>
+      <p>
+        The intended lab chain demonstrates how legacy GPP secret exposure and
+        weak service-account credentials can lead to domain compromise. Do not use
+        recovered secrets to access systems or extract domain credentials. In an
+        assessment, document the affected policy and account, then ask the domain
+        owner to rotate credentials and remove the insecure preference.
+      </p>
+      <ul>
+        <li>Remove passwords from Group Policy Preferences and rotate any exposed credentials.</li>
+        <li>Limit SYSVOL access to the domain's intended authenticated principals.</li>
+        <li>Use long, unique, managed service-account credentials.</li>
+        <li>Monitor anonymous SMB access, SYSVOL reads and unusual service-account authentication.</li>
+      </ul>
+    </mat-expansion-panel>
+  </mat-accordion>
+</ng-container>
+
 <ng-container *ngIf="selectedService === 'full-ad-compromise-linux'">
   <h2>Full AD Compromise from Linux</h2>
 

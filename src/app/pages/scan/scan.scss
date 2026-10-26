@@ -408,6 +408,40 @@ pre code {
   transform: translateY(1px);
 }
 
+.dork-notice {
+  padding: 1rem 1.1rem;
+  border: 1px solid #854d0e;
+  border-radius: 10px;
+  background: #422006;
+  color: #fde68a;
+  line-height: 1.6;
+}
+
+.dork-notice code,
+.detail li code {
+  color: #7dd3fc;
+}
+
+.dork-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.dork-search {
+  display: inline-block;
+  margin-top: 8px;
+  color: #7dd3fc;
+  font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.dork-search:hover {
+  color: #bae6fd;
+}
+
 
 /* ========================================================= */
 /* RESPONSIVE */

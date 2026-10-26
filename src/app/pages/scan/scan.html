@@ -335,6 +335,71 @@
   </ng-container>
 
   <!-- ===================================================== -->
+  <!-- GOOGLE DORKS -->
+  <!-- ===================================================== -->
+  <ng-container *ngIf="selected === 'google-dorks'">
+    <div class="detail">
+      <h2>Google Dorks</h2>
+      <p class="section-description">
+        Use advanced search to discover and classify information a site has publicly published and
+        indexed. This is a passive OSINT aid, not a replacement for an inventory or an authorized
+        technical assessment.
+      </p>
+
+      <div class="dork-notice">
+        <strong>Responsible use:</strong> use these queries only with domains you own, labs, or assets
+        explicitly covered by an authorization. The examples use <code>example.org</code>, a domain
+        reserved for documentation. Replace it only with an in-scope domain. Do not attempt to access,
+        download, retain, or share private or exposed data; notify the owner through an appropriate
+        channel. An indexed result does not grant permission to access it.
+      </div>
+
+      <mat-accordion multi>
+        <mat-expansion-panel *ngFor="let group of googleDorkGroups">
+          <mat-expansion-panel-header>
+            <mat-panel-title>{{ group.title }}</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <p>{{ group.description }}</p>
+          <div class="dork-example" *ngFor="let example of group.examples">
+            <h3>{{ example.title }}</h3>
+            <pre><code>{{ example.query }}</code></pre>
+            <div class="dork-actions">
+              <button class="copy-button" type="button" (click)="copy(example.query)">Copy query</button>
+              <a class="dork-search" [href]="googleSearchUrl(example.query)" target="_blank" rel="noopener noreferrer">
+                  Search Google
+              </a>
+            </div>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+
+      <mat-accordion multi>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Quick operator reference</mat-panel-title>
+          </mat-expansion-panel-header>
+          <ul>
+            <li><code>site:</code> limits results to a domain or subdomain.</li>
+            <li><code>"exact phrase"</code> searches for words in that order.</li>
+            <li><code>OR</code> matches either of multiple alternatives.</li>
+            <li><code>-word</code> excludes a term; <code>-inurl:</code> excludes URL paths.</li>
+            <li><code>intitle:</code> searches for a term in the page title.</li>
+            <li><code>inurl:</code> searches for a term in the page URL.</li>
+            <li><code>filetype:</code> filters by format, such as <code>pdf</code> or <code>pptx</code>.</li>
+            <li><code>after:</code> and <code>before:</code> narrow dates, but coverage may be approximate.</li>
+          </ul>
+          <p>
+            Start with a simple query, add one operator at a time, and check that each result really
+            belongs to the intended domain and date range. Syntax and coverage can vary; verify findings
+            against approved sources and record when you searched.
+          </p>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+  </ng-container>
+
+  <!-- ===================================================== -->
   <!-- RUSTSCAN DETAIL -->
   <!-- ===================================================== -->
   <ng-container *ngIf="selected === 'rustscan'">
