@@ -37,68 +37,67 @@
     <ng-container *ngIf="selectedService === 'ad-roadmap'">
       <h2>Active Directory Assessment Roadmap</h2>
       <p class="section-description">
-        A high-level, evidence-led workflow for an authorized lab or assessment. Select a box
-        to open the relevant reference; revisit earlier steps when new evidence changes the picture.
+        For an authorized assessment of a Domain Controller from Kali, the Kali Single-Host Flow
+        is the standard path to follow. The phases below mirror that reference; select a phase to
+        open the complete flow. Use the Windows Pivot Flow only when the assessment starts from
+        an already-compromised Windows host. Run these starter commands only on explicitly
+        in-scope systems; Phase 4 prepares evidence storage but does not extract credentials.
       </p>
 
       <div class="ad-roadmap" aria-label="Active Directory assessment steps">
-        <button type="button" class="ad-roadmap__step" (click)="selectService('manual')">
+        <span class="ad-roadmap__commands-label">Starter commands · Kali</span>
+        <button type="button" class="ad-roadmap__step" (click)="selectService('full-ad-compromise-linux')">
+          <span class="ad-roadmap__number">00</span>
+          <span class="ad-roadmap__content">
+            <strong>Initial scan</strong>
+            <span>Map the DC's exposed ports and services, then save the results for follow-up enumeration.</span>
+          </span>
+        </button>
+        <app-terminal [command]="kaliRoadmapCommands.initialScan"></app-terminal>
+        <div class="ad-roadmap__connector" aria-hidden="true">↓</div>
+
+        <span class="ad-roadmap__commands-label">Starter commands · Kali</span>
+        <button type="button" class="ad-roadmap__step" (click)="selectService('full-ad-compromise-linux')">
           <span class="ad-roadmap__number">01</span>
           <span class="ad-roadmap__content">
-            <strong>Confirm domain context</strong>
-            <span>Identify the domain, likely domain controllers, and exposed directory services.</span>
+            <strong>Enumeration without credentials</strong>
+            <span>Review what the DC exposes anonymously and note evidence that can guide the next checks.</span>
           </span>
         </button>
+        <app-terminal [command]="kaliRoadmapCommands.anonymousEnumeration"></app-terminal>
         <div class="ad-roadmap__connector" aria-hidden="true">↓</div>
 
-        <button type="button" class="ad-roadmap__step" (click)="selectService('manual')">
+        <span class="ad-roadmap__commands-label">Starter commands · Kali</span>
+        <button type="button" class="ad-roadmap__step" (click)="selectService('full-ad-compromise-linux')">
           <span class="ad-roadmap__number">02</span>
           <span class="ad-roadmap__content">
-            <strong>Collect available directory information</strong>
-            <span>Record domain, users, groups, computers, and policy clues available within scope.</span>
+            <strong>Enumeration with authorized credentials</strong>
+            <span>Validate the supplied account and expand directory and share review within the agreed scope.</span>
           </span>
         </button>
+        <app-terminal [command]="kaliRoadmapCommands.credentialedEnumeration"></app-terminal>
         <div class="ad-roadmap__connector" aria-hidden="true">↓</div>
 
-        <div class="ad-roadmap__branch">
-          <button type="button" class="ad-roadmap__step" (click)="selectService('shares')">
-            <span class="ad-roadmap__number">03A</span>
-            <span class="ad-roadmap__content">
-              <strong>Review shares and SYSVOL</strong>
-              <span>Check accessible, in-scope resources for configuration and assessment clues.</span>
-            </span>
-          </button>
-          <button type="button" class="ad-roadmap__step" (click)="selectService('bloodhound')">
-            <span class="ad-roadmap__number">03B</span>
-            <span class="ad-roadmap__content">
-              <strong>Map relationships</strong>
-              <span>When authorized data is available, review group membership and object relationships.</span>
-            </span>
-          </button>
-        </div>
+        <span class="ad-roadmap__commands-label">Starter checks · Kali</span>
+        <button type="button" class="ad-roadmap__step" (click)="selectService('full-ad-compromise-linux')">
+          <span class="ad-roadmap__number">03</span>
+          <span class="ad-roadmap__content">
+            <strong>Lateral movement</strong>
+            <span>Assess another in-scope host only when the collected evidence and engagement rules support it.</span>
+          </span>
+        </button>
+        <app-terminal [command]="kaliRoadmapCommands.lateralMovement"></app-terminal>
         <div class="ad-roadmap__connector" aria-hidden="true">↓</div>
 
-        <button type="button" class="ad-roadmap__step" (click)="selectService('acl')">
+        <span class="ad-roadmap__commands-label">Evidence handling · Kali</span>
+        <button type="button" class="ad-roadmap__step" (click)="selectService('full-ad-compromise-linux')">
           <span class="ad-roadmap__number">04</span>
           <span class="ad-roadmap__content">
-            <strong>Follow evidence-backed leads</strong>
-            <span>Review permissions, service accounts, Kerberos, or certificate services only when evidence points there.</span>
+            <strong>Credential dumping</strong>
+            <span>Separate this high-impact phase from routine enumeration; proceed only when explicitly authorized.</span>
           </span>
         </button>
-        <div class="ad-roadmap__branch ad-roadmap__branch--compact">
-          <button type="button" class="ad-roadmap__link" (click)="selectService('kerberos')">Kerberos</button>
-          <button type="button" class="ad-roadmap__link" (click)="selectService('spn')">Service accounts / SPNs</button>
-          <button type="button" class="ad-roadmap__link" (click)="selectService('adcs')">Certificate services</button>
-        </div>
-        <div class="ad-roadmap__connector" aria-hidden="true">↓</div>
-
-        <button type="button" class="ad-roadmap__step" (click)="selectService('post-exploitation-checklist')">
-          <span class="ad-roadmap__number">05</span>
-          <span class="ad-roadmap__content">
-            <strong>Validate, document, and close out</strong>
-            <span>Use the least-impacting validation, record evidence and impact, and follow the engagement rules.</span>
-          </span>
-        </button>
+        <app-terminal [command]="kaliRoadmapCommands.credentialHandling"></app-terminal>
       </div>
     </ng-container>
 
@@ -1234,11 +1233,11 @@
 </ng-container>
 
 <ng-container *ngIf="selectedService === 'full-ad-compromise-linux'">
-  <h2>Full AD Compromise from Linux</h2>
+  <h2>Kali Single-Host Flow – Domain Controller</h2>
 
   <p>
-    Structured Active Directory assessment workflow using Kali Linux.
-    Perform these steps only in systems you are authorized to test.
+    Standard single-host workflow for an authorized assessment of a Domain Controller from Kali.
+    Follow the phases in order and stay within the written scope.
   </p>
 
   <mat-accordion multi>

@@ -34,8 +34,8 @@ export class ActiveDirectory implements OnInit {
     { id: 'adcs', label: 'AD Certificate Services (ADCS)', group: 'Attacking' },
     { id: 'dcom', label: 'DCOM Lateral Movement', group: 'Attacking' },
     { id: 'gpo-abuse', label: 'GPO Abuse', group: 'Attacking' },
-    { id: 'post-exploitation-checklist', label: 'Post-Compromise Checklist', group: 'Post-Exploitation' },
     { id: 'compromise', label: 'Domain Compromise', group: 'Attacking' },
+    { id: 'post-exploitation-checklist', label: 'Post-Compromise Checklist', group: 'Post-Exploitation' },
     { id: 'ad-example-three-host', label: 'Three-Host Domain Chain', group: 'Examples', important: true },
     { id: 'forest-writeup', label: 'HTB Forest', group: 'Examples', important: true },
     { id: 'active-writeup', label: 'HTB Active', group: 'Examples', important: true },
@@ -94,6 +94,24 @@ net group /domain
 # Enumerate a specific domain group
 net group "Sales Department" /domain
 `;
+
+  kaliRoadmapCommands = {
+    initialScan: String.raw`# Run only against the Domain Controller in the written scope
+mkdir -p evidence
+nmap -sT -Pn -n --top-ports 1000 <IP> -oN evidence/dc-ports.txt`,
+    anonymousEnumeration: String.raw`# Check anonymous SMB listing and LDAP Root DSE only
+smbclient -L //<IP> -N
+ldapsearch -x -H ldap://<IP> -s base`,
+    credentialedEnumeration: String.raw`# Use only assessment-provided credentials over LDAPS; -W prompts without putting the password in shell history
+ldapsearch -x -H ldaps://<IP> -D '<USER>@<DOMAIN>' -W -b '<BASE_DN>' '(objectClass=user)' sAMAccountName`,
+    lateralMovement: String.raw`# Check the route and approved service reachability; this does not execute commands remotely
+ip route get <IP>
+nc -vz -w 2 <IP> 445`,
+    credentialHandling: String.raw`# Prepare a private folder for explicitly authorized assessment evidence
+umask 077
+install -d -m 700 evidence/credential-review
+# Follow the engagement rules for any sensitive evidence; do not store recovered secrets here`,
+  };
 
   // =========================================================
   // POWERVIEW

@@ -1,5 +1,13 @@
 <nav class="section-index" [class.section-index--grouped]="hasGroups" aria-label="Section index">
-  <span class="section-index__label">Browse</span>
+  <div class="section-index__toolbar">
+    <span class="section-index__label">Browse</span>
+    <div class="section-index__group-actions" *ngIf="hasGroups" role="group" aria-label="Browse groups">
+      <button type="button" (click)="collapseAllGroups()">Collapse all</button>
+      <button type="button" (click)="expandAllGroups()">Expand all</button>
+    </div>
+  </div>
+  <p class="section-index__hidden-note" *ngIf="indexHidden">Index hidden — use "Expand all" to show it.</p>
+  <ng-container *ngIf="!indexHidden">
   <ng-container *ngFor="let item of items; let index = index">
     <button
       *ngIf="item.group && (index === 0 || items[index - 1].group !== item.group)"
@@ -33,5 +41,6 @@
       {{ item.label }}
       <span class="section-index__important-badge" *ngIf="item.important" title="Important section">★ Important</span>
     </button>
+  </ng-container>
   </ng-container>
 </nav>

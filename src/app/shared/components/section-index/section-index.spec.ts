@@ -35,4 +35,30 @@ describe('SectionIndexComponent', () => {
     expect(component.countGroupItems('Enumeration')).toBe(2);
     expect(component.countGroupItems('Coming later')).toBe(1);
   });
+
+  it('collapses and expands all groups from the Browse controls', () => {
+    component.expandAllGroups();
+    expect(component.isGroupCollapsed('AD Flow')).toBe(false);
+    expect(component.isGroupCollapsed('Enumeration')).toBe(false);
+
+    component.collapseAllGroups();
+    expect(component.isGroupCollapsed('AD Flow')).toBe(true);
+    expect(component.isGroupCollapsed('Enumeration')).toBe(true);
+    expect(component.isGroupCollapsed('Coming later')).toBe(true);
+
+    component.expandAllGroups();
+    expect(component.isGroupCollapsed('AD Flow')).toBe(false);
+    expect(component.isGroupCollapsed('Enumeration')).toBe(false);
+    expect(component.isGroupCollapsed('Coming later')).toBe(false);
+  });
+
+  it('hides the whole index on collapse all and reveals it again on expand all', () => {
+    expect(component.indexHidden).toBe(false);
+
+    component.collapseAllGroups();
+    expect(component.indexHidden).toBe(true);
+
+    component.expandAllGroups();
+    expect(component.indexHidden).toBe(false);
+  });
 });

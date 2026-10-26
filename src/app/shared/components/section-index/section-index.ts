@@ -23,6 +23,7 @@ export class SectionIndexComponent implements OnChanges {
 
   private readonly collapsedGroups = new Set<string>();
   private initialized = false;
+  indexHidden = false;
 
   get hasGroups(): boolean {
     return this.items.some(item => !!item.group);
@@ -51,6 +52,18 @@ export class SectionIndexComponent implements OnChanges {
   toggleGroup(group: string): void {
     if (this.isGroupCollapsed(group)) this.collapsedGroups.delete(group);
     else this.collapsedGroups.add(group);
+  }
+
+  collapseAllGroups(): void {
+    this.items.forEach(item => {
+      if (item.group) this.collapsedGroups.add(item.group);
+    });
+    this.indexHidden = true;
+  }
+
+  expandAllGroups(): void {
+    this.collapsedGroups.clear();
+    this.indexHidden = false;
   }
 
   countGroupItems(group: string): number {

@@ -93,6 +93,20 @@ app-root .content mat-expansion-panel-header:hover {
   margin: 1.5rem auto;
 }
 
+.active-directory-page .ad-roadmap app-terminal {
+  display: block;
+  width: min(100%, 720px);
+  min-width: 0;
+}
+
+.active-directory-page .ad-roadmap__commands-label {
+  width: min(100%, 720px);
+  margin-top: 0.35rem;
+  color: #94a3b8;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
 .active-directory-page .ad-roadmap__step {
   display: flex;
   align-items: flex-start;
@@ -115,8 +129,7 @@ app-root .content mat-expansion-panel-header:hover {
   background: #172a37;
 }
 
-.active-directory-page .ad-roadmap__step:focus-visible,
-.active-directory-page .ad-roadmap__link:focus-visible {
+.active-directory-page .ad-roadmap__step:focus-visible {
   outline: 2px solid #38bdf8;
   outline-offset: 3px;
 }
@@ -156,45 +169,6 @@ app-root .content mat-expansion-panel-header:hover {
   color: #67e8f9;
   font-size: 1.25rem;
   line-height: 1;
-}
-
-.active-directory-page .ad-roadmap__branch {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  justify-items: center;
-  gap: 0.75rem;
-  width: min(100%, 720px);
-}
-
-.active-directory-page .ad-roadmap__branch .ad-roadmap__step {
-  width: 100%;
-}
-
-.active-directory-page .ad-roadmap__branch--compact {
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-}
-
-.active-directory-page .ad-roadmap__link {
-  width: 100%;
-  padding: 0.7rem 0.85rem;
-  border: 1px solid #344b59;
-  border-radius: 8px;
-  background: #101c27;
-  color: #bdeafa;
-  font: inherit;
-  font-size: 0.82rem;
-  cursor: pointer;
-}
-
-.active-directory-page .ad-roadmap__link:hover {
-  border-color: #38bdf8;
-  background: #172a37;
-}
-
-@media (max-width: 900px) {
-  .active-directory-page .ad-roadmap__branch {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

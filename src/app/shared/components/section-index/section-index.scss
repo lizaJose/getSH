@@ -22,6 +22,52 @@
   text-transform: uppercase;
 }
 
+.section-index__toolbar {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.section-index__group-actions {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.section-index .section-index__group-actions button {
+  flex: 1 1 auto;
+  min-height: 2.15rem;
+  padding: 0.4rem 0.6rem;
+  color: #d4fbe8;
+  background: #163a30;
+  border: 1px solid #4caf7d;
+  border-radius: 6px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.section-index .section-index__group-actions button:hover {
+  color: #eaffdf;
+  background: #1c4a3c;
+  border-color: #78d6a3;
+}
+
+.section-index .section-index__group-actions button:focus-visible {
+  outline: 2px solid #78d6cd;
+  outline-offset: 2px;
+}
+
+.section-index__hidden-note {
+  margin: 0.15rem 0.1rem 0.35rem;
+  padding: 0.5rem 0.65rem;
+  color: #8fa3a8;
+  background: #0c171a;
+  border: 1px dashed #34474d;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-style: italic;
+}
+
 .section-index__group {
   width: 100%;
   min-height: 2.65rem;
