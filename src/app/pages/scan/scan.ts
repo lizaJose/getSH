@@ -6,6 +6,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Terminal } from '../../shared/terminal/terminal';
 import { SectionIndexComponent, SectionIndexItem } from '../../shared/components/section-index/section-index';
 
+function createGoogleSearchUrl(query: string): string {
+  return `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+}
+
 @Component({
   selector: 'app-scan',
   standalone: true,
@@ -22,7 +26,7 @@ export class ScanComponent implements OnInit {
     { id: 'nikto', label: 'Nikto' },
     { id: 'google-dorks', label: 'Google Dorks', important: true }
   ];
-  readonly googleDorkGroups = [
+  public readonly googleDorkGroups = [
     {
       title: '1. Basic operators and scope',
       description: 'Start by limiting each query to the test domain. example.org is reserved for documentation: replace it only with a domain you own or that is explicitly included in your authorization.',
@@ -118,7 +122,13 @@ export class ScanComponent implements OnInit {
         { title: 'Search for a phrase while excluding a section', query: 'site:example.org "customer service" -inurl:blog -inurl:tag' }
       ]
     }
-  ];
+  ].map(group => ({
+    ...group,
+    examples: group.examples.map(example => ({
+      ...example,
+      searchUrl: createGoogleSearchUrl(example.query)
+    }))
+  }));
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
@@ -355,10 +365,6 @@ nikto -h http://target_ip -o nikto.html -Format htm
     navigator.clipboard.writeText(text);
   }
 
-  googleSearchUrl(query: string): string {
-    return `https://www.google.com/search?q=${encodeURIComponent(query)}`;
-  }
-  
   rustscanQuick = `# Scan the first 1,000 TCP ports, then identify discovered services with Nmap
 rustscan -a target_ip -r 1-1000 --ulimit 5000 -- -Pn -sV -sC -oN rustscan-services.txt
 `;

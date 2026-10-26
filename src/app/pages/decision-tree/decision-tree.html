@@ -1,0 +1,63 @@
+<main class="decision-page">
+  <header class="page-header">
+    <div class="terminal-path"><span class="prompt">~/get.sh/</span>decision-tree</div>
+    <span class="section-kicker">LAB WORKFLOW</span>
+    <h1 class="title">Machine Decision Tree</h1>
+    <p class="page-description">
+      An interactive workflow for solving HTB machines and other authorized labs. Follow evidence,
+      choose a next step, and jump to the relevant reference when you need more detail.
+    </p>
+  </header>
+
+  <aside class="scope-note">
+    <strong>Lab scope:</strong> this guide is a static front-end reference. It does not scan targets,
+    run commands, or store your progress. Use it only for machines and actions permitted by the lab.
+  </aside>
+
+  <section class="decision-card" aria-live="polite" aria-labelledby="decision-title">
+    <div class="decision-card__top">
+      <span class="decision-stage">{{ currentNode.stage }}</span>
+      <span class="decision-step">STEP {{ stepNumber }}</span>
+    </div>
+
+    <h2 id="decision-title">{{ currentNode.title }}</h2>
+    <p class="decision-question">{{ currentNode.question }}</p>
+    <p class="decision-guidance">{{ currentNode.guidance }}</p>
+
+    <div class="decision-choices" *ngIf="currentNode.choices?.length">
+      <button
+        *ngFor="let choice of currentNode.choices"
+        type="button"
+        class="decision-choice"
+        (click)="selectChoice(choice)"
+      >
+        <span>{{ choice.label }}</span>
+        <span class="decision-choice__arrow" aria-hidden="true">›</span>
+      </button>
+    </div>
+
+    <div class="decision-outcome" *ngIf="currentNode.outcome">
+      <strong>Next checkpoint</strong>
+      <p>{{ currentNode.outcome }}</p>
+    </div>
+
+    <nav class="decision-links" *ngIf="currentNode.links?.length" aria-label="Related guides">
+      <a
+        *ngFor="let link of currentNode.links"
+        [routerLink]="link.route"
+        [queryParams]="link.queryParams"
+      >
+        {{ link.label }} <span aria-hidden="true">›</span>
+      </a>
+    </nav>
+
+    <div class="decision-controls">
+      <button type="button" class="control-button" [disabled]="!canGoBack" (click)="goBack()">
+        ← Back
+      </button>
+      <button type="button" class="control-button control-button--reset" (click)="startOver()">
+        Start over
+      </button>
+    </div>
+  </section>
+</main>

@@ -346,14 +346,6 @@
         technical assessment.
       </p>
 
-      <div class="dork-notice">
-        <strong>Responsible use:</strong> use these queries only with domains you own, labs, or assets
-        explicitly covered by an authorization. The examples use <code>example.org</code>, a domain
-        reserved for documentation. Replace it only with an in-scope domain. Do not attempt to access,
-        download, retain, or share private or exposed data; notify the owner through an appropriate
-        channel. An indexed result does not grant permission to access it.
-      </div>
-
       <mat-accordion multi>
         <mat-expansion-panel *ngFor="let group of googleDorkGroups">
           <mat-expansion-panel-header>
@@ -366,7 +358,7 @@
             <pre><code>{{ example.query }}</code></pre>
             <div class="dork-actions">
               <button class="copy-button" type="button" (click)="copy(example.query)">Copy query</button>
-              <a class="dork-search" [href]="googleSearchUrl(example.query)" target="_blank" rel="noopener noreferrer">
+              <a class="dork-search" [href]="example.searchUrl" target="_blank" rel="noopener noreferrer">
                   Search Google
               </a>
             </div>

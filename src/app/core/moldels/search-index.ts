@@ -18,6 +18,7 @@ export const SEARCH_INDEX: SearchEntry[] = [
   { type: 'section', title: 'Masscan', keywords: ['masscan', 'mass scan', 'fast ports', 'tcp scan'], route: '/scan', queryParams: { tool: 'masscan' }, section: 'Scan', summary: 'High-speed TCP port discovery.' },
   { type: 'section', title: 'Nikto', keywords: ['nikto', 'web scan', 'http scan', 'https'], route: '/scan', queryParams: { tool: 'nikto' }, section: 'Scan', summary: 'Web server checks and misconfiguration discovery.' },
   { type: 'section', title: 'Google Dorks', keywords: ['google dorks', 'google hacking', 'dorks', 'osint', 'site operator', 'filetype', 'intitle', 'inurl', 'advanced search'], route: '/scan', queryParams: { tool: 'google-dorks' }, section: 'Scan', summary: 'Search operators for passive OSINT on authorized domains.' },
+  { type: 'section', title: 'Machine Decision Tree', keywords: ['decision tree', 'workflow', 'htb', 'hack the box', 'machine solving', 'enumeration flow', 'next step', 'lab methodology'], route: '/decision-tree', section: 'Decision Tree', summary: 'Interactive evidence-based workflow for HTB machines and authorized labs.' },
 
   // Common services
   { type: 'section', title: 'SSH', keywords: ['ssh', 'secure shell', 'keys', 'tunnel', 'authentication', 'private key', 'id_rsa', 'port forwarding'], route: '/common-services', queryParams: { service: 'ssh' }, section: 'Common Services', summary: 'Authentication, exposed keys and tunneling.' },

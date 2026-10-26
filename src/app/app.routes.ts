@@ -17,6 +17,11 @@ export const routes: Routes = [
       import('./pages/scan/scan').then(m => m.ScanComponent)
   },
   {
+    path: 'decision-tree',
+    loadComponent: () =>
+      import('./pages/decision-tree/decision-tree').then(m => m.DecisionTreeComponent)
+  },
+  {
     path: 'common-services',
     loadComponent: () =>
       import('./pages/common-services/common-services').then(m => m.CommonServicesComponent)
